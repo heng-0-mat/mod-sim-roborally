@@ -97,7 +97,11 @@ public class G4_Vertex {
 	}
 	
 	public G4_Position toG4_Position(){
-		return new G4_Position(this.x,this.y,Constants.DIRECTION_STAY);
+		try {
+			return new G4_Position(this.x,this.y,Constants.DIRECTION_STAY);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
 	public boolean isWallNorth() {

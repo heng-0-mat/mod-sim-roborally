@@ -31,7 +31,11 @@ public class G4_Position {
 	}
 	
 	public G4_Vertex toG4_Vertex(){
-		return new G4_Vertex(this.x,this.y,"");
+		try {
+			return new G4_Vertex(this.x,this.y,"");
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
 	@Override
@@ -47,5 +51,22 @@ public class G4_Position {
 		return (this.x == position.x && this.y == position.y && 
 				(this.getDirection() == position.getDirection() || 
 						position.getDirection() == Constants.DIRECTION_STAY));
+	}
+	
+	public G4_Position getPositionInDirection(Direction direction){
+		if (direction == Constants.DIRECTION_NORTH){
+			return new G4_Position(this.x, this.y-1, this.direction);
+		}
+		if (direction == Constants.DIRECTION_EAST){
+			return new G4_Position(this.x-1, this.y, this.direction);
+		}
+		if (direction == Constants.DIRECTION_SOUTH){
+			return new G4_Position(this.x, this.y+1, this.direction);
+		}
+		if (direction == Constants.DIRECTION_WEST){
+			return new G4_Position(this.x+1, this.y, this.direction);
+		}
+		
+		return this;
 	}
 }

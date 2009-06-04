@@ -240,5 +240,114 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 				
 		return direction;
 	} 
+	
+	/**
+	 * Determines whether moving from the given start position to the given end position is possible
+	 * @param start
+	 * @param ziel
+	 * @return
+	 */
+	public boolean isMovingPossible(G4_Position start, G4_Position ziel){
+		
+		if (this.getLengthOfShortestPath(start, ziel) != Double.POSITIVE_INFINITY)
+			return true;
+		
+		return false;
+	}
+	
+	/**
+	 * Returns the nearest Position to the given Position from which pushing the Ball is possible
+	 * @param position
+	 * @return
+	 */
+	public G4_Position getNearestPushPosition(G4_Position position){
+		
+		double shortestLength = 1000;
+		G4_Position nearestPosition = null;
+		
+		G4_Position positionNorth;
+		try {
+			positionNorth = this.getVertexInDirection(this.positionOfBall.toG4_Vertex(), Constants.DIRECTION_NORTH).toG4_Position();
+			positionNorth.setDirection(Constants.DIRECTION_SOUTH);
+			double lengthNorth = this.getLengthOfShortestPath(position, positionNorth);
+			if (shortestLength > lengthNorth){
+				shortestLength = lengthNorth;
+				nearestPosition = positionNorth;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		G4_Position positionEast;
+		try {
+			positionEast = this.getVertexInDirection(this.positionOfBall.toG4_Vertex(), Constants.DIRECTION_EAST).toG4_Position();
+			positionEast.setDirection(Constants.DIRECTION_WEST);
+			double lengthEast = this.getLengthOfShortestPath(position, positionEast);
+			if (shortestLength > lengthEast){
+				shortestLength = lengthEast;
+				nearestPosition = positionEast;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		G4_Position positionSouth;
+		try {
+			positionSouth = this.getVertexInDirection(this.positionOfBall.toG4_Vertex(), Constants.DIRECTION_SOUTH).toG4_Position();
+			positionSouth.setDirection(Constants.DIRECTION_NORTH);
+			double lengthSouth = this.getLengthOfShortestPath(position, positionSouth);
+			if (shortestLength > lengthSouth){
+				shortestLength = lengthSouth;
+				nearestPosition = positionSouth;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		G4_Position positionWest;
+		try {
+			positionWest = this.getVertexInDirection(this.positionOfBall.toG4_Vertex(), Constants.DIRECTION_WEST).toG4_Position();
+			positionWest.setDirection(Constants.DIRECTION_EAST);
+			double lengthWest = this.getLengthOfShortestPath(position, positionWest);
+			if (shortestLength > lengthWest){
+				shortestLength = lengthWest;
+				nearestPosition = positionWest;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return nearestPosition;
+			
+	}
+
+	/**
+	 * Returns how far the ball can be pushed from the given position in the given positions direction
+	 * Assumes that the given position is a pushing position.
+	 * @param position
+	 * @return
+	 */
+	public int getMaximalPushStrength(G4_Position position){
+		
+		//Position 0 ist die Position des Balls
+		G4_Position position0 = position.getPositionInDirection(position.getDirection());
+		G4_Position position1 = position.getPositionInDirection(position.getDirection());
+		G4_Position position2 = position.getPositionInDirection(position.getDirection());
+		G4_Position position3 = position.getPositionInDirection(position.getDirection());
+		
+		if (this.isMovingPossible(position3, position0))
+			return 3;
+		if (this.isMovingPossible(position2, position0))
+			return 2;
+		if (this.isMovingPossible(position1, position0))
+			return 1;
+
+		return 0;
+	}
+	
 
 }
