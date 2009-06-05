@@ -259,7 +259,7 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 	 * @param position
 	 * @return
 	 */
-	public G4_Position getNearestPushPosition(G4_Position position){
+	public G4_Position getNearestPushPosition(G4_Position position, G4_GraphMap MovingMap){
 		
 		double shortestLength = 1000;
 		G4_Position nearestPosition = null;
@@ -268,7 +268,7 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 		try {
 			positionNorth = this.getVertexInDirection(this.positionOfBall.toG4_Vertex(), Constants.DIRECTION_NORTH).toG4_Position();
 			positionNorth.setDirection(Constants.DIRECTION_SOUTH);
-			double lengthNorth = this.getLengthOfShortestPath(position, positionNorth);
+			double lengthNorth = MovingMap.getLengthOfShortestPath(position, positionNorth);
 			if (shortestLength > lengthNorth){
 				shortestLength = lengthNorth;
 				nearestPosition = positionNorth;
@@ -282,7 +282,7 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 		try {
 			positionEast = this.getVertexInDirection(this.positionOfBall.toG4_Vertex(), Constants.DIRECTION_EAST).toG4_Position();
 			positionEast.setDirection(Constants.DIRECTION_WEST);
-			double lengthEast = this.getLengthOfShortestPath(position, positionEast);
+			double lengthEast = MovingMap.getLengthOfShortestPath(position, positionEast);
 			if (shortestLength > lengthEast){
 				shortestLength = lengthEast;
 				nearestPosition = positionEast;
@@ -296,7 +296,7 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 		try {
 			positionSouth = this.getVertexInDirection(this.positionOfBall.toG4_Vertex(), Constants.DIRECTION_SOUTH).toG4_Position();
 			positionSouth.setDirection(Constants.DIRECTION_NORTH);
-			double lengthSouth = this.getLengthOfShortestPath(position, positionSouth);
+			double lengthSouth = MovingMap.getLengthOfShortestPath(position, positionSouth);
 			if (shortestLength > lengthSouth){
 				shortestLength = lengthSouth;
 				nearestPosition = positionSouth;
@@ -310,7 +310,7 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 		try {
 			positionWest = this.getVertexInDirection(this.positionOfBall.toG4_Vertex(), Constants.DIRECTION_WEST).toG4_Position();
 			positionWest.setDirection(Constants.DIRECTION_EAST);
-			double lengthWest = this.getLengthOfShortestPath(position, positionWest);
+			double lengthWest = MovingMap.getLengthOfShortestPath(position, positionWest);
 			if (shortestLength > lengthWest){
 				shortestLength = lengthWest;
 				nearestPosition = positionWest;
