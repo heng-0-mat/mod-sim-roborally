@@ -13,7 +13,8 @@ import roborally.task.Direction;
  */
 
 /**
- * @author omar
+ * @author omar ramo
+ * 
  *
  */
 public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge> {
