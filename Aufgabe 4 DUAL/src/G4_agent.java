@@ -30,6 +30,7 @@ public class G4_agent extends AITask
 	 */
 	public void preTrade(Card[] useableCards)	
 	{
+		
 		// TODO: Implement if you want to use trading
 	}
 	
