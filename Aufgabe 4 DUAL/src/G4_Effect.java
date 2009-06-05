@@ -11,6 +11,7 @@ public class G4_Effect {
 	private String rotationDirection;
 	private Direction translationDirection;
 	//private ArrayList<Integer> activePhase;
+	//OMARS KOMMENTAR
 	
 	public String getRotationDirection() {
 		return rotationDirection;
