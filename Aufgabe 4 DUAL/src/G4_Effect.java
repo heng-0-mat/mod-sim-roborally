@@ -77,6 +77,7 @@ public class G4_Effect {
 			}
 			
 		}
+		//MEIN KOMMENTAR
 		
 	}
 
