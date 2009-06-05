@@ -4,7 +4,6 @@ import java.util.Set;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.DefaultWeightedEdge;
 
 import roborally.task.Constants;
 import roborally.task.Direction;
@@ -14,7 +13,7 @@ import roborally.task.Direction;
  */
 
 /**
- * @author henning
+ * @author omar
  *
  */
 public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge> {
