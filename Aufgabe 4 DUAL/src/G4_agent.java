@@ -42,7 +42,9 @@ public class G4_agent extends AITask
 	{
 		// TODO: Implement if you want to use trading
 		//MEIN KOMMENTAR
+		//QIS KOMMENTAR
 		//MEIN 2Ter KOmmentar
+
 	}		
 	
 	/**
