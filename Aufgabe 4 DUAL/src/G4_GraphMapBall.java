@@ -9,12 +9,7 @@ import roborally.task.Constants;
 import roborally.task.Direction;
 
 /**
- * 
- */
-
-/**
- * @author omar ramo
- * 
+ * @author omar el goss
  *
  */
 public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge> {
