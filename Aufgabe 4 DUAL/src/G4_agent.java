@@ -44,7 +44,7 @@ public class G4_agent extends AITask
 		//MEIN KOMMENTAR
 		//QIS KOMMENTAR
 		//MEIN 2Ter KOmmentar
-
+		//QIS 2Ter Kommentar
 	}		
 	
 	/**
