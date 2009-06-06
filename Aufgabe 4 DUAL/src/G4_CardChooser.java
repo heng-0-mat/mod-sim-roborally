@@ -285,7 +285,7 @@ public class G4_CardChooser {
 
 	}
 
-	private G4_Position applyCardEffect(Card c, G4_Position position){
+	public G4_Position applyCardEffect(Card c, G4_Position position){
 
 		try {
 			//Aktuellen Knoten aus dem Graph holen
@@ -355,7 +355,7 @@ public class G4_CardChooser {
 
 	}
 
-	private G4_Position applyVertexEffects(G4_Position position){
+	public G4_Position applyVertexEffects(G4_Position position){
 
 		//TODO Verarbeitungsreihenfolge der Effekte	
 		
@@ -378,7 +378,7 @@ public class G4_CardChooser {
 		return position;	
 	}
 
-	private Card tryChoosingCard(CardType cardtype){
+	public Card tryChoosingCard(CardType cardtype){
 		
 		Card returnCard = null;
 		
@@ -549,11 +549,11 @@ public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ba
 		
 		//Falls die Zielposition schon erreicht sein muesste ist einfach mal weiter nach vorne schieben
 		//vielleicht hat uns ja jemand zurueckgeschoben
-		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
-		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
-		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
-		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
-		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
+		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Forward_Card));
+		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Forward_Card));
+		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Forward_Card));
+		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Forward_Card));
+		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Forward_Card));
 			
 		//Die ersten 5 gewaehlten Karten zurueckgeben
 		for (int i = 0; i < 5; i++){

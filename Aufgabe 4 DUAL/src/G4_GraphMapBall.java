@@ -330,9 +330,9 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 		
 		//Position 0 ist die Position des Balls
 		G4_Position position0 = position.getPositionInDirection(position.getDirection());
-		G4_Position position1 = position.getPositionInDirection(position.getDirection());
-		G4_Position position2 = position.getPositionInDirection(position.getDirection());
-		G4_Position position3 = position.getPositionInDirection(position.getDirection());
+		G4_Position position1 = position0.getPositionInDirection(position.getDirection());
+		G4_Position position2 = position1.getPositionInDirection(position.getDirection());
+		G4_Position position3 = position2.getPositionInDirection(position.getDirection());
 		
 		if (this.isMovingPossible(position3, position0))
 			return 3;

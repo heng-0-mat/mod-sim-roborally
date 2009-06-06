@@ -58,13 +58,13 @@ public class G4_Position {
 			return new G4_Position(this.x, this.y-1, this.direction);
 		}
 		if (direction == Constants.DIRECTION_EAST){
-			return new G4_Position(this.x-1, this.y, this.direction);
+			return new G4_Position(this.x+1, this.y, this.direction);
 		}
 		if (direction == Constants.DIRECTION_SOUTH){
 			return new G4_Position(this.x, this.y+1, this.direction);
 		}
 		if (direction == Constants.DIRECTION_WEST){
-			return new G4_Position(this.x+1, this.y, this.direction);
+			return new G4_Position(this.x-1, this.y, this.direction);
 		}
 		
 		return this;

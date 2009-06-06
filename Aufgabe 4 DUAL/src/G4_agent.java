@@ -308,12 +308,53 @@ public Card[] playSokubanWithOpponent(Card[] useableCards){
 			
 			//Falls wir noch nicht auf der nächsten Push-Position sind
 			if (!position.equals(nextPushPosition)){
-				// TODO "Ball im Weg"-Problem verlaesslich loesen
 				
 				//Nicht den Ball ueberfahren, Knoten des Balls aus Graph entfernen
 				G4_Vertex vertexOfBall = positionOfBall.toG4_Vertex();
 				G4_Vertex nextVertexOfBall = chooser.graphMap.getVertexInDirection(vertexOfBall, position.getDirection());
 				chooser.graphMap.removeVertex(vertexOfBall);
+				
+				//Erstmal den Ball abschirmen, also nicht in Zielrichtung verschieben
+				if (chooser.getChosenCards().size() == 0){
+					G4_Position nearestPushPosition = BallsGraph.getNearestPushPosition(position, myMapGraph);
+					Direction pushDirection = nearestPushPosition.getDirection();
+					chooser.chooseMovingCards2(position, nearestPushPosition);
+					
+					if (chooser.getChosenCards().size() < 5){
+						switch (BallsGraph.getMaximalPushStrength(nearestPushPosition)){
+						
+						case 3:
+							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card));
+							break;
+						case 2:
+							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card));
+							break;
+						case 1:
+							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Forward_Card));
+							break;
+						case 0:
+							
+						}
+						//Karte neu laden um den Knoten des Balls wieder hinzuzufuegen
+						chooser.graphMap.loadMap(this.Game.Map);
+						
+						//Karteneffekt und Knoteneffekt auf Roboter anwenden
+						position = chooser.applyCardEffect(chooser.getChosenCards().lastElement(), position);
+						position = chooser.applyVertexEffects(position);
+						
+						//Richtung aendern damit Karten/Knoteneffekt richtig wirkt
+						BallsGraph.getPositionOfBall().setDirection(pushDirection);
+						//Position des Balls aktualisieren
+						BallsGraph.setPositionOfBall(chooser.applyCardEffect(chooser.getChosenCards().lastElement(),
+								BallsGraph.getPositionOfBall()));
+						BallsGraph.setPositionOfBall(chooser.applyVertexEffects(BallsGraph.getPositionOfBall()));
+					}
+					
+					continue;
+				}
+				// TODO "Ball im Weg"-Problem verlaesslich loesen
+				
+				
 				
 				if (chooser.graphMap.getLengthOfShortestPath(position, nextPushPosition) == Double.POSITIVE_INFINITY){
 					
