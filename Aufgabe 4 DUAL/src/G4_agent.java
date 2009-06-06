@@ -81,8 +81,14 @@ public class G4_agent extends AITask
 	    	return this.playLastManStanding(useableCards);
 	    }
 	    else if (this.Settings.getGameMode().equals(Constants.GameMode.SOKUBAN)){
-	    	return this.playSokuban(useableCards);
-	    }
+	    	try {
+	    		//Sind mehr Roboter als wir und der Dummy auf dem Spielfeld???
+				if (this.Game.Robots.getAllRobots()[2] != null)
+					return this.playSokubanWithOpponent(useableCards);
+			} catch (Exception e) {
+				return this.playSokuban(useableCards);
+			}
+	     }
 	    
 	    
 	    return null;
@@ -157,6 +163,104 @@ public class G4_agent extends AITask
 	}
 
 	public Card[] playSokuban(Card[] useableCards){
+		
+		//Spielfeld als Graph erzeugen
+		G4_GraphMap myMapGraph = new G4_GraphMap(Game.Map );
+		
+		myMapGraph.loadEnemies(Game.Robots.getAllRobots(), this.getRobotName());
+
+		//Graph fuer die Bewegungen des Balls erzeugen
+		G4_GraphMapBall BallsGraph = new G4_GraphMapBall(myMapGraph.vertexSet());
+
+		//Position des Balls bestimmen
+		RobotInformation ball = this.Game.Robots.getRobotByID("Dummy");
+		Node nodeOfBall = ball.getNode();
+		G4_Position positionOfBall = new G4_Position(nodeOfBall.getX(), 
+													 nodeOfBall.getY(), 
+													 ball.getOrientation());
+
+		//Position des Balls speichern
+		BallsGraph.setPositionOfBall(positionOfBall);
+
+		//Zielposition des Balls
+		G4_Position ballZielposition = new G4_Position(ball.getNextCheckpoints()[0].getX(),
+													   ball.getNextCheckpoints()[0].getY(),
+													   Constants.DIRECTION_STAY);
+
+		// Eigene Position bestimmen
+		G4_Position position = new G4_Position(getCurrentNode().getX(),getCurrentNode().getY(),Game.Me.getOrientation());
+
+
+		int attackCards = 0;
+		int moveCards = 0;
+
+		//Kartenauswaehler initialisieren
+		G4_CardChooser chooser = new G4_CardChooser(myMapGraph, useableCards, position, attackCards, moveCards);
+		chooser.debugOutput = this.debugOutput;
+		chooser.setGraphMapBall(BallsGraph);
+		
+		//Schiebn oder zur naechsten PushPosition fahren		
+		while (chooser.getChosenCards().size() < 5){
+
+			G4_Position nextPushPosition = BallsGraph.getNextPushingPosition(positionOfBall, ballZielposition );
+			
+			//Falls der Ball schon im Ziel sein muesste
+			if (nextPushPosition == null)
+				break;
+			
+			//Falls wir noch nicht auf der nächsten Push-Position sind
+			if (!position.equals(nextPushPosition)){
+				// TODO "Ball im Weg"-Problem verlaesslich loesen
+				
+				//Nicht den Ball ueberfahren, Knoten des Balls aus Graph entfernen
+				G4_Vertex vertexOfBall = positionOfBall.toG4_Vertex();
+				G4_Vertex nextVertexOfBall = chooser.graphMap.getVertexInDirection(vertexOfBall, position.getDirection());
+				chooser.graphMap.removeVertex(vertexOfBall);
+				
+				if (chooser.graphMap.getLengthOfShortestPath(position, nextPushPosition) == Double.POSITIVE_INFINITY){
+					
+					if (this.debugOutput)
+						System.out.println("JETZT IST DER BALL MIR IM WEG!");
+					
+					//Karte neu laden um den Knoten des Balls wieder hinzuzufuegen
+					chooser.graphMap.loadMap(this.Game.Map);
+					//Karten waehlen um den Ball zu verschieben
+					chooser.choosePushingCards(position,nextVertexOfBall.toG4_Position() );
+					continue;
+				}				
+
+				chooser.chooseMovingCards2(position, nextPushPosition);
+				
+				//Vielleicht koennen wir den Ball schon schieben
+				//wenn die letzte Karte ein "vorwaertskarte" war
+				if (chooser.getChosenCards().size() < 5){
+					if (chooser.getChosenCards().lastElement().getCardType() == Constants.CardType.Move_Forward_Card){
+						chooser.tryReplacingCard(chooser.getChosenCards().size() - 1, Constants.CardType.Move_Two_Forward_Card);
+					}
+					else if (chooser.getChosenCards().lastElement().getCardType() == Constants.CardType.Move_Two_Forward_Card){
+						chooser.tryReplacingCard(chooser.getChosenCards().size() - 1, Constants.CardType.Move_Three_Forward_Card);
+					}					
+				}
+
+				//Karte neu laden um den Knoten des Balls wieder hinzuzufuegen
+				chooser.graphMap.loadMap(this.Game.Map);
+			}
+			else{
+				if (this.debugOutput)
+					System.out.println("JETZT MUESSTE ICH SCHIEBEN!");
+				
+				chooser.choosePushingCards(position, ballZielposition);
+				
+			}
+		}
+		
+		if (this.debugOutput)
+			System.out.println("Sokuban -- RUNDE FERTIG");
+
+		return chooser.getChosenCardsArray();
+	}
+	
+public Card[] playSokubanWithOpponent(Card[] useableCards){
 		
 		//Spielfeld als Graph erzeugen
 		G4_GraphMap myMapGraph = new G4_GraphMap(Game.Map );
