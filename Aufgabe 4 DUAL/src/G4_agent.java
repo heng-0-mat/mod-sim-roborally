@@ -122,8 +122,8 @@ public class G4_agent extends AITask
 
 		//Kartenauswaehler initialisieren
 		G4_CardChooser chooser = new G4_CardChooser(myMapGraph, useableCards, position, attackCards, moveCards);
-		
-		
+		chooser.debugOutput = this.debugOutput;
+				
 		chooser.chooseMovingCards2(position, zielPosition);
 		
 		if (this.debugOutput)
@@ -148,7 +148,8 @@ public class G4_agent extends AITask
 
 		//Kartenauswaehler initialisieren
 		G4_CardChooser chooser = new G4_CardChooser(myMapGraph, useableCards, position, attackCards, moveCards);
-
+		chooser.debugOutput = this.debugOutput;
+		
 		if (this.debugOutput)
 			System.out.println("Last Man Standing -- RUNDE FERTIG");
 
@@ -189,6 +190,7 @@ public class G4_agent extends AITask
 
 		//Kartenauswaehler initialisieren
 		G4_CardChooser chooser = new G4_CardChooser(myMapGraph, useableCards, position, attackCards, moveCards);
+		chooser.debugOutput = this.debugOutput;
 		chooser.setGraphMapBall(BallsGraph);
 		
 		//Schiebn oder zur naechsten PushPosition fahren		

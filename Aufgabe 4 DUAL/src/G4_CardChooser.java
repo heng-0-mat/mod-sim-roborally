@@ -15,6 +15,8 @@ import roborally.task.Constants.CardType;
  *
  */
 public class G4_CardChooser {
+	
+	public boolean debugOutput;
 
 	public G4_GraphMap graphMap;
 	public G4_GraphMapBall graphMapBall;
@@ -556,7 +558,8 @@ public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ba
 		//Die ersten 5 gewaehlten Karten zurueckgeben
 		for (int i = 0; i < 5; i++){
 			myTurn[i] = chosenCards.get(i);
-			System.out.println(myTurn[i].getCardTypeString() + "  ID = " + myTurn[i].hashCode());
+			if (this.debugOutput)
+				System.out.println(myTurn[i].getCardTypeString() + "  ID = " + myTurn[i].hashCode());
 		}
 		
 		return myTurn;
