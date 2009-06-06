@@ -83,39 +83,8 @@ public class G4_agent extends AITask
 	    
 	    
 	    return null;
-		
 
-		
-//		//von Qi
-//		int currentNodeX=Game.Me.getCurrentNode().getX();
-//		int currentNodeY=Game.Me.getCurrentNode().getY();
-//		int flagNodeX=Game.Me.getCheckpoints()[0].getX();
-//		int flagNodeY=Game.Me.getCheckpoints()[0].getY();
-//		int height=Game.Map.getHeight();
-//		int width=Game.Map.getWidth();
-////		int ballNodeX=Game.Robots.getRobotByID("Dummy").getNode().getX();
-////		int ballNodeY=Game.Robots.getRobotByID("Dummy").getNode().getY();
-//		int nextNodeX;
-//		int nextNodeY;
-//		
-//		G4_Position start = new G4_Position(ballNodeX,ballNodeY, Constants.DIRECTION_STAY);
-
-		
-//		List<DefaultEdge> edges = BallsGraph.getEdgesOnShortestPath(start,ziel); 
-//		G4_Vertex vertex  = BallsGraph.getEdgeTarget(edges.get(0));
-//		nextNodeX=vertex.getX();
-//		nextNodeY=vertex.getY();
-				
-//		
-//		//Von Qi
-//		String orientation=Game.Me.getOrientation().toString();
-//		QZ_RoboMoveToBall robomoveball=new QZ_RoboMoveToBall(getWallsInfo(ballNodeX,ballNodeY,currentNodeX,currentNodeY,flagNodeX,flagNodeY),width,height,useableCards,ballNodeX,ballNodeY,currentNodeX,currentNodeY,orientation,nextNodeX,nextNodeY);
-//				
-//		
-//		for (DefaultEdge edge: edges){
-//			System.out.println(edge);
-//		}
-		
+	    
 //		if (Game.Round.getRound() == 1){
 //			JGraph jgraph = new JGraph( new JGraphModelAdapter( BallsGraph ) );
 //		    JFrame myFrame;
@@ -130,113 +99,6 @@ public class G4_agent extends AITask
 //	
 //		}
 		
-			
-				
-		//return robomoveball.getCards();
-	}
-
-	//Erzeugt wallsInformation von Qi
-	public QZ_Wall[][] getWallsInfo(int ballNodeX,int ballNodeY,int currentNodeX,int currentNodeY,int flagNodeX,int flagNodeY){
-		
-		int height=Game.Map.getHeight();
-		int width=Game.Map.getWidth();
-		QZ_Wall[][] wallsInfo=new QZ_Wall[height][width];
-		
-		for(int i=0;i<height;i++)
-		{
-			for(int j=0;j<width;j++)
-			{
-				wallsInfo[i][j]=new QZ_Wall();
-			}
-		}
-		
-		
-		for(int i=0;i<height;i++)
-		{
-			for(int j=0;j<width;j++)
-			{
-				if(Game.Map.getNode(j, i).getConnection(Direction.EAST).toString().contains("wall")==true){wallsInfo[i][j].setEast(true);}
-				if(Game.Map.getNode(j, i).getConnection(Direction.SOUTH).toString().contains("wall")==true){wallsInfo[i][j].setSouth(true);}
-				if(Game.Map.getNode(j, i).getConnection(Direction.WEST).toString().contains("wall")==true){wallsInfo[i][j].setWest(true);}
-				if(Game.Map.getNode(j, i).getConnection(Direction.NORTH).toString().contains("wall")==true){wallsInfo[i][j].setNorth(true);}
-			
-			//记录洞的信息
-				try
-					{						
-							String[] temp=this.Game.Map.getEffects(j,i);
-							if(temp.length>0)
-							{
-								
-								if(currentNodeY==i && currentNodeX==j){break;} //把机器人自己的位置剔出来
-								
-								wallsInfo[i][j].setEast(true);
-								wallsInfo[i][j].setSouth(true);
-								wallsInfo[i][j].setWest(true);
-								wallsInfo[i][j].setNorth(true);
-								
-								//Debug
-								//System.out.println("currentWallX ="+j+",currentWallY ="+i);
-								//不要让下标超过允许的范围
-								try{wallsInfo[i-1][j].setSouth(true);}catch(Exception e){//System.out.println("East out of bound");
-								}
-								try{wallsInfo[i][j-1].setEast(true);}catch(Exception e){//System.out.println("South out of bound");
-								}
-								try{wallsInfo[i+1][j].setNorth(true);}catch(Exception e){//System.out.println("West out of bound");
-								}
-								try{wallsInfo[i][j+1].setWest(true);}catch(Exception e){//System.out.println("North out of bound");
-								}
-							}
-					}
-					catch(Exception e)
-					{
-						System.out.println("None Effect");
-					}
-		
-							
-			}
-		}
-		
-		
-		//Debug
-		/*
-		 * System.out.println("Hier wird alle Informationen Ueber Walls gezeigt.");
-		for(int i=0;i<height;i++)
-		{
-			for(int j=0;j<width;j++)
-			{
-				System.out.println("i ="+i+",j ="+j+"East ="+Boolean.toString(wallsInfo[i][j].getEast()));
-				System.out.println("i ="+i+",j ="+j+"South ="+Boolean.toString(wallsInfo[i][j].getSouth()));
-				System.out.println("i ="+i+",j ="+j+"West ="+Boolean.toString(wallsInfo[i][j].getWest()));
-				System.out.println("i ="+i+",j ="+j+"North ="+Boolean.toString(wallsInfo[i][j].getNorth()));
-				System.out.println("--------------------------");
-			}
-			
-			System.out.println("\n\n\n");
-		}
-		 */
-			
-					
-		//设置球的位置为墙,Robot不能通过球
-		wallsInfo[ballNodeY][ballNodeX].setEast(true);
-		wallsInfo[ballNodeY][ballNodeX].setSouth(true);
-		wallsInfo[ballNodeY][ballNodeX].setWest(true);
-		wallsInfo[ballNodeY][ballNodeX].setNorth(true);
-		try{wallsInfo[ballNodeY][ballNodeX-1].setEast(true);}catch(Exception e){}
-		try{wallsInfo[ballNodeY-1][ballNodeX].setSouth(true);}catch(Exception e){}
-		try{wallsInfo[ballNodeY][ballNodeX+1].setWest(true);}catch(Exception e){}
-		try{wallsInfo[ballNodeY+1][ballNodeX].setNorth(true);}catch(Exception e){}
-				
-		//把旗帜的位置设为可以通过，不然到不了终点
-		wallsInfo[flagNodeY][flagNodeX].setEast(true);
-		wallsInfo[flagNodeY][flagNodeX].setSouth(true);
-		wallsInfo[flagNodeY][flagNodeX].setWest(true);
-		wallsInfo[flagNodeY][flagNodeX].setNorth(true);
-		try{wallsInfo[flagNodeY][flagNodeX-1].setEast(true);}catch(Exception e){}
-		try{wallsInfo[flagNodeY-1][flagNodeX].setSouth(true);}catch(Exception e){}
-		try{wallsInfo[flagNodeY][flagNodeX+1].setWest(true);}catch(Exception e){}
-		try{wallsInfo[flagNodeY+1][flagNodeX].setNorth(true);}catch(Exception e){}
-		
-		return wallsInfo;
 	}
 
 	public Card[] playRegularGame(Card[] useableCards){
