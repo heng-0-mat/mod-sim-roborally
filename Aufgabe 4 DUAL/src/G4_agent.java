@@ -21,6 +21,9 @@ import org.jgrapht.graph.*;
  */
 public class G4_agent extends AITask
 {
+	
+	boolean debugOutput;
+	
 	/**
 	 * This method is called before doTrade() in every Round. An AITask can examine its cards and make computations
 	 * concerning trading operations.
@@ -69,7 +72,7 @@ public class G4_agent extends AITask
 	public Card[] executeTurn(Card[] useableCards)
 	{
 		//Ausgaben auf die Konsole (de-)aktivieren
-		boolean debugOutput = true;
+		this.debugOutput = true;
 		   
 	    if (this.Settings.getGameMode().equals(Constants.GameMode.REGULAR_GAME)){
 	    	return this.playRegularGame(useableCards);
@@ -123,7 +126,8 @@ public class G4_agent extends AITask
 		
 		chooser.chooseMovingCards2(position, zielPosition);
 		
-		System.out.println("Regular Game -- RUNDE FERTIG");
+		if (this.debugOutput)
+			System.out.println("Regular Game -- RUNDE FERTIG");
 			    
 	    return chooser.getChosenCardsArray();
 	}
@@ -145,8 +149,8 @@ public class G4_agent extends AITask
 		//Kartenauswaehler initialisieren
 		G4_CardChooser chooser = new G4_CardChooser(myMapGraph, useableCards, position, attackCards, moveCards);
 
-
-		System.out.println("Last Man Standing -- RUNDE FERTIG");
+		if (this.debugOutput)
+			System.out.println("Last Man Standing -- RUNDE FERTIG");
 
 		return chooser.chooseCards();
 	}
@@ -206,7 +210,10 @@ public class G4_agent extends AITask
 				chooser.graphMap.removeVertex(vertexOfBall);
 				
 				if (chooser.graphMap.getLengthOfShortestPath(position, nextPushPosition) == Double.POSITIVE_INFINITY){
-					System.out.println("JETZT IST DER BALL MIR IM WEG!");
+					
+					if (this.debugOutput)
+						System.out.println("JETZT IST DER BALL MIR IM WEG!");
+					
 					//Karte neu laden um den Knoten des Balls wieder hinzuzufuegen
 					chooser.graphMap.loadMap(this.Game.Map);
 					//Karten waehlen um den Ball zu verschieben
@@ -231,14 +238,16 @@ public class G4_agent extends AITask
 				chooser.graphMap.loadMap(this.Game.Map);
 			}
 			else{
-				//chooser.choosePushingCards	
-				System.out.println("JETZT MUESSTE ICH SCHIEBEN!");
+				if (this.debugOutput)
+					System.out.println("JETZT MUESSTE ICH SCHIEBEN!");
+				
 				chooser.choosePushingCards(position, ballZielposition);
 				
 			}
 		}
 		
-		System.out.println("Sokuban -- RUNDE FERTIG");
+		if (this.debugOutput)
+			System.out.println("Sokuban -- RUNDE FERTIG");
 
 		return chooser.getChosenCardsArray();
 	}
