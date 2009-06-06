@@ -41,10 +41,6 @@ public class G4_agent extends AITask
 	public void doTrade()
 	{
 		// TODO: Implement if you want to use trading
-		//MEIN KOMMENTAR
-		//QIS KOMMENTAR
-		//MEIN 2Ter KOmmentar
-		//QIS 2Ter Kommentar
 	}		
 	
 	/**
@@ -72,6 +68,8 @@ public class G4_agent extends AITask
 	 */	
 	public Card[] executeTurn(Card[] useableCards)
 	{
+		//Ausgaben auf die Konsole (de-)aktivieren
+		boolean debugOutput = true;
 		   
 	    if (this.Settings.getGameMode().equals(Constants.GameMode.REGULAR_GAME)){
 	    	return this.playRegularGame(useableCards);
@@ -331,6 +329,10 @@ public class G4_agent extends AITask
 		while (chooser.getChosenCards().size() < 5){
 
 			G4_Position nextPushPosition = BallsGraph.getNextPushingPosition(positionOfBall, ballZielposition );
+			
+			//Falls der Ball schon im Ziel sein muesste
+			if (nextPushPosition == null)
+				break;
 			
 			//Falls wir noch nicht auf der nächsten Push-Position sind
 			if (!position.equals(nextPushPosition)){

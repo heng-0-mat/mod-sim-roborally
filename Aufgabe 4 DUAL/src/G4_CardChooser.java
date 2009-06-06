@@ -512,10 +512,6 @@ public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ba
 			
 			//Wenn eine Karte gewaehlt wurde
 			if (countChosenCards < chosenCards.size()){
-//				
-//				//Karteneffekt und Knoteneffekt anwenden
-//				start = this.applyCardEffect(chosenCards.lastElement(), start);
-//				start = this.applyVertexEffects(start);
 				
 				//Karteneffekt und Knoteneffekt auf Roboter anwenden
 				robotPosition = this.applyCardEffect(chosenCards.lastElement(), robotPosition);
@@ -532,7 +528,7 @@ public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ba
 				System.out.println("Keine passende Karte gefunden");
 				break;
 			}
-						
+
 			//PFad neu berechnen
 			path = this.graphMapBall.getEdgesOnShortestPath(this.graphMapBall.getPositionOfBall(), ballEndPosition);		
 			//Wenn der richtige Knoten erreicht ist oder genug Karten gewaehlt
@@ -548,13 +544,19 @@ public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ba
 	public Card[] getChosenCardsArray(){
 
 		Card[] myTurn = {null,null,null,null,null};
-		int numCards = 0;	
 		
-		//Alle gewaehlten Karten zurueckgeben
-		for (Card c : this.chosenCards ){
-			myTurn[numCards] = c;
-			numCards++;
-			System.out.println(c.getCardTypeString() + "  ID = " + c.hashCode());
+		//Falls die Zielposition schon erreicht sein muesste ist einfach mal weiter nach vorne schieben
+		//vielleicht hat uns ja jemand zurueckgeschoben
+		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
+		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
+		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
+		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
+		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
+			
+		//Die ersten 5 gewaehlten Karten zurueckgeben
+		for (int i = 0; i < 5; i++){
+			myTurn[i] = chosenCards.get(i);
+			System.out.println(myTurn[i].getCardTypeString() + "  ID = " + myTurn[i].hashCode());
 		}
 		
 		return myTurn;
