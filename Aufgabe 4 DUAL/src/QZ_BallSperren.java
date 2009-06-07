@@ -54,24 +54,24 @@ public class QZ_BallSperren {
 	//Waehlt eine Position aus,wenn der Ball den Weg blokiert ist
 	public void positionAussuchen()
 	{	
-		System.out.println("Schieben starten:");
-		System.out.println("Ballposition("+ballNodeX+","+ballNodeY+")");
-		System.out.println("Roboposition("+roboNodeX+","+roboNodeY+")");
+		//System.out.println("Schieben starten:");
+		//System.out.println("Ballposition("+ballNodeX+","+ballNodeY+")");
+		//System.out.println("Roboposition("+roboNodeX+","+roboNodeY+")");
 		try
 		{				
 			//schiebt den Ball vom East zum West
 			new QZ_TestMap(wallsInfo,roboNodeX,roboNodeY,ballNodeX+1,ballNodeY,height,width);
-			System.out.println("einmal schieben Vom East zum West");
+			//System.out.println("einmal schieben Vom East zum West");
 			new QZ_TestMap(wallsInfoE,ballNodeX,ballNodeY,ballNodeX-2,ballNodeY,height,width);
-			System.out.println("zweimal schieben vom East zum West");
+			//System.out.println("zweimal schieben vom East zum West");
 
 			//Debug
-			System.out.println(wallsInfoNoBallNew[ballNodeX+1][ballNodeY].getWest());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getEast());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getWest());
-			System.out.println(wallsInfoNoBallNew[ballNodeX-1][ballNodeY].getEast());
-			System.out.println(wallsInfoNoBallNew[ballNodeX-1][ballNodeY].getWest());
-			System.out.println(wallsInfoNoBallNew[ballNodeX-2][ballNodeY].getEast());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX+1][ballNodeY].getWest());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getEast());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getWest());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX-1][ballNodeY].getEast());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX-1][ballNodeY].getWest());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX-2][ballNodeY].getEast());
 						
 			if(!wallsInfoNoBallNew[ballNodeX+1][ballNodeY].getWest())
 			{
@@ -111,7 +111,7 @@ public class QZ_BallSperren {
 		}
 		catch(Exception e)
 		{
-			System.out.println("Der Robot kann die Position von East des Robots nicht erreichen");
+			//System.out.println("Der Robot kann die Position von East des Robots nicht erreichen");
 		}
 		
 		
@@ -119,17 +119,17 @@ public class QZ_BallSperren {
 		{	
 			//schiebt den Ball vom West zum East
 			new QZ_TestMap(wallsInfo,roboNodeX,roboNodeY,ballNodeX-1,ballNodeY,height,width);
-			System.out.println("einmal schieben vom West zum East");
+			//System.out.println("einmal schieben vom West zum East");
 			new QZ_TestMap(wallsInfoW,ballNodeX,ballNodeY,ballNodeX+2,ballNodeY,height,width);
-			System.out.println("zweimal schieben vom West zum East");
+			//System.out.println("zweimal schieben vom West zum East");
 			
 			//Debug
-			System.out.println(wallsInfoNoBallNew[ballNodeX-1][ballNodeY].getEast());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getWest());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getEast());
-			System.out.println(wallsInfoNoBallNew[ballNodeX+1][ballNodeY].getWest());
-			System.out.println(wallsInfoNoBallNew[ballNodeX+1][ballNodeY].getEast());
-			System.out.println(wallsInfoNoBallNew[ballNodeX+2][ballNodeY].getWest());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX-1][ballNodeY].getEast());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getWest());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getEast());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX+1][ballNodeY].getWest());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX+1][ballNodeY].getEast());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX+2][ballNodeY].getWest());
 			
 			if(!wallsInfoNoBallNew[ballNodeX-1][ballNodeY].getEast())
 			{
@@ -168,7 +168,7 @@ public class QZ_BallSperren {
 		}
 		catch(Exception e)
 		{
-			System.out.println("Der Robot kann die Position von West des Robots nicht erreichen");
+			//System.out.println("Der Robot kann die Position von West des Robots nicht erreichen");
 		}
 		
 		
@@ -176,17 +176,17 @@ public class QZ_BallSperren {
 		{	
 			//schiebt den Ball vom North zum South
 			new QZ_TestMap(wallsInfo,roboNodeX,roboNodeY,ballNodeX,ballNodeY-1,height,width);
-			System.out.println("einmal schieben vom North zum South");
+			//System.out.println("einmal schieben vom North zum South");
 			new QZ_TestMap(wallsInfoN,ballNodeX,ballNodeY,ballNodeX,ballNodeY+2,height,width);
-			System.out.println("zweimal schieben vom North zum South");
+			//System.out.println("zweimal schieben vom North zum South");
 			
 			//Debug
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY-1].getSouth());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getNorth());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getSouth());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY+1].getNorth());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY+1].getSouth());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY+2].getNorth());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY-1].getSouth());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getNorth());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getSouth());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY+1].getNorth());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY+1].getSouth());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY+2].getNorth());
 			
 			if(!wallsInfoNoBallNew[ballNodeX][ballNodeY-1].getSouth())
 			{
@@ -226,7 +226,7 @@ public class QZ_BallSperren {
 		}
 		catch(Exception e)
 		{
-			System.out.println("Der Robot kann die Position von North des Robots nicht erreichen");
+			//System.out.println("Der Robot kann die Position von North des Robots nicht erreichen");
 		}
 		
 		
@@ -234,17 +234,17 @@ public class QZ_BallSperren {
 		{	
 			//schiebt den vom South zum North
 			new QZ_TestMap(wallsInfo,roboNodeX,roboNodeY,ballNodeX,ballNodeY+1,height,width);
-			System.out.println("einmal schieben vom South zum North");
+			//System.out.println("einmal schieben vom South zum North");
 			new QZ_TestMap(wallsInfoS,ballNodeX,ballNodeY,ballNodeX,ballNodeY-2,height,width);
-			System.out.println("zweimal schieben vom South zum North");
+			//System.out.println("zweimal schieben vom South zum North");
 				
 			//Debug
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY+1].getNorth());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getSouth());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getNorth());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY-1].getSouth());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY-1].getNorth());
-			System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY-2].getSouth());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY+1].getNorth());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getSouth());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY].getNorth());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY-1].getSouth());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY-1].getNorth());
+			//System.out.println(wallsInfoNoBallNew[ballNodeX][ballNodeY-2].getSouth());
 			
 			if(!wallsInfoNoBallNew[ballNodeX][ballNodeY+1].getNorth())
 			{
@@ -284,7 +284,7 @@ public class QZ_BallSperren {
 		}
 		catch(Exception e)
 		{
-			System.out.println("Der Robot kann die Position von South des Robots nicht erreichen");
+			//System.out.println("Der Robot kann die Position von South des Robots nicht erreichen");
 		}
 
 	}

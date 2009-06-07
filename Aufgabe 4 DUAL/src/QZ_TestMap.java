@@ -214,10 +214,10 @@ public class QZ_TestMap {
 		 
 				
 		//Debug
-		System.out.println("\n\n\nDer kuertzste Weg");
+		//System.out.println("\n\n\nDer kuertzste Weg");
 		for(int i=0;i<templist.size();i++)
 		{
-			System.out.println(i+"--->("+(templist.get(i)._pos.x)+","+(templist.get(i)._pos.y)+")");
+		//	System.out.println(i+"--->("+(templist.get(i)._pos.x)+","+(templist.get(i)._pos.y)+")");
 		}
 	}
 	
