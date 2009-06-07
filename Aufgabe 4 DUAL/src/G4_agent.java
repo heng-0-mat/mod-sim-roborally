@@ -86,6 +86,7 @@ public class G4_agent extends AITask
 				if (this.Game.Robots.getAllRobots()[2] != null)
 					return this.playSokubanWithOpponent(useableCards);
 			} catch (Exception e) {
+				e.printStackTrace();
 				return this.playSokuban(useableCards);
 			}
 	     }
@@ -332,19 +333,19 @@ public Card[] playSokubanWithOpponent(Card[] useableCards){
 				chooser.graphMap.removeVertex(vertexOfBall);
 				
 				//Erstmal den Ball abschirmen, also nicht in Zielrichtung verschieben
-				if (chooser.getChosenCards().size() == 0){
+				if (chooser.getChosenCards().size() == 0 && this.Game.Round.getRound() == 1){
 					G4_Position nearestPushPosition = BallsGraph.getNearestPushPosition(position, myMapGraph);
 					Direction pushDirection = nearestPushPosition.getDirection();
 					chooser.chooseMovingCards2(position, nearestPushPosition);
 					
-					if (chooser.getChosenCards().size() < 5){
+					if (chooser.getChosenCards().size() < 5 && this.Game.Round.getRound() == 1 ){
 						switch (BallsGraph.getMaximalPushStrength(nearestPushPosition)){
 						
 						case 3:
-							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card));
+							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Forward_Card));
 							break;
 						case 2:
-							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card));
+							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Forward_Card));
 							break;
 						case 1:
 							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Forward_Card));
