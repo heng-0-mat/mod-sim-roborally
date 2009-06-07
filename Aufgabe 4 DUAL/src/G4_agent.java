@@ -340,12 +340,12 @@ public class G4_agent extends AITask
 				chooser.graphMap.removeVertex(vertexOfBall);
 
 				//Erstmal den Ball abschirmen, also nicht in Zielrichtung verschieben
-				if (chooser.getChosenCards().size() == 0 && this.Game.Round.getRound() < 3){
+				if (chooser.getChosenCards().size() == 0){
 					G4_Position nearestPushPosition = BallsGraph.getNearestPushPosition(position, myMapGraph);
 					Direction pushDirection = nearestPushPosition.getDirection();
 					chooser.chooseMovingCards2(position, nearestPushPosition);
 
-					if (chooser.getChosenCards().size() < 5  && this.Game.Round.getRound() < 3 ){
+					if (chooser.getChosenCards().size() < 5){
 						switch (BallsGraph.getMaximalPushStrength(nearestPushPosition)){
 
 						case 3:
