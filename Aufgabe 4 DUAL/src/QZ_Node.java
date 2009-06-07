@@ -1,34 +1,23 @@
 import java.awt.Point;
 import java.util.LinkedList;
 
-/*
- * Definition der Knoten
+/**
+ * @author Qi Zheng
+ *
+ *Definiert eine Node
  */
 public class QZ_Node implements Comparable  {
-	  // koordinate 
+	  
 	  public Point _pos;
-	  // Anzahl der Eingangsknoten
 	  public int _costFromStart;
-	  // Anzahl der Zielknoten
 	  public int _costToObject;
-	  // Eltern knoten
 	  public QZ_Node _parentNode;
 	  private QZ_Node()  {
 	  }
-	  
-	  /*
-	   
-	   * @param _pos
-	   */
+	  	  
 	  public QZ_Node(Point _pos)  {
 	    this._pos = _pos;
 	  }
-
-	  /*
-	   * 
-	   * @param node
-	   * @return
-	   */
 	  
 	  //knotengewicht
 	  public int getCost(QZ_Node node)  {
@@ -38,9 +27,7 @@ public class QZ_Node implements Comparable  {
 	    return (int) Math.sqrt(m * m + n * n);
 	  }
 	 
-	  /*
-	   * equals Methode
-	   */
+	  //equals Methode
 	  public boolean equals(Object node)  {
 	    
 	    if (_pos.x == ((QZ_Node) node)._pos.x && _pos.y == ((QZ_Node) node)._pos.y)  {
@@ -48,10 +35,7 @@ public class QZ_Node implements Comparable  {
 	    }
 	    return false;
 	  }
-	  
-	  /*
-	   * 
-	   */
+	 	 
 	  public int compareTo(Object node)  {
 	    int a1 = _costFromStart + _costToObject;
 	    int a2 = ((QZ_Node) node)._costFromStart + ((QZ_Node) node)._costToObject;
@@ -63,12 +47,7 @@ public class QZ_Node implements Comparable  {
 	      return 1;
 	    }
 	  }
-	  
-	  
-	   /* 
-	   * 
-	   * @return
-	   */
+	
 	  public LinkedList getLimit()  {
 	    LinkedList limit = new LinkedList();
 	    int x = _pos.x;

@@ -2,23 +2,16 @@ import java.awt.Point;
 import java.util.LinkedList;
 import java.util.List;
 
-/*
- * Dijkstra verfahren
+/**
+ * @author Qi Zheng
+ *
  */
 public class QZ_PathFinder {
-	  // List der Prioritaet
 	  private LevelList _levelList;
-	  
-	  private LinkedList<QZ_Node> _closedList;
-	  // LandKarte
+      private LinkedList<QZ_Node> _closedList;
 	  private int[][] _map;
-	  
 	  private int[] _limit;
-	  
-	  /*
-	   * Init 
-	   * @param _map
-	   */
+	 
 	  public QZ_PathFinder(int[][] map, int[] limit) {
 	    _map = map;
 	    _limit = limit;
@@ -26,14 +19,12 @@ public class QZ_PathFinder {
 	    _closedList = new LinkedList<QZ_Node>();
 	  }
 	  
-	  /*
-	   * Durchsuchen des Kurztstem Weg
-	   * 
-	   * @param startPos
-	   * @param objectPos
-	   * @return
-	   */
-	  public List<QZ_Node> searchPath(Point startPos, Point objectPos) {
+	  /**
+	 * @param Startposition
+	 * @param Zielsposition
+	 * @return Liefert eine Liste des kurzsten Wegs
+	 */
+	public List<QZ_Node> searchPath(Point startPos, Point objectPos) {
 	    // Anfangsknoten und Endknoten
 	    QZ_Node startNode = new QZ_Node(startPos);
 	    QZ_Node objectNode = new QZ_Node(objectPos);

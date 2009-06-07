@@ -2,29 +2,45 @@ import java.awt.Point;
 import java.util.LinkedList;
 import java.util.List;
 
-/*
- * Schnittstelle zwischen klasse agent und PathFinder
- * 
+/**
+ * @author Qi Zheng
+ *
+ *Diese Klasse erzeugt einen kurzsten Weg von Startposition bis Zielsposition .
  */
-
 public class QZ_TestMap {
 	
-	final static public int[] HIT = { 1 };
-	private List list=new LinkedList();		//List des kurztstem Weg
-	private QZ_Node[] minPath=null;	//Array des kurztstem Weg
+	final static public int[] HIT = { 1 };	
+	private List list=new LinkedList();		
+	private QZ_Node[] minPath=null;	
 	private List<QZ_Node> templist=new LinkedList<QZ_Node>();	
 	
-	/* 
-	 *  konstructor 
+	/**
+	 * @param wallsInfo		//Die Mauern Information ueber dem Spielfeld
+	 * @param currentNodeXX	//Die x_koordinate der Startposition
+	 * @param currentNodeYY	//Die y_koordinate der Startposition
+	 * @param flagNodeXX	//Die x_koordinate der Zielsposition
+	 * @param flagNodeYY	//Die y_koordinate der Zielsposition
+	 * @param heightt		//Die Hoehe des Spielfeldes
+	 * @param widthh		//die Laenge des Spielfeldes
 	 */
 	public QZ_TestMap(QZ_Wall[][] wallsInfo,int currentNodeXX,int currentNodeYY,int flagNodeXX,int flagNodeYY,int heightt,int widthh) {
 		
 		myMiniPath(wallsInfo,currentNodeXX,currentNodeYY,flagNodeXX,flagNodeYY,heightt,widthh);
 										
 	}
-	
-	
-	//把普通的地图加倍
+		
+	/**
+	 * @param wallsInfo		//Die Mauern Information ueber dem Spielfeld
+	 * @param currentNodeXX	//Die x_koordinate der Startposition
+	 * @param currentNodeYY	//Die y_koordinate der Startposition
+	 * @param flagNodeXX	//Die x_koordinate der Zielsposition
+	 * @param flagNodeYY	//Die y_koordinate der Zielsposition
+	 * @param heightt		//Die Hoehe des Spielfeldes
+	 * @param widthh		//die Laenge des Spielfeldes
+	 * 
+	 * 
+	 *Erzeugt eine Liste fuer einen kurzsten Weg von Startposition bis Zielsposition von Spielfeld. 
+	 */
 	public void myMiniPath(QZ_Wall[][] wallsInfo,int currentNodeXX,int currentNodeYY,int flagNodeXX,int flagNodeYY,int heightt,int widthh){
 		
 		int currentNodeX=currentNodeYY*2+1;
@@ -205,8 +221,10 @@ public class QZ_TestMap {
 		}
 	}
 	
-	
-	//返回一个最短路径
+		
+	/**
+	 * Liefert eine Liste des kurzsten Wegs
+	 */
 	public List<QZ_Node> getMiniPath()
 	{
 		return this.templist;
