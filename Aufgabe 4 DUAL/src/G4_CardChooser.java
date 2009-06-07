@@ -455,7 +455,11 @@ public class G4_CardChooser {
 			chosenCards.add(this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card));
 		}
 		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnU(start.getDirection())){
-			chosenCards.add(this.tryChoosingCard(Constants.CardType.U_Turn_Card ));
+			//Wenns nur ein Feld weit in U-Turn Richtung gefahren werden muss
+			if (this.graphMap.getDirectionOfEdge(path.get(1)) != G4_DirectionUtils.turnU(start.getDirection()))
+				chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Backward_Card));
+			else
+				chosenCards.add(this.tryChoosingCard(Constants.CardType.U_Turn_Card ));
 		}
 					
 		//Wenn eine Karte gewaehlt wurde
@@ -484,7 +488,7 @@ public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ba
 		}
 		
 		//Kuerzester Weg
-		List<DefaultEdge> path = this.graphMapBall.getEdgesOnShortestPath(this.graphMapBall.getPositionOfBall(), ballEndPosition);
+		List<DefaultWeightedEdge> path = this.graphMapBall.getEdgesOnShortestPath(this.graphMapBall.getPositionOfBall(), ballEndPosition);
 		Direction pushDirection = this.graphMapBall.getDirectionOfEdge(path.get(0));
 	
 		while (pushDirection == this.graphMapBall.getDirectionOfEdge(path.get(0))){

@@ -3,7 +3,9 @@ import java.util.Set;
 
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultWeightedEdge;
 
 import roborally.task.Constants;
 import roborally.task.Direction;
@@ -12,9 +14,14 @@ import roborally.task.Direction;
  * @author omar el goss
  *
  */
-public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge> {
+public class G4_GraphMapBall extends DefaultDirectedWeightedGraph<G4_Vertex, DefaultWeightedEdge> {
 
 	private G4_Position positionOfBall;
+	
+	final int defaultConnWeight = 2;
+	final int rotatorConnWeight = 3;
+	final int reducedConnWeight = 1;
+	final int increasedConnWeight = 3;
 		
 	public G4_Position getPositionOfBall() {
 		return positionOfBall;
@@ -25,7 +32,7 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 	}
 
 	public G4_GraphMapBall(Set<G4_Vertex> vertexSet) {
-		super(DefaultEdge.class);
+		super(DefaultWeightedEdge.class);
 		
 		for(G4_Vertex vertex: vertexSet){
 			this.addVertex(vertex);	
@@ -74,6 +81,10 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 					this.addEdge(currentVertex,vertexWest);
 				}
 			}
+		}
+		
+		for (DefaultWeightedEdge edge : this.edgeSet()){
+			this.setEdgeWeight(edge, defaultConnWeight);
 		}
 	}
 	
@@ -136,18 +147,19 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 
 	/**
 	 * Calculates Dijkstras shortest Path from the given Position to the this Graph's checkpoint
-	 * @param position
+	 * @param startPosition
 	 * @return The edges on the shortest path
 	 */
-	public List<DefaultEdge> getEdgesOnShortestPath(G4_Position position, G4_Position endPosition){
+	public List<DefaultWeightedEdge> getEdgesOnShortestPath(G4_Position startPosition, G4_Position endPosition){
 		
-		G4_Vertex startVertex = new G4_Vertex(position.x,position.y,"");
+		G4_Vertex startVertex = new G4_Vertex(startPosition.x,startPosition.y,"");
 		G4_Vertex endVertex = new G4_Vertex(endPosition.x, endPosition.y, "");
 		
 		//Kuerzesten Weg von momentaner Position zum Checkpoint bestimmen
-		DijkstraShortestPath<G4_Vertex, DefaultEdge> shortestPath = 
-			new DijkstraShortestPath<G4_Vertex, DefaultEdge>(
-					this,
+		DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge> shortestPath = 
+			new DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge>(
+					 this.getAdaptedGraph(startVertex, startPosition.getDirection()),
+					// this,
 					startVertex, 
 					endVertex);
 		return shortestPath.getPathEdgeList();
@@ -164,9 +176,10 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 		G4_Vertex endVertex = new G4_Vertex(endPosition.x, endPosition.y, "");
 		
 		 //Kuerzesten Weg von momentaner Position zum Checkpoint bestimmen
-		 DijkstraShortestPath<G4_Vertex, DefaultEdge> shortestPath = 
-			 new DijkstraShortestPath<G4_Vertex, DefaultEdge>(
-					 this, 
+		 DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge> shortestPath = 
+			 new DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge>(
+					 this.getAdaptedGraph(startVertex, startPosition.getDirection()),
+					// this,
 					 startVertex, 
 					 endVertex);
 		 return shortestPath.getPathLength();
@@ -182,7 +195,7 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 	 */
 	public G4_Position getNextPushingPosition(G4_Position startBallPosition, G4_Position endBallPosition){
 						
-		List<DefaultEdge> path = this.getEdgesOnShortestPath(startBallPosition, endBallPosition);
+		List<DefaultWeightedEdge> path = this.getEdgesOnShortestPath(startBallPosition, endBallPosition);
 		
 		if (path.size() == 0)
 			return null;
@@ -202,7 +215,7 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 	 * @param edge
 	 * @return the direction of the edge
 	 */
-	public Direction getDirectionOfEdge(DefaultEdge edge){
+	public Direction getDirectionOfEdge(DefaultWeightedEdge edge){
 		Direction direction = null;
 		
 		G4_Vertex source = this.getEdgeSource(edge);
@@ -344,5 +357,99 @@ public class G4_GraphMapBall extends DefaultDirectedGraph<G4_Vertex, DefaultEdge
 		return 0;
 	}
 	
+	/**
+	 * Adjusts the edge weights around the given position so that moving in the given direction
+	 * (at most 3 vertices) is less expensive than moving into the other directions
+	 * @param position 
+	 * @param direction
+	 * @return A G4_GraphMap with adjusted weights around the given position
+	 */
+	private G4_GraphMapBall getAdaptedGraph(G4_Vertex position, Direction direction){
 
+		G4_GraphMapBall returnGraph = (G4_GraphMapBall) this.clone();
+				
+		int x = position.getX();
+		int y = position.getY();
+		
+		G4_Vertex coordinatesNorth = this.getVertex(x, y-1);	
+		G4_Vertex coordinatesNorth2 = this.getVertex(x, y-2);	
+		G4_Vertex coordinatesNorth3 = this.getVertex(x, y-3);	
+		G4_Vertex coordinatesEast =  this.getVertex(x+1, y);	
+		G4_Vertex coordinatesEast2 =  this.getVertex(x+2, y);	
+		G4_Vertex coordinatesEast3 =  this.getVertex(x+3, y);	
+		G4_Vertex coordinatesSouth = this.getVertex(x, y+1);	
+		G4_Vertex coordinatesSouth2 = this.getVertex(x, y+2);	
+		G4_Vertex coordinatesSouth3 = this.getVertex(x, y+3);	
+		G4_Vertex coordinatesWest =  this.getVertex(x-1, y);	
+		G4_Vertex coordinatesWest2 =  this.getVertex(x-2, y);	
+		G4_Vertex coordinatesWest3 =  this.getVertex(x-3, y);	
+		
+		//TODO Kantengewichte relativ anpassen
+
+		try{
+		
+		if (direction == Constants.DIRECTION_NORTH){
+			DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesNorth);
+			returnGraph.setEdgeWeight(edge, reducedConnWeight);
+		}
+		if (direction == Constants.DIRECTION_EAST){
+			DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesEast);
+			returnGraph.setEdgeWeight(edge, reducedConnWeight);
+		}
+		if (direction == Constants.DIRECTION_SOUTH){
+			DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesSouth);
+			returnGraph.setEdgeWeight(edge, reducedConnWeight);
+		}
+		if (direction == Constants.DIRECTION_WEST){
+			DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesWest);
+			returnGraph.setEdgeWeight(edge, reducedConnWeight);
+		}
+
+		}catch (Exception e){}
+
+		try{
+
+			if (direction == Constants.DIRECTION_NORTH){
+				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesNorth, coordinatesNorth2);
+				returnGraph.setEdgeWeight(edge, reducedConnWeight);
+			}
+			if (direction == Constants.DIRECTION_EAST){
+				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesEast, coordinatesEast2);
+				returnGraph.setEdgeWeight(edge, reducedConnWeight);
+			}
+			if (direction == Constants.DIRECTION_SOUTH){
+				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesSouth, coordinatesSouth2);
+				returnGraph.setEdgeWeight(edge, reducedConnWeight);
+			}
+			if (direction == Constants.DIRECTION_WEST){
+				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesWest, coordinatesWest2);
+				returnGraph.setEdgeWeight(edge, reducedConnWeight);
+			}
+
+		}catch (Exception e){}
+
+		try{
+
+			if (direction == Constants.DIRECTION_NORTH){
+				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesNorth2, coordinatesNorth3);
+				returnGraph.setEdgeWeight(edge, reducedConnWeight);
+			}
+			if (direction == Constants.DIRECTION_EAST){
+				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesEast2, coordinatesEast3);
+				returnGraph.setEdgeWeight(edge, reducedConnWeight);
+			}
+			if (direction == Constants.DIRECTION_SOUTH){
+				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesSouth2, coordinatesSouth3);
+				returnGraph.setEdgeWeight(edge, reducedConnWeight);
+			}
+			if (direction == Constants.DIRECTION_WEST){
+				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesWest2, coordinatesWest3);
+				returnGraph.setEdgeWeight(edge, reducedConnWeight);
+			}
+
+		}catch (Exception e){}
+	
+		return returnGraph; 
+	}
+	
 }

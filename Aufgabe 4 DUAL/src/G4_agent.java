@@ -86,7 +86,7 @@ public class G4_agent extends AITask
 				if (this.Game.Robots.getAllRobots()[2] != null)
 					return this.playSokubanWithOpponent(useableCards);
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				return this.playSokuban(useableCards);
 			}
 	     }
@@ -333,19 +333,19 @@ public Card[] playSokubanWithOpponent(Card[] useableCards){
 				chooser.graphMap.removeVertex(vertexOfBall);
 				
 				//Erstmal den Ball abschirmen, also nicht in Zielrichtung verschieben
-				if (chooser.getChosenCards().size() == 0 && this.Game.Round.getRound() == 1){
+				if (chooser.getChosenCards().size() == 0 && this.Game.Round.getRound() < 3){
 					G4_Position nearestPushPosition = BallsGraph.getNearestPushPosition(position, myMapGraph);
 					Direction pushDirection = nearestPushPosition.getDirection();
 					chooser.chooseMovingCards2(position, nearestPushPosition);
 					
-					if (chooser.getChosenCards().size() < 5 && this.Game.Round.getRound() == 1 ){
+					if (chooser.getChosenCards().size() < 5  && this.Game.Round.getRound() < 3 ){
 						switch (BallsGraph.getMaximalPushStrength(nearestPushPosition)){
 						
 						case 3:
-							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Forward_Card));
+							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card));
 							break;
 						case 2:
-							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Forward_Card));
+							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card));
 							break;
 						case 1:
 							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Forward_Card));
@@ -361,11 +361,13 @@ public Card[] playSokubanWithOpponent(Card[] useableCards){
 						position = chooser.applyVertexEffects(position);
 						
 						//Richtung aendern damit Karten/Knoteneffekt richtig wirkt
+						Direction testBallDirection = BallsGraph.getPositionOfBall().getDirection();
 						BallsGraph.getPositionOfBall().setDirection(pushDirection);
 						//Position des Balls aktualisieren
 						BallsGraph.setPositionOfBall(chooser.applyCardEffect(chooser.getChosenCards().lastElement(),
 								BallsGraph.getPositionOfBall()));
 						BallsGraph.setPositionOfBall(chooser.applyVertexEffects(BallsGraph.getPositionOfBall()));
+						BallsGraph.getPositionOfBall().setDirection(testBallDirection);
 					}
 					
 					continue;
@@ -391,11 +393,19 @@ public Card[] playSokubanWithOpponent(Card[] useableCards){
 				//Vielleicht koennen wir den Ball schon schieben
 				//wenn die letzte Karte ein "vorwaertskarte" war
 				if (chooser.getChosenCards().size() < 5){
+					G4_Position nextBallPosition1 = positionOfBall.getPositionInDirection(nextPushPosition.getDirection());
+					G4_Position nextBallPosition2 = nextBallPosition1.getPositionInDirection(nextPushPosition.getDirection());
+					G4_Position nextBallPosition3 = nextBallPosition1.getPositionInDirection(nextPushPosition.getDirection());
+					
 					if (chooser.getChosenCards().lastElement().getCardType() == Constants.CardType.Move_Forward_Card){
-						chooser.tryReplacingCard(chooser.getChosenCards().size() - 1, Constants.CardType.Move_Two_Forward_Card);
+						if (BallsGraph.isMovingPossible(nextBallPosition2, positionOfBall))
+							chooser.tryReplacingCard(chooser.getChosenCards().size() - 1, Constants.CardType.Move_Three_Forward_Card);
+						if (BallsGraph.isMovingPossible(nextBallPosition1, positionOfBall))
+							chooser.tryReplacingCard(chooser.getChosenCards().size() - 1, Constants.CardType.Move_Two_Forward_Card);
 					}
 					else if (chooser.getChosenCards().lastElement().getCardType() == Constants.CardType.Move_Two_Forward_Card){
-						chooser.tryReplacingCard(chooser.getChosenCards().size() - 1, Constants.CardType.Move_Three_Forward_Card);
+						if (BallsGraph.isMovingPossible(nextBallPosition3, positionOfBall))
+							chooser.tryReplacingCard(chooser.getChosenCards().size() - 1, Constants.CardType.Move_Three_Forward_Card);
 					}					
 				}
 
