@@ -325,7 +325,8 @@ public class G4_agent extends AITask
 		while (chooser.getChosenCards().size() < 5){
 
 			G4_Position nextPushPosition = BallsGraph.getNextPushingPosition(positionOfBall, ballZielposition );
-
+			//G4_Position nextPushPosition = BallsGraph.getNearestPushPosition(position, myMapGraph);
+			
 			//Falls der Ball schon im Ziel sein muesste
 			if (nextPushPosition == null)
 				break;

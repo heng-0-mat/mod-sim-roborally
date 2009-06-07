@@ -367,7 +367,7 @@ public class G4_GraphMapBall extends DefaultDirectedWeightedGraph<G4_Vertex, Def
 	private G4_GraphMapBall getAdaptedGraph(G4_Vertex position, Direction direction){
 
 		G4_GraphMapBall returnGraph = (G4_GraphMapBall) this.clone();
-				
+		
 		int x = position.getX();
 		int y = position.getY();
 		
