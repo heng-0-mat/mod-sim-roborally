@@ -345,11 +345,68 @@ public class G4_agent extends AITask
 					Direction pushDirection = nearestPushPosition.getDirection();
 					chooser.chooseMovingCards2(position, nearestPushPosition);
 
-					if (chooser.getChosenCards().size() < 5){
+					boolean schonVerschoben = false;
+					
+					//Vielleicht koennen wir den Ball schon schieben
+					//wenn die letzte Karte ein "vorwaertskarte" war
+					if (position.equals(nearestPushPosition) && this.Game.Round.getRound() > 2){
+						G4_Position nextBallPosition1 = positionOfBall.getPositionInDirection(nearestPushPosition.getDirection());
+						G4_Position nextBallPosition2 = nextBallPosition1.getPositionInDirection(nearestPushPosition.getDirection());
+
+						if (chooser.getChosenCards().lastElement().getCardType() == Constants.CardType.Move_Forward_Card){
+							if (BallsGraph.isMovingPossible(nextBallPosition2, positionOfBall))
+								chooser.tryReplacingCard(chooser.getChosenCards().size() - 1, Constants.CardType.Move_Three_Forward_Card);
+							else if (BallsGraph.isMovingPossible(nextBallPosition1, positionOfBall))
+								chooser.tryReplacingCard(chooser.getChosenCards().size() - 1, Constants.CardType.Move_Two_Forward_Card);
+							
+							//Karte neu laden um den Knoten des Balls wieder hinzuzufuegen
+							chooser.graphMap.loadMap(this.Game.Map);
+
+							//Karteneffekt und Knoteneffekt auf Roboter anwenden
+							position = chooser.applyCardEffect(chooser.getChosenCards().lastElement(), position);
+							position = chooser.applyVertexEffects(position);
+
+							//Richtung aendern damit Karten/Knoteneffekt richtig wirkt
+							Direction testBallDirection = BallsGraph.getPositionOfBall().getDirection();
+							BallsGraph.getPositionOfBall().setDirection(pushDirection);
+							//Position des Balls aktualisieren
+							BallsGraph.setPositionOfBall(chooser.applyCardEffect(chooser.getChosenCards().lastElement(),
+									BallsGraph.getPositionOfBall()));
+							BallsGraph.setPositionOfBall(chooser.applyVertexEffects(BallsGraph.getPositionOfBall()));
+							BallsGraph.getPositionOfBall().setDirection(testBallDirection);
+							schonVerschoben = true;
+						}
+						else if (chooser.getChosenCards().lastElement().getCardType() == Constants.CardType.Move_Two_Forward_Card){
+							if (BallsGraph.isMovingPossible(nextBallPosition1, positionOfBall))
+								chooser.tryReplacingCard(chooser.getChosenCards().size() - 1, Constants.CardType.Move_Three_Forward_Card);
+							
+							//Karte neu laden um den Knoten des Balls wieder hinzuzufuegen
+							chooser.graphMap.loadMap(this.Game.Map);
+
+							//Karteneffekt und Knoteneffekt auf Roboter anwenden
+							position = chooser.applyCardEffect(chooser.getChosenCards().lastElement(), position);
+							position = chooser.applyVertexEffects(position);
+
+							//Richtung aendern damit Karten/Knoteneffekt richtig wirkt
+							Direction testBallDirection = BallsGraph.getPositionOfBall().getDirection();
+							BallsGraph.getPositionOfBall().setDirection(pushDirection);
+							//Position des Balls aktualisieren
+							BallsGraph.setPositionOfBall(chooser.applyCardEffect(chooser.getChosenCards().lastElement(),
+									BallsGraph.getPositionOfBall()));
+							BallsGraph.setPositionOfBall(chooser.applyVertexEffects(BallsGraph.getPositionOfBall()));
+							BallsGraph.getPositionOfBall().setDirection(testBallDirection);
+							schonVerschoben = true;
+						}					
+					}
+					
+					if (chooser.getChosenCards().size() < 5 && !schonVerschoben){
 						switch (BallsGraph.getMaximalPushStrength(nearestPushPosition)){
 
 						case 3:
-							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card));
+							if (this.Game.Round.getRound() < 3)
+								chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card));
+							else
+								chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
 							break;
 						case 2:
 							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card));
@@ -358,11 +415,12 @@ public class G4_agent extends AITask
 							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Forward_Card));
 							break;
 						case 0:
-
+							continue;
 						}
+						
 						//Karte neu laden um den Knoten des Balls wieder hinzuzufuegen
 						chooser.graphMap.loadMap(this.Game.Map);
-
+						
 						//Karteneffekt und Knoteneffekt auf Roboter anwenden
 						position = chooser.applyCardEffect(chooser.getChosenCards().lastElement(), position);
 						position = chooser.applyVertexEffects(position);
@@ -375,6 +433,7 @@ public class G4_agent extends AITask
 								BallsGraph.getPositionOfBall()));
 						BallsGraph.setPositionOfBall(chooser.applyVertexEffects(BallsGraph.getPositionOfBall()));
 						BallsGraph.getPositionOfBall().setDirection(testBallDirection);
+						
 					}
 
 					continue;
@@ -421,7 +480,7 @@ public class G4_agent extends AITask
 					if (chooser.getChosenCards().lastElement().getCardType() == Constants.CardType.Move_Forward_Card){
 						if (BallsGraph.isMovingPossible(nextBallPosition2, positionOfBall))
 							chooser.tryReplacingCard(chooser.getChosenCards().size() - 1, Constants.CardType.Move_Three_Forward_Card);
-						if (BallsGraph.isMovingPossible(nextBallPosition1, positionOfBall))
+						else if (BallsGraph.isMovingPossible(nextBallPosition1, positionOfBall))
 							chooser.tryReplacingCard(chooser.getChosenCards().size() - 1, Constants.CardType.Move_Two_Forward_Card);
 					}
 					else if (chooser.getChosenCards().lastElement().getCardType() == Constants.CardType.Move_Two_Forward_Card){
