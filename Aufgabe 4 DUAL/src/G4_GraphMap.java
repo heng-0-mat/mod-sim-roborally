@@ -29,7 +29,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	final int defaultConnWeight = 2;
 	final int rotatorConnWeight = 3;
 	final int reducedConnWeight = 1;
-	final int increasedConnWeight = 3;
+	final int increasedConnWeight = 4;
 	
 	public G4_GraphMap(MapObject map) {
 		super(DefaultWeightedEdge.class);
@@ -124,6 +124,32 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	}
 	
 	/**
+	 * "Walks" from a position into the given direction until a wall is hit
+	 * and sets the effectOnHealth 
+	 * @param startVertex
+	 * @param direction
+	 */
+	private void setLaserPositions(G4_Vertex startVertex, Direction direction){
+		
+		G4_Vertex currentVertex = startVertex;
+		
+		try {
+			
+			do{
+				
+				currentVertex = this.getVertexInDirection(currentVertex, direction);
+				currentVertex.getEffect().effectOnHealth--;
+								
+			}while (!currentVertex.isWallinDirection(direction));
+			
+		} catch (Exception e) {
+			// Falls Position ausserhalb
+			//e.printStackTrace();
+		}
+		
+	}
+	
+	/**
 	 * Creates a graph representation of a Roborally.MapObject
 	 * @param map
 	 */
@@ -132,31 +158,10 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		//Knoten erstellen fuer alle Felder auf der Karte
 		for (int x = 0; x < map.getWidth(); x++) {
 			for (int y = 0; y < map.getHeight(); y++) {
-					G4_Vertex vertex = new G4_Vertex(x, y, map.getNode(x,y).toString());
-										
-					//Ist dies der Zielknoten?
-					if (map.getNode(x,y).toString().contains("Checkpoint")){
-						this.checkpoint = vertex;
-					}
-					if (map.getNode(x,y).toString().contains("Startpoint")){
-						this.startpoint = vertex;
-						
-						if (map.getNode(x,y).toString().contains("Startpoint(north")){
-							this.startDirection = Constants.DIRECTION_NORTH;
-						}
-						if (map.getNode(x,y).toString().contains("Startpoint(east")){
-							this.startDirection = Constants.DIRECTION_EAST;
-						}
-						if (map.getNode(x,y).toString().contains("Startpoint(south")){
-							this.startDirection = Constants.DIRECTION_SOUTH;
-						}
-						if (map.getNode(x,y).toString().contains("Startpoint(west")){
-							this.startDirection = Constants.DIRECTION_WEST;
-						}
-						
-					}
-										
-					this.addVertex(vertex);
+					
+				G4_Vertex vertex = new G4_Vertex(x, y, map.getNode(x,y).toString());
+				this.addVertex(vertex);
+				
 			}
 		}
 		
@@ -192,14 +197,42 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 					G4_Vertex vertexInEffectDirection = this.getVertexInDirection(currentVertex, effectDirection);
 					if (this.vertexSet().contains(vertexInEffectDirection)){
 						this.setEdgeWeight(this.getEdge(currentVertex, vertexInEffectDirection), reducedConnWeight);
-						//this.setEdgeWeight(this.getEdge(vertexInEffectDirection, currentVertex), increasedConnWeight);
+						
+						try {
+							this.setEdgeWeight(this.getEdge(vertexInEffectDirection, currentVertex), increasedConnWeight);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							//e.printStackTrace();
+						}
 					}
 				}
+				
+				//Laser verarbeiten
+				if (currentVertex.isLaserEast()){
+					this.setLaserPositions(currentVertex, Constants.DIRECTION_EAST);
+				}
+				if (currentVertex.isLaserNorth()){
+					this.setLaserPositions(currentVertex, Constants.DIRECTION_NORTH);
+				}
+				if (currentVertex.isLaserSouth()){
+					this.setLaserPositions(currentVertex, Constants.DIRECTION_SOUTH);
+				}
+				if (currentVertex.isLaserWest()){
+					this.setLaserPositions(currentVertex, Constants.DIRECTION_WEST);
+				}
+			
 										
 			}
 		
 		//Kanten fuer Loecher entfernen
 		for(G4_Vertex currentVertex: this.vertexSet()){
+			
+			//Bei Laser Kanten gewichte erhöhen
+			if (currentVertex.getEffect().effectOnHealth < 0){
+				for (DefaultWeightedEdge edge: this.incomingEdgesOf(currentVertex)){
+					this.setEdgeWeight(edge, 2*increasedConnWeight);
+				}
+			}
 			
 			G4_Vertex vertexNorth = this.getVertex(currentVertex.getX(),currentVertex.getY()-1);
 			G4_Vertex vertexEast =  this.getVertex(currentVertex.getX()+1,currentVertex.getY());
@@ -350,68 +383,79 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 		//TODO Kantengewichte relativ anpassen
 
-		try{
-		
 		if (direction == Constants.DIRECTION_NORTH){
-			DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesNorth);
-			returnGraph.setEdgeWeight(edge, reducedConnWeight);
-		}
-		if (direction == Constants.DIRECTION_EAST){
-			DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesEast);
-			returnGraph.setEdgeWeight(edge, reducedConnWeight);
-		}
-		if (direction == Constants.DIRECTION_SOUTH){
-			DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesSouth);
-			returnGraph.setEdgeWeight(edge, reducedConnWeight);
-		}
-		if (direction == Constants.DIRECTION_WEST){
-			DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesWest);
-			returnGraph.setEdgeWeight(edge, reducedConnWeight);
-		}
-
-		}catch (Exception e){}
-
-		try{
-
-			if (direction == Constants.DIRECTION_NORTH){
+			
+			try {
+				DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesNorth);
+				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			} catch (Exception e) {}
+			
+			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesNorth, coordinatesNorth2);
-				returnGraph.setEdgeWeight(edge, reducedConnWeight);
-			}
-			if (direction == Constants.DIRECTION_EAST){
-				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesEast, coordinatesEast2);
-				returnGraph.setEdgeWeight(edge, reducedConnWeight);
-			}
-			if (direction == Constants.DIRECTION_SOUTH){
-				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesSouth, coordinatesSouth2);
-				returnGraph.setEdgeWeight(edge, reducedConnWeight);
-			}
-			if (direction == Constants.DIRECTION_WEST){
-				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesWest, coordinatesWest2);
-				returnGraph.setEdgeWeight(edge, reducedConnWeight);
-			}
-
-		}catch (Exception e){}
-
-		try{
-
-			if (direction == Constants.DIRECTION_NORTH){
+				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			} catch (Exception e) {}
+			
+			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesNorth2, coordinatesNorth3);
-				returnGraph.setEdgeWeight(edge, reducedConnWeight);
-			}
-			if (direction == Constants.DIRECTION_EAST){
+				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			} catch (Exception e) {}
+						
+		}
+		
+		else if (direction == Constants.DIRECTION_EAST){
+			
+			try {
+				DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesEast);
+				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			} catch (Exception e) {}
+			
+			try {
+				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesEast, coordinatesEast2);
+				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			} catch (Exception e) {}
+			
+			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesEast2, coordinatesEast3);
-				returnGraph.setEdgeWeight(edge, reducedConnWeight);
-			}
-			if (direction == Constants.DIRECTION_SOUTH){
+				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			} catch (Exception e) {}
+		}
+		
+		else if (direction == Constants.DIRECTION_SOUTH){
+			
+			try {
+				DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesSouth);
+				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			} catch (Exception e) {}
+			
+			try {
+				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesSouth, coordinatesSouth2);
+				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			} catch (Exception e) {}
+			
+			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesSouth2, coordinatesSouth3);
-				returnGraph.setEdgeWeight(edge, reducedConnWeight);
-			}
-			if (direction == Constants.DIRECTION_WEST){
+				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			} catch (Exception e) {}
+		}
+		
+		else if (direction == Constants.DIRECTION_WEST){
+			
+			try {
+				DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesWest);
+				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			} catch (Exception e) {}
+			
+			try {
+				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesWest, coordinatesWest2);
+				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			} catch (Exception e) {}
+			
+			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesWest2, coordinatesWest3);
-				returnGraph.setEdgeWeight(edge, reducedConnWeight);
-			}
-
-		}catch (Exception e){}
+				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			} catch (Exception e) {}
+			
+		}
 	
 		return returnGraph; 
 	}

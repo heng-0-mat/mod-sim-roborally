@@ -10,6 +10,7 @@ public class G4_Effect {
 	
 	private String rotationDirection;
 	private Direction translationDirection;
+	public int effectOnHealth = 0;
 	//private ArrayList<Integer> activePhase;
 	//OMARS KOMMENTAR
 	

@@ -23,6 +23,11 @@ public class G4_Vertex {
 	private boolean shootingWest = false;
 	private boolean shootingSouth = false;
 	
+	private boolean laserNorth = false;
+	private boolean laserEast = false;
+	private boolean laserWest = false;
+	private boolean laserSouth = false;
+	
 	private boolean isHole = false;
 	
 	public boolean isHole() {
@@ -37,6 +42,8 @@ public class G4_Vertex {
 		this.x = x;
 		this.y = y;
 		this.effect = new G4_Effect(nodeString);
+		
+		//System.out.println(nodeString);
 		
 		if (nodeString.contains("north(wall()")){
 			this.wallNorth = true;
@@ -53,6 +60,18 @@ public class G4_Vertex {
 		if (nodeString.contains("OutOfGame")){
 			this.isHole = true;
 		}
+		if (nodeString.contains("LaserGun(north")){
+			this.laserNorth = true;
+		}
+		if (nodeString.contains("LaserGun(east")){
+			this.laserEast = true;
+		}
+		if (nodeString.contains("LaserGun(south")){
+			this.laserSouth = true;
+		}
+		if (nodeString.contains("LaserGun(west")){
+			this.laserWest = true;
+		}
 	}
 	
 	public G4_Vertex(G4_Vertex v) {
@@ -67,7 +86,10 @@ public class G4_Vertex {
 		this.shootingNorth = v.isShootingNorth();
 		this.shootingSouth = v.isShootingSouth();
 		this.shootingWest = v.isShootingWest();
-	
+		this.laserEast = v.isLaserEast();
+		this.laserNorth = v.isLaserNorth();
+		this.laserSouth = v.isLaserSouth();
+		this.laserWest = v.isLaserWest();
 	}
 	
 	@Override
@@ -262,5 +284,37 @@ public class G4_Vertex {
 	 */
 	public Direction applyRotationEffects(Direction direction){
 		return (G4_DirectionUtils.rotate(direction, this.effect.getRotationDirection()));
+	}
+
+	public boolean isLaserNorth() {
+		return laserNorth;
+	}
+
+	public void setLaserNorth(boolean laserNorth) {
+		this.laserNorth = laserNorth;
+	}
+
+	public boolean isLaserEast() {
+		return laserEast;
+	}
+
+	public void setLaserEast(boolean laserEast) {
+		this.laserEast = laserEast;
+	}
+
+	public boolean isLaserWest() {
+		return laserWest;
+	}
+
+	public void setLaserWest(boolean laserWest) {
+		this.laserWest = laserWest;
+	}
+
+	public boolean isLaserSouth() {
+		return laserSouth;
+	}
+
+	public void setLaserSouth(boolean laserSouth) {
+		this.laserSouth = laserSouth;
 	}	
 }
