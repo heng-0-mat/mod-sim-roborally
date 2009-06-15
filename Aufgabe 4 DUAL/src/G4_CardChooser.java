@@ -378,7 +378,21 @@ public class G4_CardChooser {
 		return position;	
 	}
 
-	public Card tryChoosingCard(CardType cardtype){
+	public void tryChoosingCard(CardType cardtype){
+		
+		Card returnCard = null;
+		
+		for (Card card: this.cards){
+			if (cardtype == card.getCardType()){
+				returnCard = this.cards.remove(this.cards.indexOf(card));
+				break;				
+			}
+		}
+		
+		this.chosenCards.add(returnCard);
+	}
+	
+public Card tryPickingCard(CardType cardtype){
 		
 		Card returnCard = null;
 		
@@ -423,13 +437,13 @@ public class G4_CardChooser {
 		//Wenn der richtige Knoten erreicht ist, nur noch drehen
 		if (path.size() == 0){
 			if (ziel.getDirection() == G4_DirectionUtils.turnCW(start.getDirection())){
-				chosenCards.add(this.tryChoosingCard(Constants.CardType.Rotate_CW_Card));
+				this.tryChoosingCard(Constants.CardType.Rotate_CW_Card);
 			}
 			else if (ziel.getDirection() == G4_DirectionUtils.turnCCW(start.getDirection())){
-				chosenCards.add(this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card));
+				this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card);
 			}
 			else if (ziel.getDirection() == G4_DirectionUtils.turnU(start.getDirection())){
-				chosenCards.add(this.tryChoosingCard(Constants.CardType.U_Turn_Card ));
+				this.tryChoosingCard(Constants.CardType.U_Turn_Card );
 			}
 			else{
 				if (this.debugOutput)
@@ -445,31 +459,31 @@ public class G4_CardChooser {
 			this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
 			this.graphMap.getDirectionOfEdge(path.get(1)) == start.getDirection() &&
 			this.graphMap.getDirectionOfEdge(path.get(2)) == start.getDirection()){
-					chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
+					this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
 		}
 		else if (path.size() >= 2 &&
 				 this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
 				 this.graphMap.getDirectionOfEdge(path.get(1)) == start.getDirection()){
-				chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card));
+				this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
 		}
 		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection()){
-			chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Forward_Card));
+			this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
 		}		
 		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCW(start.getDirection())){
 			if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
-				chosenCards.add(this.tryChoosingCard(Constants.CardType.Rotate_CW_Card));
+				this.tryChoosingCard(Constants.CardType.Rotate_CW_Card);
 		}
 		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCCW(start.getDirection())){
 			if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
-				chosenCards.add(this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card));
+				this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card);
 		}
 		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnU(start.getDirection())){
 			//Wenns nur ein Feld weit in U-Turn Richtung gefahren werden muss
 			if ((this.graphMap.getDirectionOfEdge(path.get(1)) != G4_DirectionUtils.turnU(start.getDirection()) ||
 					(!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)))
-				chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Backward_Card));
+				this.tryChoosingCard(Constants.CardType.Move_Backward_Card);
 			else
-				chosenCards.add(this.tryChoosingCard(Constants.CardType.U_Turn_Card ));
+				this.tryChoosingCard(Constants.CardType.U_Turn_Card );
 		}
 					
 		//Wenn eine Karte gewaehlt wurde
@@ -514,15 +528,15 @@ public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ba
 				this.graphMapBall.getDirectionOfEdge(path.get(0)) == robotPosition.getDirection() &&
 				this.graphMapBall.getDirectionOfEdge(path.get(1)) == robotPosition.getDirection() &&
 				this.graphMapBall.getDirectionOfEdge(path.get(2)) == robotPosition.getDirection()){
-						chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
+						this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
 			}
 			else if (path.size() >= 2 &&
 					 this.graphMapBall.getDirectionOfEdge(path.get(0)) == robotPosition.getDirection() &&
 					 this.graphMapBall.getDirectionOfEdge(path.get(1)) == robotPosition.getDirection()){
-					chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card));
-			}
+					this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
+					}
 			else if (this.graphMapBall.getDirectionOfEdge(path.get(0)) == robotPosition.getDirection()){
-				chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Forward_Card));
+				this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
 			}	
 			
 			//Wenn eine Karte gewaehlt wurde
@@ -562,11 +576,11 @@ public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ba
 		
 		//Falls die Zielposition schon erreicht sein muesste ist einfach mal weiter nach vorne schieben
 		//vielleicht hat uns ja jemand zurueckgeschoben
-		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Forward_Card));
-		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Forward_Card));
-		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Forward_Card));
-		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Forward_Card));
-		chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Forward_Card));
+		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
 			
 		//Die ersten 5 gewaehlten Karten zurueckgeben
 		for (int i = 0; i < 5; i++){
@@ -592,7 +606,7 @@ public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ba
 	
 	public void tryReplacingCard(int index, CardType cardType){
 		try {
-			this.chosenCards.set(index, this.tryChoosingCard(cardType));
+			this.chosenCards.set(index, this.tryPickingCard(cardType));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

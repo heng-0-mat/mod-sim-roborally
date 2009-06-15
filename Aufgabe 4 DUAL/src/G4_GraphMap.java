@@ -197,7 +197,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 				if (effectDirection != Constants.DIRECTION_STAY){
 					G4_Vertex vertexInEffectDirection = this.getVertexInDirection(currentVertex, effectDirection);
 					if (this.vertexSet().contains(vertexInEffectDirection)){
-						this.setEdgeWeight(this.getEdge(currentVertex, vertexInEffectDirection), reducedConnWeight);
+						this.setEdgeWeight(this.getEdge(currentVertex, vertexInEffectDirection), defaultConnWeight);
 						
 						try {
 							this.setEdgeWeight(this.getEdge(vertexInEffectDirection, currentVertex), increasedConnWeight);
@@ -518,7 +518,8 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 //						endVertex);
 //			return shortestPath.getPathEdgeList();
 			return DijkstraShortestPath.findPathBetween(
-					this.getAdaptedGraph(startVertex, startPosition.getDirection()), startVertex, endVertex);
+					//this.getAdaptedGraph(startVertex, startPosition.getDirection())
+					this, startVertex, endVertex);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

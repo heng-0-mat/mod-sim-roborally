@@ -414,15 +414,15 @@ public class G4_agent extends AITask
 
 						case 3:
 							if (this.Game.Round.getRound() < 3)
-								chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card));
+								chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
 							else
-								chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card));
+								chooser.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
 							break;
 						case 2:
-							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card));
+							chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
 							break;
 						case 1:
-							chooser.getChosenCards().add(chooser.tryChoosingCard(Constants.CardType.Move_Forward_Card));
+							chooser.tryChoosingCard(Constants.CardType.Move_Forward_Card);
 							break;
 						case 0:
 							continue;
