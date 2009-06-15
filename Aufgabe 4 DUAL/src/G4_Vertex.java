@@ -12,6 +12,7 @@ public class G4_Vertex {
 	private int x;
 	private int y;
 	private G4_Effect effect;
+	public String nodeString;
 	
 	private boolean wallNorth = false;
 	private boolean wallEast = false;
@@ -28,6 +29,9 @@ public class G4_Vertex {
 	private boolean laserWest = false;
 	private boolean laserSouth = false;
 	
+	public boolean cogwheelCW = false;
+	public boolean cogwheelCCW = false;
+	
 	private boolean isHole = false;
 	
 	public boolean isHole() {
@@ -42,6 +46,7 @@ public class G4_Vertex {
 		this.x = x;
 		this.y = y;
 		this.effect = new G4_Effect(nodeString);
+		this.nodeString = nodeString;
 		
 		//System.out.println(nodeString);
 		
@@ -72,6 +77,14 @@ public class G4_Vertex {
 		if (nodeString.contains("LaserGun(west")){
 			this.laserWest = true;
 		}
+		if (nodeString.contains("CogRotate")){
+			if (nodeString.contains("counterclockwise")){
+				this.cogwheelCCW = true;
+			}
+			else if (nodeString.contains("clockwise")){
+				this.cogwheelCW = true;
+			}
+		}
 	}
 	
 	public G4_Vertex(G4_Vertex v) {
@@ -90,6 +103,9 @@ public class G4_Vertex {
 		this.laserNorth = v.isLaserNorth();
 		this.laserSouth = v.isLaserSouth();
 		this.laserWest = v.isLaserWest();
+		this.nodeString = v.nodeString;
+		this.cogwheelCCW = v.cogwheelCCW;
+		this.cogwheelCW = v.cogwheelCW;
 	}
 	
 	@Override

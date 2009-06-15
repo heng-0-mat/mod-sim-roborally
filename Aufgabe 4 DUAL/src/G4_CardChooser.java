@@ -52,7 +52,7 @@ public class G4_CardChooser {
 		return this.graphMap;
 	}
 
-	public Card[] chooseCards(){
+	public Card[] chooseCards(G4_Position Ziel){
 
 		Card[] myTurn = {null,null,null,null,null};
 		int numCards = 0;	
@@ -92,10 +92,10 @@ public class G4_CardChooser {
 		}
 		else{
 			//Ansonsten versuch zum Checkpoint zu fahren
-			if (this.graphMap.checkpoint != null){
-				G4_Position checkpoint = new G4_Position(this.graphMap.checkpoint.getX(),this.graphMap.checkpoint.getY(),Constants.DIRECTION_STAY);
-				chooseMovingCards(myPosition, checkpoint, this.cards, new Vector<Card>());
-			}
+			//if (this.graphMap.checkpoint != null){
+			//	G4_Position checkpoint = new G4_Position(this.graphMap.checkpoint.getX(),this.graphMap.checkpoint.getY(),Constants.DIRECTION_STAY);
+				chooseMovingCards(myPosition, Ziel, this.cards, new Vector<Card>());
+			//}
 		}
 
 		//Alle gewaehlten Bewegungskarten zurueckgeben
@@ -431,6 +431,13 @@ public class G4_CardChooser {
 			else if (ziel.getDirection() == G4_DirectionUtils.turnU(start.getDirection())){
 				chosenCards.add(this.tryChoosingCard(Constants.CardType.U_Turn_Card ));
 			}
+			else{
+				if (this.debugOutput)
+					System.out.println("Wir sind gerade in ein Loch oder sowas gefahren!");
+				return chosenCards;
+			}
+				
+			
 		}
 		
 		//An den Kanten des kuerzesten Weges langlaufen
@@ -449,14 +456,17 @@ public class G4_CardChooser {
 			chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Forward_Card));
 		}		
 		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCW(start.getDirection())){
-			chosenCards.add(this.tryChoosingCard(Constants.CardType.Rotate_CW_Card));
+			if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
+				chosenCards.add(this.tryChoosingCard(Constants.CardType.Rotate_CW_Card));
 		}
 		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCCW(start.getDirection())){
-			chosenCards.add(this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card));
+			if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
+				chosenCards.add(this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card));
 		}
 		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnU(start.getDirection())){
 			//Wenns nur ein Feld weit in U-Turn Richtung gefahren werden muss
-			if (this.graphMap.getDirectionOfEdge(path.get(1)) != G4_DirectionUtils.turnU(start.getDirection()))
+			if ((this.graphMap.getDirectionOfEdge(path.get(1)) != G4_DirectionUtils.turnU(start.getDirection()) ||
+					(!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)))
 				chosenCards.add(this.tryChoosingCard(Constants.CardType.Move_Backward_Card));
 			else
 				chosenCards.add(this.tryChoosingCard(Constants.CardType.U_Turn_Card ));
@@ -466,13 +476,12 @@ public class G4_CardChooser {
 		if (countChosenCards < chosenCards.size()){
 			//Karteneffekt und Knoteneffekt anwenden
 			start = this.applyCardEffect(chosenCards.lastElement(), start);
-			start = this.applyVertexEffects(start);
-			
-						
 		}else{
 			System.out.println("Keine passende Karte gefunden");
 			return null;
 		}
+		
+		start = this.applyVertexEffects(start);
 		
 		//Rekursiver Aufruf 
 		return this.chooseMovingCards2(start, ziel);

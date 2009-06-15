@@ -1,5 +1,6 @@
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.ToolTipManager;
@@ -72,7 +73,7 @@ public class G4_agent extends AITask
 	public Card[] executeTurn(Card[] useableCards)
 	{
 		//Ausgaben auf die Konsole (de-)aktivieren
-		this.debugOutput = false;
+		this.debugOutput = true;
 		   
 	    if (this.Settings.getGameMode().equals(Constants.GameMode.REGULAR_GAME)){
 	    	return this.playRegularGame(useableCards);
@@ -119,23 +120,28 @@ public class G4_agent extends AITask
 		// Eigene Position bestimmen
 	    G4_Position position = new G4_Position(getCurrentNode().getX(),getCurrentNode().getY(),Game.Me.getOrientation());
 	    
-	    // Eigene ZielPosition bestimmen
-	    G4_Position zielPosition = new G4_Position(this.Game.Me.getNextCheckpoints()[0].getX(),
-	    										   this.Game.Me.getNextCheckpoints()[0].getY(),
-	    										   Constants.DIRECTION_STAY);
+	  
 	
 	    int attackCards = 0;
-	    int moveCards = 0;
+	    int moveCards = 5;
 
 		//Kartenauswaehler initialisieren
 		G4_CardChooser chooser = new G4_CardChooser(myMapGraph, useableCards, position, attackCards, moveCards);
 		chooser.debugOutput = this.debugOutput;
+		
+		//while (chooser.getChosenCards().size() < 5){
+			  // Eigene ZielPosition bestimmen
+		    G4_Position zielPosition = new G4_Position(this.Game.Me.getNextCheckpoints()[0].getX(),
+		    										   this.Game.Me.getNextCheckpoints()[0].getY(),
+		    										   Constants.DIRECTION_STAY);
+		    chooser.chooseMovingCards2(position, zielPosition);
+		//}
 				
-		chooser.chooseMovingCards2(position, zielPosition);
+		
 		
 		if (this.debugOutput)
-			System.out.println("Regular Game -- RUNDE FERTIG");
-			    
+			System.out.println("Regular Game -- RUNDE " +  this.Game.Round.getRound());
+			    //chooser.chooseCards(zielPosition);
 	    return chooser.getChosenCardsArray();
 	}
 	
@@ -152,6 +158,10 @@ public class G4_agent extends AITask
 
 		int attackCards = 3;
 		int moveCards = 2;
+		
+		  G4_Position zielPosition = new G4_Position(this.Game.Me.getNextCheckpoints()[0].getX(),
+				   this.Game.Me.getNextCheckpoints()[0].getY(),
+				   Constants.DIRECTION_STAY);
 
 		//Kartenauswaehler initialisieren
 		G4_CardChooser chooser = new G4_CardChooser(myMapGraph, useableCards, position, attackCards, moveCards);
@@ -160,7 +170,7 @@ public class G4_agent extends AITask
 		if (this.debugOutput)
 			System.out.println("Last Man Standing -- RUNDE FERTIG");
 
-		return chooser.chooseCards();
+		return chooser.chooseCards(zielPosition);
 	}
 
 	public Card[] playSokuban(Card[] useableCards){

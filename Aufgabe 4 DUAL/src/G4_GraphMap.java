@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.Vector;
 
+import org.jgrapht.alg.BellmanFordShortestPath;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.*;
 
@@ -207,6 +208,16 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 					}
 				}
 				
+				//Ausgehende Kanten von Pushern löschen. Es gibt nur eine
+				if (currentVertex.nodeString.contains("Pusher")){
+					Vector<DefaultWeightedEdge> removeset = new Vector<DefaultWeightedEdge>();
+					for( DefaultWeightedEdge edge: this.outgoingEdgesOf(currentVertex)){
+						if (this.getDirectionOfEdge(edge) != currentVertex.getEffect().getTranslationDirection())
+							removeset.add(edge);
+					}
+					this.removeAllEdges(removeset);
+				}
+				
 				//Laser verarbeiten
 				if (currentVertex.isLaserEast()){
 					this.setLaserPositions(currentVertex, Constants.DIRECTION_EAST);
@@ -387,17 +398,23 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			
 			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesNorth);
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
+				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
+					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 			} catch (Exception e) {}
 			
 			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesNorth, coordinatesNorth2);
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
+				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
+					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 			} catch (Exception e) {}
 			
 			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesNorth2, coordinatesNorth3);
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
+				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
+					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 			} catch (Exception e) {}
 						
 		}
@@ -406,17 +423,23 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			
 			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesEast);
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
+				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
+					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 			} catch (Exception e) {}
 			
 			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesEast, coordinatesEast2);
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
+				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
+					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 			} catch (Exception e) {}
 			
 			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesEast2, coordinatesEast3);
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
+				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
+					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 			} catch (Exception e) {}
 		}
 		
@@ -424,17 +447,23 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			
 			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesSouth);
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
+				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
+					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 			} catch (Exception e) {}
 			
 			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesSouth, coordinatesSouth2);
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
+				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
+					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 			} catch (Exception e) {}
 			
 			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesSouth2, coordinatesSouth3);
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
+				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
+					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 			} catch (Exception e) {}
 		}
 		
@@ -442,17 +471,23 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			
 			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesWest);
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
+				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
+					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 			} catch (Exception e) {}
 			
 			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesWest, coordinatesWest2);
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
+				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
+					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 			} catch (Exception e) {}
 			
 			try {
 				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesWest2, coordinatesWest3);
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
+				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
+					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 			} catch (Exception e) {}
 			
 		}
@@ -472,16 +507,19 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 		try {
 			//Kuerzesten Weg von momentaner Position zum Checkpoint bestimmen
-			DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge> shortestPath = 
-				new DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge>(
-						this.getAdaptedGraph(startVertex,startPosition.getDirection()), 
-						startVertex, 
-						endVertex);
+//			DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge> shortestPath = 
+//				new DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge>(
+//						this.getAdaptedGraph(startVertex,startPosition.getDirection()), 
+//						startVertex, 
+//						endVertex);
 //				new DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge>(
 //						this, 
 //						startVertex, 
 //						endVertex);
-			return shortestPath.getPathEdgeList();
+//			return shortestPath.getPathEdgeList();
+			return DijkstraShortestPath.findPathBetween(
+					this.getAdaptedGraph(startVertex, startPosition.getDirection()), startVertex, endVertex);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
