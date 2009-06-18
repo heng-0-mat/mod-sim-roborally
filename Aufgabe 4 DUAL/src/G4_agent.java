@@ -7,6 +7,7 @@ import javax.swing.ToolTipManager;
 
 import roborally.task.*;
 
+import org.jgraph.JGraph;
 import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.graph.*;
 
@@ -22,7 +23,7 @@ import org.jgrapht.graph.*;
  */
 public class G4_agent extends AITask
 {
-	
+	G4_GraphMap graphMap;
 	boolean debugOutput;
 	
 	/**
@@ -95,47 +96,52 @@ public class G4_agent extends AITask
 	    
 	    return null;
 
-	    
-//		if (Game.Round.getRound() == 1){
-//			JGraph jgraph = new JGraph( new JGraphModelAdapter( BallsGraph ) );
-//		    JFrame myFrame;
-//
-//		    myFrame = new JFrame("Meine Map");
-//		    myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//	      
-//	        myFrame.getContentPane().add(jgraph);
-//		    myFrame.setSize(800, 800);
-//		    myFrame.show();
-//		    ToolTipManager.sharedInstance().registerComponent(jgraph);
-//	
-//		}
-		
 	}
 
 	public Card[] playRegularGame(Card[] useableCards){
 		
-		//Spielfeld als Graph erzeugen
-		G4_GraphMap myMapGraph = new G4_GraphMap(Game.Map );
+		if (Game.Round.getRound() == 1){
+			//Spielfeld als Graph erzeugen
+			this.graphMap = new G4_GraphMap(Game.Map );
+		}
+		
 		
 		// Eigene Position bestimmen
 	    G4_Position position = new G4_Position(getCurrentNode().getX(),getCurrentNode().getY(),Game.Me.getOrientation());
 	    
-	  
+//	    if (Game.Round.getRound() == 1){
+//	    	JGraph jgraph = new JGraph( new JGraphModelAdapter( myMapGraph ) );
+//	    	JFrame myFrame;
+//
+//	    	myFrame = new JFrame("Meine Map");
+//	    	myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//
+//	    	myFrame.getContentPane().add(jgraph);
+//	    	myFrame.setSize(800, 800);
+//	    	myFrame.show();
+//	    	ToolTipManager.sharedInstance().registerComponent(jgraph);
+//
+//	    }
 	
 	    int attackCards = 0;
 	    int moveCards = 5;
 
 		//Kartenauswaehler initialisieren
-		G4_CardChooser chooser = new G4_CardChooser(myMapGraph, useableCards, position, attackCards, moveCards);
+		G4_CardChooser chooser = new G4_CardChooser(this.graphMap, useableCards, position, attackCards, moveCards);
 		chooser.debugOutput = this.debugOutput;
 		
-		//while (chooser.getChosenCards().size() < 5){
-			  // Eigene ZielPosition bestimmen
-		    G4_Position zielPosition = new G4_Position(this.Game.Me.getNextCheckpoints()[0].getX(),
-		    										   this.Game.Me.getNextCheckpoints()[0].getY(),
-		    										   Constants.DIRECTION_STAY);
+		int indexCheckpoint = 0;
+		while (chooser.getChosenCards().size() < 5 ){
+			Node[] checkpoints = this.Game.Me.getNextCheckpoints();
+			
+			
+			// Naechste ZielPosition bestimmen
+		    G4_Position zielPosition = new G4_Position(checkpoints[indexCheckpoint].getX(), 
+		    			checkpoints[indexCheckpoint].getY(), Constants.DIRECTION_STAY);
 		    chooser.chooseMovingCards2(position, zielPosition);
-		//}
+		    		    
+		    indexCheckpoint++;		    
+		}
 				
 		
 		

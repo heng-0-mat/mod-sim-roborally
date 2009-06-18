@@ -32,6 +32,10 @@ public class G4_Vertex {
 	public boolean cogwheelCW = false;
 	public boolean cogwheelCCW = false;
 	
+	public boolean pusher = false;
+	public Direction pusherDirection = Direction.NONE;
+	
+	
 	private boolean isHole = false;
 	
 	public boolean isHole() {
@@ -77,6 +81,24 @@ public class G4_Vertex {
 		if (nodeString.contains("LaserGun(west")){
 			this.laserWest = true;
 		}
+		
+		if (nodeString.contains("PusherDevice(north")){
+			this.pusher = true;
+			this.pusherDirection = Direction.NORTH;
+		}
+		if (nodeString.contains("PusherDevice(east")){
+			this.pusher = true;
+			this.pusherDirection = Direction.EAST;
+		}
+		if (nodeString.contains("PusherDevice(south")){
+			this.pusher = true;
+			this.pusherDirection = Direction.SOUTH;
+		}
+		if (nodeString.contains("PusherDevice(west")){
+			this.pusher = true;
+			this.pusherDirection = Direction.WEST;		
+		}
+		
 		if (nodeString.contains("CogRotate")){
 			if (nodeString.contains("counterclockwise")){
 				this.cogwheelCCW = true;

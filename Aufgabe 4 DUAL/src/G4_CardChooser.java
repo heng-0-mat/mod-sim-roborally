@@ -292,10 +292,10 @@ public class G4_CardChooser {
 			G4_Vertex vertexCurrent = this.graphMap.getVertex(position.x,position.y);
 			Direction direction = position.getDirection();
 
-			G4_Vertex vertexBackward1 = this.graphMap.getVertexInDirection(vertexCurrent, G4_DirectionUtils.turnU(direction));
-			G4_Vertex vertexForward1 = this.graphMap.getVertexInDirection(vertexCurrent, direction);
-			G4_Vertex vertexForward2 = this.graphMap.getVertexInDirection(vertexForward1, direction);
-			G4_Vertex vertexForward3 = this.graphMap.getVertexInDirection(vertexForward2, direction);
+			G4_Vertex vertexBackward1 = this.graphMap.getVertexInDirectionIgnoringEdges(vertexCurrent, G4_DirectionUtils.turnU(direction));
+			G4_Vertex vertexForward1 = this.graphMap.getVertexInDirectionIgnoringEdges(vertexCurrent, direction);
+			G4_Vertex vertexForward2 = this.graphMap.getVertexInDirectionIgnoringEdges(vertexForward1, direction);
+			G4_Vertex vertexForward3 = this.graphMap.getVertexInDirectionIgnoringEdges(vertexForward2, direction);
 
 			//Auswirkung der naechsten Karte berechnen
 			if (c.getCardType().equals(Constants.CardType.Move_Forward_Card)){
@@ -392,7 +392,7 @@ public class G4_CardChooser {
 		this.chosenCards.add(returnCard);
 	}
 	
-public Card tryPickingCard(CardType cardtype){
+	public Card tryPickingCard(CardType cardtype){
 		
 		Card returnCard = null;
 		
@@ -453,17 +453,36 @@ public Card tryPickingCard(CardType cardtype){
 				
 			
 		}
-		
-		//An den Kanten des kuerzesten Weges langlaufen
-		else if (path.size() >= 3 &&
-			this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
-			this.graphMap.getDirectionOfEdge(path.get(1)) == start.getDirection() &&
-			this.graphMap.getDirectionOfEdge(path.get(2)) == start.getDirection()){
-					this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
+		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
+		         this.graphMap.getEdgeWeight(path.get(0)) == 3 * this.graphMap.defaultConnWeight){
+			this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
 		}
 		else if (path.size() >= 2 &&
 				 this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
-				 this.graphMap.getDirectionOfEdge(path.get(1)) == start.getDirection()){
+		         this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.defaultConnWeight &&
+		         this.graphMap.getDirectionOfEdge(path.get(1)) == start.getDirection() &&
+				 this.graphMap.getEdgeWeight(path.get(1)) == 2 *  this.graphMap.defaultConnWeight){
+			this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
+		}
+		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
+				 this.graphMap.getEdgeWeight(path.get(0)) == 2 * this.graphMap.defaultConnWeight){
+			this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
+		}
+		//An den Kanten des kuerzesten Weges langlaufen
+		else if (path.size() >= 3 &&
+			this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
+			this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.defaultConnWeight &&
+			this.graphMap.getDirectionOfEdge(path.get(1)) == start.getDirection() &&
+			this.graphMap.getEdgeWeight(path.get(1)) == this.graphMap.defaultConnWeight &&
+			this.graphMap.getDirectionOfEdge(path.get(2)) == start.getDirection() &&
+			this.graphMap.getEdgeWeight(path.get(2)) == this.graphMap.defaultConnWeight){
+					this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
+		}
+		else if (path.size() >= 2 &&
+				this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
+				this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.defaultConnWeight &&
+				this.graphMap.getDirectionOfEdge(path.get(1)) == start.getDirection() &&
+				this.graphMap.getEdgeWeight(path.get(1)) == this.graphMap.defaultConnWeight){
 				this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
 		}
 		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection()){
@@ -480,7 +499,7 @@ public Card tryPickingCard(CardType cardtype){
 		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnU(start.getDirection())){
 			//Wenns nur ein Feld weit in U-Turn Richtung gefahren werden muss
 			if ((this.graphMap.getDirectionOfEdge(path.get(1)) != G4_DirectionUtils.turnU(start.getDirection()) ||
-					(!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)))
+					(this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW || this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)))
 				this.tryChoosingCard(Constants.CardType.Move_Backward_Card);
 			else
 				this.tryChoosingCard(Constants.CardType.U_Turn_Card );
