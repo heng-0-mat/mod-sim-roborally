@@ -454,35 +454,40 @@ public class G4_CardChooser {
 			
 		}
 		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
-		         this.graphMap.getEdgeWeight(path.get(0)) == 3 * this.graphMap.defaultConnWeight){
+		         this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.default3ConnWeight){
 			this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
 		}
 		else if (path.size() >= 2 &&
 				 this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
 		         this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.defaultConnWeight &&
 		         this.graphMap.getDirectionOfEdge(path.get(1)) == start.getDirection() &&
-				 this.graphMap.getEdgeWeight(path.get(1)) == 2 *  this.graphMap.defaultConnWeight){
+				 this.graphMap.getEdgeWeight(path.get(1)) == this.graphMap.default2ConnWeight){
 			this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
 		}
 		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
-				 this.graphMap.getEdgeWeight(path.get(0)) == 2 * this.graphMap.defaultConnWeight){
+				 this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.default2ConnWeight){
 			this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
 		}
 		//An den Kanten des kuerzesten Weges langlaufen
 		else if (path.size() >= 3 &&
 			this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
-			this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.defaultConnWeight &&
+			(this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.defaultConnWeight ||
+					this.graphMap.getEdgeWeight(path.get(0)) > this.graphMap.default3ConnWeight) &&
 			this.graphMap.getDirectionOfEdge(path.get(1)) == start.getDirection() &&
-			this.graphMap.getEdgeWeight(path.get(1)) == this.graphMap.defaultConnWeight &&
+			(this.graphMap.getEdgeWeight(path.get(1)) == this.graphMap.defaultConnWeight ||
+					this.graphMap.getEdgeWeight(path.get(1)) > this.graphMap.default3ConnWeight) &&
 			this.graphMap.getDirectionOfEdge(path.get(2)) == start.getDirection() &&
-			this.graphMap.getEdgeWeight(path.get(2)) == this.graphMap.defaultConnWeight){
+			(this.graphMap.getEdgeWeight(path.get(2)) == this.graphMap.defaultConnWeight ||
+					this.graphMap.getEdgeWeight(path.get(2)) > this.graphMap.default3ConnWeight)){
 					this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
 		}
 		else if (path.size() >= 2 &&
 				this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
-				this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.defaultConnWeight &&
+				(this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.defaultConnWeight ||
+						this.graphMap.getEdgeWeight(path.get(0)) > this.graphMap.default3ConnWeight) &&
 				this.graphMap.getDirectionOfEdge(path.get(1)) == start.getDirection() &&
-				this.graphMap.getEdgeWeight(path.get(1)) == this.graphMap.defaultConnWeight){
+				(this.graphMap.getEdgeWeight(path.get(1)) == this.graphMap.defaultConnWeight ||
+						this.graphMap.getEdgeWeight(path.get(1)) > this.graphMap.default3ConnWeight)){
 				this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
 		}
 		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection()){
@@ -504,14 +509,19 @@ public class G4_CardChooser {
 			else
 				this.tryChoosingCard(Constants.CardType.U_Turn_Card );
 		}
-					
+							
 		//Wenn eine Karte gewaehlt wurde
 		if (countChosenCards < chosenCards.size()){
 			//Karteneffekt und Knoteneffekt anwenden
 			start = this.applyCardEffect(chosenCards.lastElement(), start);
 		}else{
-			System.out.println("Keine passende Karte gefunden");
-			return null;
+			if (this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW || this.graphMap.getEdgeSource(path.get(0)).cogwheelCW){
+				this.tryChoosingCard(Constants.CardType.U_Turn_Card );
+				start = this.applyCardEffect(chosenCards.lastElement(), start);
+			}else{
+				System.out.println("Keine passende Karte gefunden");
+				return null;
+			}
 		}
 		
 		start = this.applyVertexEffects(start);

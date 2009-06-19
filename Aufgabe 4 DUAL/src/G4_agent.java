@@ -131,9 +131,12 @@ public class G4_agent extends AITask
 		chooser.debugOutput = this.debugOutput;
 		
 		int indexCheckpoint = 0;
-		while (chooser.getChosenCards().size() < 5 ){
-			Node[] checkpoints = this.Game.Me.getNextCheckpoints();
-			
+		Node[] checkpoints = this.Game.Me.getNextCheckpoints();
+		int maxIndex = checkpoints.length;
+		
+		while (chooser.getChosenCards().size() < 5 && indexCheckpoint < maxIndex){
+			if (checkpoints[indexCheckpoint] == null)
+				break;
 			
 			// Naechste ZielPosition bestimmen
 		    G4_Position zielPosition = new G4_Position(checkpoints[indexCheckpoint].getX(), 

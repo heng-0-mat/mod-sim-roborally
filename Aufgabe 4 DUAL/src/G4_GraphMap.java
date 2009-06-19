@@ -39,9 +39,19 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	public List<G4_Vertex> checkpoints;	
 	
 	final int defaultConnWeight = 2;
-	final int rotatorConnWeight = 3;
-	final int reducedConnWeight = 1;
-	final int increasedConnWeight = 4;
+	final int default2ConnWeight = 4;
+	final int default3ConnWeight = 6;
+	
+	final int inHoleWeight = 30;
+	final int inCompactorWeight = 30;
+	
+	final int inLaserWeight = 10;
+	final int outLaserWeight = 2;
+	final int stayInLaserWeight = 50;
+	
+	final int withConveyorWeight = 1;
+	final int againstConveyorWeight = 8;
+	
 	
 	public G4_GraphMap(MapObject map) {
 		super(DefaultWeightedEdge.class);
@@ -145,20 +155,21 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 		G4_Vertex currentVertex = startVertex;
 		currentVertex.getEffect().effectOnHealth--;
-		
-		try {
+
+		while (currentVertex != null && !currentVertex.isWallinDirection(direction)){
 			
-			do{
-				
-				currentVertex = this.getVertexInDirection(currentVertex, direction);
+			try {	
+				currentVertex = this.getVertexInDirectionIgnoringEdges(currentVertex, direction);
 				currentVertex.getEffect().effectOnHealth--;
-								
-			}while (!currentVertex.isWallinDirection(direction));
+				currentVertex.laserDirections.add(direction);
 			
-		} catch (Exception e) {
-			// Falls Position ausserhalb
-			//e.printStackTrace();
+			} catch (Exception e) {
+				// Falls Position ausserhalb
+				//e.printStackTrace();
+			}					
 		}
+
+
 		
 	}
 	
@@ -182,34 +193,40 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 				if (vertex.pusher)
 					pushers.add(vertex);
 					
-				if (vertex.nodeString.contains("Compactor"))
+				if (vertex.isCompactor())
 					compactors.add(vertex);
+				
+				if (vertex.conveyor)
+					conveyors.add(vertex);
+				
+				if (vertex.laser)
+					lasers.add(vertex);
 				
 			}
 		}
 		
 		//Alle Felder, die nicht durch Wände getrennt sind, verbinden
 		connectVertices();
-		
-		//Zahnraeder verarbeiten
-		loadCogwheels();
-		
-		//Pusher/Conveyor-Kantengewichte anpassen
-		adjustConveyorPusherEdgeWeights();
-		
-		//Laser verarbeiten
-		loadLasers();
-		
-		//Pusher verarbeiten
-		loadPushers();
-		
+			
 		//Loecher verarbeiten
 		loadHoles();
 		
 		//Compactors verarbeiten
 		loadCompactors();
-				
-	}
+		
+		//Zahnraeder verarbeiten
+		loadCogwheels();
+		
+		//Pusher/Conveyor-Kantengewichte anpassen
+		loadConveyors();
+		
+		//Pusher verarbeiten
+		loadPushers();
+								
+		//Laser verarbeiten
+		loadLasers();
+		
+	}	
 	
 	private void connectVertices(){
 		
@@ -242,28 +259,35 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			}
 		
 	}
-	
-	private void adjustConveyorPusherEdgeWeights(){
-		
-		for(G4_Vertex currentVertex: this.vertexSet()){
-							
-				//PUSHER- UND CONVEYER-KANTENGEWICHTE VERRINGERN
-				Direction effectDirection = currentVertex.getEffect().getTranslationDirection();
-				if (effectDirection != Constants.DIRECTION_STAY && effectDirection != Constants.DIRECTION_NONE){
-					G4_Vertex vertexInEffectDirection = this.getVertexInDirection(currentVertex, effectDirection);
-					if (this.vertexSet().contains(vertexInEffectDirection)){
-						this.setEdgeWeight(this.getEdge(currentVertex, vertexInEffectDirection), defaultConnWeight);
-						
-						try {
-							this.setEdgeWeight(this.getEdge(vertexInEffectDirection, currentVertex), increasedConnWeight);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
+
+	private void loadConveyors(){
+
+		//Alle ausgehenden Kanten bis auf die Kante in Pusher-Richtung entfernen
+		for(G4_Vertex vertex: this.conveyors){
+
+			HashSet<DefaultWeightedEdge> outEdges = new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
+			HashSet<DefaultWeightedEdge> inEdges = new HashSet<DefaultWeightedEdge>(this.incomingEdgesOf(vertex));
+			
+			//Falls in ein Loch, ins Aus oder auf ein Compactor geschoben wird
+			// alle ausgehenden und eingehenden Kanten entfernen
+			if (this.getVertexInDirection(vertex, vertex.conveyorDirection) == null ||
+					this.getVertexInDirection(vertex, vertex.conveyorDirection).isHole() ||
+					this.getVertexInDirection(vertex, vertex.conveyorDirection).isCompactor()){
+				this.removeAllEdges(outEdges);
+				this.removeAllEdges(inEdges);
+			}				
+			//Im Normalfall
+			else{
+				for(DefaultWeightedEdge edge: outEdges){
+					//Kanten in Translationsrichtung
+					if (this.getDirectionOfEdge(edge) == vertex.conveyorDirection)
+						this.setEdgeWeight(edge, withConveyorWeight);
+					//Kanten entgegen Translationsrichtung
+					else if (this.getDirectionOfEdge(edge) == G4_DirectionUtils.turnU(vertex.conveyorDirection))
+						this.setEdgeWeight(edge, againstConveyorWeight);
 				}
 			}
-		
+		}
 	}
 	
 	private void loadCogwheels(){
@@ -338,48 +362,87 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 //		
 	}
 	
+	/**
+	 * Laedt Loecher auf der Karte.
+	 * Entfernt alle ausgehenden Kanten.
+	 * Setzt das Gewicht eingehender Kanten auf inHoleWeight
+	 * Setzt das Gewicht aller eingehenden Kanten auf benachbarte Felder mit Translationseffekt
+	 * in Richtung des Lochs auf inHoleWeight (und entfernt die ausgehenden Kanten, die nicht
+	 * in Richtung des Lochs zeigen.)
+	 *  
+	 */
 	private void loadHoles(){
 		//Alle ausgehenden Kanten von Loechern entfernen
 		for(G4_Vertex vertex: this.holes){
 			HashSet<DefaultWeightedEdge> outEdges = new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
 			this.removeAllEdges(outEdges);
 			
+			//Eingehende Kanten mit hohem Kantengewicht versehen
 			HashSet<DefaultWeightedEdge> inEdges = new HashSet<DefaultWeightedEdge>(this.incomingEdgesOf(vertex));
 			for(DefaultWeightedEdge inEdge: inEdges){
-				this.setEdgeWeight(inEdge, 5 * increasedConnWeight);
+				this.setEdgeWeight(inEdge, inHoleWeight);
 			}
+
+			//Eingangskanten von Conveyors und Pushers die ins Loch schieben erhöhen
+			for (Direction dir: Direction.getDirectionsNESW()){
+				G4_Vertex dirVertex = this.getVertexInDirection(vertex, dir);
+				if (this.conveyors.contains(dirVertex)){
+					if (dirVertex.conveyorDirection == G4_DirectionUtils.turnU(dir)){
+						for(DefaultWeightedEdge inEdge: this.incomingEdgesOf(dirVertex)){
+							this.setEdgeWeight(inEdge, inHoleWeight);
+						}
+					}
+				}	
+				if (this.pushers.contains(dirVertex)){
+					if (dirVertex.pusherDirection == G4_DirectionUtils.turnU(dir)){
+						for(DefaultWeightedEdge inEdge: this.incomingEdgesOf(dirVertex)){
+							this.setEdgeWeight(inEdge, inHoleWeight);
+						}
+					}
+				}	
+				
+			}
+			
+			
 			
 		}		
 	}
 	
 	private void loadLasers(){
 		//Beschossene Positionen markieren
-		for(G4_Vertex currentVertex: this.vertexSet()){
+		for(G4_Vertex currentVertex: this.lasers){
 			//Laser verarbeiten
-			if (currentVertex.isLaserEast()){
-				this.setLaserPositions(currentVertex, Constants.DIRECTION_EAST);
-			}
-			if (currentVertex.isLaserNorth()){
-				this.setLaserPositions(currentVertex, Constants.DIRECTION_NORTH);
-			}
-			if (currentVertex.isLaserSouth()){
-				this.setLaserPositions(currentVertex, Constants.DIRECTION_SOUTH);
-			}
-			if (currentVertex.isLaserWest()){
-				this.setLaserPositions(currentVertex, Constants.DIRECTION_WEST);
+			for(Direction dir: currentVertex.laserDirections){
+				this.setLaserPositions(currentVertex, dir);
 			}
 		}
 		
 		//Bei Beschossenen Positionen eingehende-Kanten-Gewichte erhöhen
 		for(G4_Vertex currentVertex: this.vertexSet()){
 			if (currentVertex.getEffect().effectOnHealth < 0){
-				for (DefaultWeightedEdge edge: this.incomingEdgesOf(currentVertex)){
-					this.setEdgeWeight(edge, 4 * increasedConnWeight);
+				//Alle eingehende Kanten
+				for (DefaultWeightedEdge inEdge: this.incomingEdgesOf(currentVertex)){
+					this.setEdgeWeight(inEdge, inLaserWeight);
 				}
+			}
+		}
+		//Bei Beschossenen Positionen ausgehenden-Kanten-Gewichte erhöhen
+		for(G4_Vertex currentVertex: this.vertexSet()){
+			if (currentVertex.getEffect().effectOnHealth < 0){
+				for (DefaultWeightedEdge outEdge: this.outgoingEdgesOf(currentVertex)){
+					//Kanten die in der Schusslinie laufen extrem hohe Gewichte geben
+					if (currentVertex.laserDirections.contains(this.getDirectionOfEdge(outEdge)) ||
+							currentVertex.laserDirections.contains(G4_DirectionUtils.turnU(this.getDirectionOfEdge(outEdge))))
+						this.setEdgeWeight(outEdge, stayInLaserWeight);
+					else
+						this.setEdgeWeight(outEdge, outLaserWeight);
+				}
+				
 			}
 		}
 	}
 
+	
 	/**
 	 * Erzeugt Pusher im Grpahen
 	 */
@@ -401,13 +464,13 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 					//Lange "HIN" - Kante über das Pusher-Feld einfuegen
 					try {
 						DefaultWeightedEdge longEdge = this.addEdge(vertexCW1, vertexCCW1);
-						this.setEdgeWeight(longEdge, 2 * defaultConnWeight);
+						this.setEdgeWeight(longEdge, default2ConnWeight);
 
 						if (vertexCCW1.pusher){
 							//Feld danach ist auch Pusher
 							//Lange "HIN" - Kante über beide Pusher-Felder einfuegen
 							DefaultWeightedEdge longerEdge = this.addEdge(vertexCW1, vertexCCW2);
-							this.setEdgeWeight(longerEdge, 3 * defaultConnWeight);
+							this.setEdgeWeight(longerEdge, default3ConnWeight);
 						}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
@@ -426,13 +489,13 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 					//Lange "ZURUECK" - Kante über das Pusher-Feld einfuegen
 					try {
 						DefaultWeightedEdge longEdge = this.addEdge(vertexCCW1, vertexCW1);
-						this.setEdgeWeight(longEdge, 2 * defaultConnWeight);
+						this.setEdgeWeight(longEdge, default2ConnWeight);
 
 						if (vertexCW1.pusher){
 							//Feld davor ist auch Pusher
 							//Lange "ZURUECK" - Kante über beide Pusher-Felder einfuegen
 							DefaultWeightedEdge longerEdge = this.addEdge(vertexCCW1, vertexCW2);
-							this.setEdgeWeight(longerEdge, 3 * defaultConnWeight);
+							this.setEdgeWeight(longerEdge, default3ConnWeight);
 						}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
@@ -448,10 +511,25 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 		//Alle ausgehenden Kanten bis auf die Kante in Pusher-Richtung entfernen
 		for(G4_Vertex vertex: this.pushers){
+
 			HashSet<DefaultWeightedEdge> outEdges = new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
-			for(DefaultWeightedEdge edge: outEdges){
-				if (this.getDirectionOfEdge(edge) != vertex.pusherDirection)
-					this.removeEdge(edge);
+			HashSet<DefaultWeightedEdge> inEdges = new HashSet<DefaultWeightedEdge>(this.incomingEdgesOf(vertex));
+
+			//Falls in ein Loch, ins Aus oder auf ein Compactor geschoben wird
+			// ALLE ausgehenden und eingehenden Kanten entfernen
+			if (this.getVertexInDirection(vertex, vertex.pusherDirection) == null ||
+					this.getVertexInDirection(vertex, vertex.pusherDirection).isHole() ||
+					this.getVertexInDirection(vertex, vertex.pusherDirection).isCompactor()){
+				this.removeAllEdges(outEdges);
+				this.removeAllEdges(inEdges);
+			//Im Normalfall
+			}else{
+				for(DefaultWeightedEdge edge: outEdges){
+					if (this.getDirectionOfEdge(edge) != vertex.pusherDirection)
+						this.removeEdge(edge);
+					else
+						this.setEdgeWeight(edge,0);
+				}
 			}
 		}
 		//############ ENDE PUSHER REPRAESENTIEREN ########################################
@@ -469,7 +547,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			
 			try {
 				DefaultWeightedEdge edgeNS = this.addEdge(vertexNorth, vertexSouth);
-				this.setEdgeWeight(edgeNS, 2 * defaultConnWeight);
+				this.setEdgeWeight(edgeNS, default2ConnWeight);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -477,7 +555,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			
 			try {
 				DefaultWeightedEdge edgeSN = this.addEdge(vertexSouth, vertexNorth);
-				this.setEdgeWeight(edgeSN, 2 * defaultConnWeight);
+				this.setEdgeWeight(edgeSN, default2ConnWeight);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -485,7 +563,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			
 			try {
 				DefaultWeightedEdge edgeEW = this.addEdge(vertexEast, vertexWest);
-				this.setEdgeWeight(edgeEW, 2 * defaultConnWeight);
+				this.setEdgeWeight(edgeEW, default2ConnWeight);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -493,7 +571,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			
 			try {
 				DefaultWeightedEdge edgeWE = this.addEdge(vertexWest, vertexEast);
-				this.setEdgeWeight(edgeWE, 2 * defaultConnWeight);
+				this.setEdgeWeight(edgeWE, default2ConnWeight);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -502,13 +580,14 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		}		
 		
 		
-		//Alle ausgehenden Kanten von Loechern entfernen
+		//Alle ausgehenden Kanten entfernen
 		for(G4_Vertex vertex: this.compactors){
 			HashSet<DefaultWeightedEdge> outEdges = new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
 			this.removeAllEdges(outEdges);
+			//Eingehende Kantengewichte erhoehen
 			HashSet<DefaultWeightedEdge> inEdges = new HashSet<DefaultWeightedEdge>(this.incomingEdgesOf(vertex));
 			for(DefaultWeightedEdge inEdge: inEdges){
-				this.setEdgeWeight(inEdge, 5 * increasedConnWeight);
+				this.setEdgeWeight(inEdge, inCompactorWeight);
 			}
 			
 		}		
@@ -523,7 +602,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	 */
 	private G4_GraphMap getAdaptedGraph(G4_Vertex position, Direction direction){
 
-		G4_GraphMap returnGraph = (G4_GraphMap) this.clone();
+		G4_GraphMap returnGraph = new G4_GraphMap(this.rrMap);
 				
 		int x = position.getX();
 		int y = position.getY();
@@ -656,18 +735,8 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 		try {
 			//Kuerzesten Weg von momentaner Position zum Checkpoint bestimmen
-//			DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge> shortestPath = 
-//				new DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge>(
-//						this.getAdaptedGraph(startVertex,startPosition.getDirection()), 
-//						startVertex, 
-//						endVertex);
-//				new DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge>(
-//						this, 
-//						startVertex, 
-//						endVertex);
-//			return shortestPath.getPathEdgeList();
 			return DijkstraShortestPath.findPathBetween(
-					//this.getAdaptedGraph(startVertex, startPosition.getDirection())
+//					this.getAdaptedGraph(startVertex, startPosition.getDirection())
 					this, startVertex, endVertex);
 			
 		} catch (Exception e) {
@@ -690,7 +759,8 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		 //Kuerzesten Weg von momentaner Position zum Checkpoint bestimmen
 		 DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge> shortestPath = 
 			 new DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge>(
-					 this.getAdaptedGraph(startVertex,startPosition.getDirection()), 
+					 //this.getAdaptedGraph(startVertex,startPosition.getDirection()), 
+					 this, 
 					 startVertex, 
 					 endVertex);
 		 return shortestPath.getPathLength();

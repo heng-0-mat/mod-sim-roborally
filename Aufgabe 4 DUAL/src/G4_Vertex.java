@@ -1,3 +1,5 @@
+import java.util.Vector;
+
 import roborally.task.Constants;
 import roborally.task.Direction;
 
@@ -35,15 +37,28 @@ public class G4_Vertex {
 	public boolean pusher = false;
 	public Direction pusherDirection = Direction.NONE;
 	
+	public boolean conveyor = false;
+	public Direction conveyorDirection = Direction.NONE;
 	
-	private boolean isHole = false;
+	public boolean laser = false;
+	public Direction laserDirection = Direction.NONE;
+	public Vector<Direction> laserDirections = new Vector<Direction>(); 
 	
+	public boolean rotator = false;
+	public String rotatorDirection = "";
+	
+	private boolean hole = false;
+	
+	private boolean compactor = false;
+	
+	
+	 
 	public boolean isHole() {
-		return isHole;
+		return hole;
 	}
 
 	public void setHole(boolean isHole) {
-		this.isHole = isHole;
+		this.hole = isHole;
 	}
 
 	public G4_Vertex(int x, int y, String nodeString) {
@@ -54,6 +69,7 @@ public class G4_Vertex {
 		
 		//System.out.println(nodeString);
 		
+		// ---------- WALLS ---------------------------------------
 		if (nodeString.contains("north(wall()")){
 			this.wallNorth = true;
 		}
@@ -66,22 +82,44 @@ public class G4_Vertex {
 		if (nodeString.contains("west(wall()")){
 			this.wallWest = true;
 		}
+		
+		// ---------- HOLE ---------------------------------------
 		if (nodeString.contains("OutOfGame")){
-			this.isHole = true;
+			this.hole = true;
 		}
+		
+		// ---------- HOLE ---------------------------------------
+		if (nodeString.contains("Compactor")){
+			this.compactor = true;
+		}
+		
+		// ---------- LASER ---------------------------------------
 		if (nodeString.contains("LaserGun(north")){
 			this.laserNorth = true;
+			this.laser = true;
+			this.laserDirection = Direction.NORTH;
+			this.laserDirections.add(Direction.NORTH);
 		}
 		if (nodeString.contains("LaserGun(east")){
 			this.laserEast = true;
+			this.laser = true;
+			this.laserDirection = Direction.EAST;
+			this.laserDirections.add(Direction.EAST);
 		}
 		if (nodeString.contains("LaserGun(south")){
 			this.laserSouth = true;
+			this.laser = true;
+			this.laserDirection = Direction.SOUTH;
+			this.laserDirections.add(Direction.SOUTH);
 		}
 		if (nodeString.contains("LaserGun(west")){
 			this.laserWest = true;
+			this.laser = true;
+			this.laserDirection = Direction.WEST;
+			this.laserDirections.add(Direction.WEST);
 		}
 		
+		// ---------- PUSHER ---------------------------------------
 		if (nodeString.contains("PusherDevice(north")){
 			this.pusher = true;
 			this.pusherDirection = Direction.NORTH;
@@ -99,14 +137,43 @@ public class G4_Vertex {
 			this.pusherDirection = Direction.WEST;		
 		}
 		
+		// ---------- COGWHEEL ---------------------------------------
 		if (nodeString.contains("CogRotate")){
+			this.rotator = true;
 			if (nodeString.contains("counterclockwise")){
 				this.cogwheelCCW = true;
+				this.rotatorDirection = G4_DirectionUtils.RotateCCW;
 			}
 			else if (nodeString.contains("clockwise")){
 				this.cogwheelCW = true;
+				this.rotatorDirection = G4_DirectionUtils.RotateCW;
 			}
 		}
+		
+		// ---------- CONVEYER ---------------------------------------
+		if (nodeString.contains("Conveyer")){
+			this.conveyor = true;
+			if (nodeString.contains("Conveyer(north")){
+				this.conveyorDirection = Constants.DIRECTION_NORTH;
+			}
+			if (nodeString.contains("Conveyer(east")){
+				this.conveyorDirection = Constants.DIRECTION_EAST;
+			}
+			if (nodeString.contains("Conveyer(south")){
+				this.conveyorDirection = Constants.DIRECTION_SOUTH;
+			}
+			if (nodeString.contains("Conveyer(west")){
+				this.conveyorDirection = Constants.DIRECTION_WEST;
+			}
+//			if (nodeString.contains("counterclockwise")){
+//				this.rotationDirection = G4_DirectionUtils.RotateCCW;
+//			}
+//			else if (nodeString.contains("clockwise")){
+//				this.rotationDirection = G4_DirectionUtils.RotateCW;				
+//			}
+//			
+		}
+		
 	}
 	
 	public G4_Vertex(G4_Vertex v) {
@@ -128,6 +195,16 @@ public class G4_Vertex {
 		this.nodeString = v.nodeString;
 		this.cogwheelCCW = v.cogwheelCCW;
 		this.cogwheelCW = v.cogwheelCW;
+		this.pusher = v.pusher;
+		this.pusherDirection = v.pusherDirection;
+		this.conveyor = v.conveyor;
+		this.conveyorDirection = v.conveyorDirection;
+		this.laser = v.laser;
+		this.laserDirection = v.laserDirection;
+		this.rotator = v.rotator;
+		this.rotatorDirection = v.rotatorDirection;
+		this.hole = v.hole;		
+		this.compactor = v.compactor;
 	}
 	
 	@Override
@@ -354,5 +431,13 @@ public class G4_Vertex {
 
 	public void setLaserSouth(boolean laserSouth) {
 		this.laserSouth = laserSouth;
+	}
+
+	public boolean isCompactor() {
+		return compactor;
+	}
+
+	public void setCompactor(boolean compactor) {
+		this.compactor = compactor;
 	}	
 }
