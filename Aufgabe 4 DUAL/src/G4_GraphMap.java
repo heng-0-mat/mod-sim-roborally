@@ -52,7 +52,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	final int stayInLaserWeight = 50;
 	
 	final int withConveyorWeight = 1;
-	final int againstConveyorWeight = 8;
+	final int againstConveyorWeight = 4;
 	
 	
 	public G4_GraphMap(MapObject map, G4_Position startPosition) {
@@ -305,6 +305,15 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 					else if (this.getDirectionOfEdge(edge) == G4_DirectionUtils.turnU(vertex.conveyorDirection))
 						this.setEdgeWeight(edge, againstConveyorWeight);
 				}
+				
+				for(DefaultWeightedEdge edge: inEdges){
+					//Kanten in Translationsrichtung
+					if (this.getDirectionOfEdge(edge) == vertex.conveyorDirection)
+						this.setEdgeWeight(edge, withConveyorWeight);
+					//Kanten entgegen Translationsrichtung
+					else if (this.getDirectionOfEdge(edge) == G4_DirectionUtils.turnU(vertex.conveyorDirection))
+						this.setEdgeWeight(edge, againstConveyorWeight);
+				}
 			}
 			
 			if (vertex.conveyorAndRotator){
@@ -318,6 +327,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 					
 		}
 	}
+	
 	
 	private void loadCogwheels(){
 //		//DIAGONALKANTEN FUER ZAHNRAEDER EINFUEGEN
@@ -391,6 +401,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 //		
 	}
 	
+	
 	/**
 	 * Laedt Loecher auf der Karte.
 	 * Entfernt alle ausgehenden Kanten.
@@ -436,6 +447,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			
 		}		
 	}
+	
 	
 	private void loadLasers(){
 		//Beschossene Positionen markieren
@@ -502,13 +514,13 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 						}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			
 			try {
@@ -527,13 +539,13 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 						}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		
@@ -564,6 +576,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 			
 	}
+	
 	
 	private void loadCompactors(){
 		//LANGE Kanten einfuegen

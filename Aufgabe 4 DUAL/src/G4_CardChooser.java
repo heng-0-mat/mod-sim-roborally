@@ -360,19 +360,27 @@ public class G4_CardChooser {
 		//TODO Verarbeitungsreihenfolge der Effekte	
 		
 		Direction direction = position.getDirection();
-		G4_Vertex vertexCurrent = this.graphMap.getVertex(position.x,position.y);
-		
-		G4_Vertex nextVertex = null;
-		
-		nextVertex = this.graphMap.applyTranslationEffects(vertexCurrent);
-		direction = vertexCurrent.applyRotationEffects(direction);
-		
-		if (nextVertex == null){
+		G4_Vertex vertex = this.graphMap.getVertex(position.x,position.y);
+				
+		if (vertex.conveyor){
+			if (vertex.conveyorAndRotator)
+				direction = vertex.applyRotationEffects(direction);
+			
+			vertex = this.graphMap.applyTranslationEffects(vertex);
+		}
+		if (vertex.rotator){
+			direction = vertex.applyRotationEffects(direction);
+		}
+		if (vertex.pusher){
+			vertex = this.graphMap.applyTranslationEffects(vertex);
+		}
+						
+		if (vertex == null){
 			return null;
 		}
 		
-		position.x = nextVertex.getX();
-		position.y = nextVertex.getY();
+		position.x = vertex.getX();
+		position.y = vertex.getY();
 		position.setDirection(direction);
 
 		return position;	
@@ -572,7 +580,7 @@ public class G4_CardChooser {
 		return this.chooseMovingCards2(start, ziel);
 	}
 	
-public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ballEndPosition){
+	public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ballEndPosition){
 		
 		//G4_Position start = this.graphMapBall.getPositionOfBall(); 
 	
@@ -639,7 +647,6 @@ public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ba
 		
 		return chosenCards;
 	}
-
 
 	public Card[] getChosenCardsArray(){
 
