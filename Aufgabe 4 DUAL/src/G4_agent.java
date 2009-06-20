@@ -23,8 +23,11 @@ import org.jgrapht.graph.*;
  */
 public class G4_agent extends AITask
 {
-	G4_GraphMap graphMap;
-	boolean debugOutput;
+	public G4_GraphMap graphMap;
+	public G4_Position position;
+	
+	public boolean debugOutput;
+		
 	
 	/**
 	 * This method is called before doTrade() in every Round. An AITask can examine its cards and make computations
@@ -75,6 +78,10 @@ public class G4_agent extends AITask
 	{
 		//Ausgaben auf die Konsole (de-)aktivieren
 		this.debugOutput = true;
+		
+		// Eigene Position bestimmen
+		this.position = new G4_Position(getCurrentNode().getX(),getCurrentNode().getY(),Game.Me.getOrientation());
+
 		   
 	    if (this.Settings.getGameMode().equals(Constants.GameMode.REGULAR_GAME)){
 	    	return this.playRegularGame(useableCards);
@@ -102,13 +109,9 @@ public class G4_agent extends AITask
 		
 		if (Game.Round.getRound() == 1){
 			//Spielfeld als Graph erzeugen
-			this.graphMap = new G4_GraphMap(Game.Map );
+			this.graphMap = new G4_GraphMap(Game.Map, this.position );
 		}
 		
-		
-		// Eigene Position bestimmen
-	    G4_Position position = new G4_Position(getCurrentNode().getX(),getCurrentNode().getY(),Game.Me.getOrientation());
-	    
 //	    if (Game.Round.getRound() == 1){
 //	    	JGraph jgraph = new JGraph( new JGraphModelAdapter( myMapGraph ) );
 //	    	JFrame myFrame;
@@ -127,7 +130,7 @@ public class G4_agent extends AITask
 	    int moveCards = 5;
 
 		//Kartenauswaehler initialisieren
-		G4_CardChooser chooser = new G4_CardChooser(this.graphMap, useableCards, position, attackCards, moveCards);
+		G4_CardChooser chooser = new G4_CardChooser(this.graphMap, useableCards, this.position, attackCards, moveCards);
 		chooser.debugOutput = this.debugOutput;
 		
 		int indexCheckpoint = 0;
@@ -155,16 +158,15 @@ public class G4_agent extends AITask
 	}
 	
 	public Card[] playLastManStanding(Card[] useableCards){
-
+		
+		
 		//Spielfeld als Graph erzeugen
-		G4_GraphMap myMapGraph = new G4_GraphMap(Game.Map );
+		G4_GraphMap myMapGraph = new G4_GraphMap(Game.Map, position );
 
 		//Gegner laden
 		myMapGraph.loadEnemies(Game.Robots.getAllRobots(), this.getRobotName());
 
-		// Eigene Position bestimmen
-		G4_Position position = new G4_Position(getCurrentNode().getX(),getCurrentNode().getY(),Game.Me.getOrientation());
-
+	
 		int attackCards = 3;
 		int moveCards = 2;
 		
@@ -185,7 +187,7 @@ public class G4_agent extends AITask
 	public Card[] playSokuban(Card[] useableCards){
 
 		//Spielfeld als Graph erzeugen
-		G4_GraphMap myMapGraph = new G4_GraphMap(Game.Map );
+		G4_GraphMap myMapGraph = new G4_GraphMap(Game.Map, this.position );
 
 		myMapGraph.loadEnemies(Game.Robots.getAllRobots(), this.getRobotName());
 
@@ -306,7 +308,7 @@ public class G4_agent extends AITask
 	public Card[] playSokubanWithOpponent(Card[] useableCards){
 
 		//Spielfeld als Graph erzeugen
-		G4_GraphMap myMapGraph = new G4_GraphMap(Game.Map );
+		G4_GraphMap myMapGraph = new G4_GraphMap(Game.Map, this.position );
 
 		myMapGraph.loadEnemies(Game.Robots.getAllRobots(), this.getRobotName());
 

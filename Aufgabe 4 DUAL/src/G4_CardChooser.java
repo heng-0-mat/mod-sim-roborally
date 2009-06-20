@@ -428,10 +428,17 @@ public class G4_CardChooser {
 			return chosenCards;
 		}
 		
+		//Wenn wir in ein Loch oder aehnliches geraten sind, zurueck auf "die" Startposition
+		if (this.graphMap.getLengthOfShortestPath(start, ziel) == Double.POSITIVE_INFINITY){
+			if (this.debugOutput)
+				System.out.println("Wir sind gerade in ein Loch oder sowas gefahren!");
+			start = this.graphMap.startPosition;
+		}
+		
 		//Kuerzester Weg
 		List<DefaultWeightedEdge> path = this.graphMap.getEdgesOnShortestPath(start, ziel);
 		
-		//Bereits gewaehlte Karten
+		//Anzahl bereits gewaehlter Karten
 		int countChosenCards = chosenCards.size();
 		
 		//Wenn der richtige Knoten erreicht ist, nur noch drehen
@@ -444,72 +451,113 @@ public class G4_CardChooser {
 			}
 			else if (ziel.getDirection() == G4_DirectionUtils.turnU(start.getDirection())){
 				this.tryChoosingCard(Constants.CardType.U_Turn_Card );
+			}			
+		}
+		
+		//Der richtige Knoten ist noch NICHT erreicht
+		else{
+			// Wir schauen nicht in die richtige Richtung
+			if (this.graphMap.getDirectionOfEdge(path.get(0)) != start.getDirection()){
+				if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCW(start.getDirection())){
+					if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
+						this.tryChoosingCard(Constants.CardType.Rotate_CW_Card);
+				}
+				else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCCW(start.getDirection())){
+					if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
+						this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card);
+				}
+				else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnU(start.getDirection())){
+					//Wenns nur ein Feld weit in U-Turn Richtung gefahren werden muss
+					if ((this.graphMap.getDirectionOfEdge(path.get(1)) != G4_DirectionUtils.turnU(start.getDirection()) ||
+							(this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW || this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)))
+						this.tryChoosingCard(Constants.CardType.Move_Backward_Card);
+					else
+						this.tryChoosingCard(Constants.CardType.U_Turn_Card );
+				}
 			}
+			//Wir schauen in die richtige RIchtung
 			else{
-				if (this.debugOutput)
-					System.out.println("Wir sind gerade in ein Loch oder sowas gefahren!");
-				return chosenCards;
-			}
-				
-			
-		}
-		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
-		         this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.default3ConnWeight){
-			this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
-		}
-		else if (path.size() >= 2 &&
-				 this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
-		         this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.defaultConnWeight &&
-		         this.graphMap.getDirectionOfEdge(path.get(1)) == start.getDirection() &&
-				 this.graphMap.getEdgeWeight(path.get(1)) == this.graphMap.default2ConnWeight){
-			this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
-		}
-		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
-				 this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.default2ConnWeight){
-			this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
-		}
-		//An den Kanten des kuerzesten Weges langlaufen
-		else if (path.size() >= 3 &&
-			this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
-			(this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.defaultConnWeight ||
-					this.graphMap.getEdgeWeight(path.get(0)) > this.graphMap.default3ConnWeight) &&
-			this.graphMap.getDirectionOfEdge(path.get(1)) == start.getDirection() &&
-			(this.graphMap.getEdgeWeight(path.get(1)) == this.graphMap.defaultConnWeight ||
-					this.graphMap.getEdgeWeight(path.get(1)) > this.graphMap.default3ConnWeight) &&
-			this.graphMap.getDirectionOfEdge(path.get(2)) == start.getDirection() &&
-			(this.graphMap.getEdgeWeight(path.get(2)) == this.graphMap.defaultConnWeight ||
-					this.graphMap.getEdgeWeight(path.get(2)) > this.graphMap.default3ConnWeight)){
+				//Naechste Kante geht ueber 3 Knoten
+				if (this.graphMap.getLengthOfEdge(path.get(0)) == 3){
 					this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
+				}
+				//Naechste Kante geht uber 2 Knoten
+				else if(this.graphMap.getLengthOfEdge(path.get(0)) == 2){
+					//Ueber-Naechste Kante geht NICHT in die gleiche Richtung
+					if (this.graphMap.getDirectionOfEdge(path.get(1)) != start.getDirection()){
+						this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
+					}
+					//Ueber-Naechste Kante geht in die gleiche Richtung
+					else{
+						//Ueber-Naechste Kante geht ueber 1 Knoten
+						if (this.graphMap.getLengthOfEdge(path.get(0)) == 1){
+							this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
+						}
+						//Ueber-Naechste Kante geht ueber mehr als 1 Knoten
+						else{
+							this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
+						}
+					}
+				}
+				//Naechste Kante geht ueber 1 Knoten
+				else{
+					//Ueber-Naechste Kante existiert NICHT
+					if (path.size() < 2){
+						this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+					}
+					//Ueber-Naechste Kante EXISTIERT
+					else{
+						//Ueber-Naechste Kante geht NICHT in die gleiche Richtung
+						if (this.graphMap.getDirectionOfEdge(path.get(1)) != start.getDirection()){
+							this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+						}
+						//Ueber-Naechste Kante geht in die gleiche Richtung
+						else{
+							//Ueber-Naechste Kante geht ueber 3 Knoten
+							if (this.graphMap.getLengthOfEdge(path.get(1)) == 3){
+								this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+							}
+							//Ueber-Naechste Kante geht ueber 2 Knoten
+							else if (this.graphMap.getLengthOfEdge(path.get(1)) == 2){
+								this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
+							}
+							//Ueber-Naechste Kante geht ueber 1 Knoten
+							else if (this.graphMap.getLengthOfEdge(path.get(1)) == 1){
+								
+								//Ueber-Ueber-Naechste Kante existiert NICHT
+								if (path.size() < 3){
+									this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);	
+								}
+								else{
+									//Ueber-Ueber-Naechste Kante geht NICHT in die gleiche Richtung
+									if (this.graphMap.getDirectionOfEdge(path.get(2)) != start.getDirection()){
+										this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);	
+									}
+									//Ueber-Ueber-Naechste Kante geht in die gleiche Richtung							
+									else{
+										//Ueber-Ueber-Naechste Kante geht ueber 1 Knoten
+										if (this.graphMap.getLengthOfEdge(path.get(2)) == 1){
+											this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);	
+										}
+										//Ueber-Ueber-Naechste Kante geht ueber MEHR als 1 Knoten
+										else{
+											this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);	
+										}
+									}
+
+								}
+
+								
+							}
+
+						}
+					}
+		//				
+				}
+				
+			}
 		}
-		else if (path.size() >= 2 &&
-				this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection() &&
-				(this.graphMap.getEdgeWeight(path.get(0)) == this.graphMap.defaultConnWeight ||
-						this.graphMap.getEdgeWeight(path.get(0)) > this.graphMap.default3ConnWeight) &&
-				this.graphMap.getDirectionOfEdge(path.get(1)) == start.getDirection() &&
-				(this.graphMap.getEdgeWeight(path.get(1)) == this.graphMap.defaultConnWeight ||
-						this.graphMap.getEdgeWeight(path.get(1)) > this.graphMap.default3ConnWeight)){
-				this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
-		}
-		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == start.getDirection()){
-			this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-		}		
-		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCW(start.getDirection())){
-			if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
-				this.tryChoosingCard(Constants.CardType.Rotate_CW_Card);
-		}
-		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCCW(start.getDirection())){
-			if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
-				this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card);
-		}
-		else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnU(start.getDirection())){
-			//Wenns nur ein Feld weit in U-Turn Richtung gefahren werden muss
-			if ((this.graphMap.getDirectionOfEdge(path.get(1)) != G4_DirectionUtils.turnU(start.getDirection()) ||
-					(this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW || this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)))
-				this.tryChoosingCard(Constants.CardType.Move_Backward_Card);
-			else
-				this.tryChoosingCard(Constants.CardType.U_Turn_Card );
-		}
-							
+			
 		//Wenn eine Karte gewaehlt wurde
 		if (countChosenCards < chosenCards.size()){
 			//Karteneffekt und Knoteneffekt anwenden

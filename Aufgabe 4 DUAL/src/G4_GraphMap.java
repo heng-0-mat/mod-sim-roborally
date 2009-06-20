@@ -30,6 +30,8 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	public G4_Vertex startpoint = null;
 	public Direction startDirection = null;
 	
+	public G4_Position startPosition = null; 
+	
 	public HashSet<G4_Vertex> pushers = new HashSet<G4_Vertex>();
 	public HashSet<G4_Vertex> compactors = new HashSet<G4_Vertex>();
 	public HashSet<G4_Vertex> conveyors = new HashSet<G4_Vertex>();
@@ -53,10 +55,11 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	final int againstConveyorWeight = 8;
 	
 	
-	public G4_GraphMap(MapObject map) {
+	public G4_GraphMap(MapObject map, G4_Position startPosition) {
 		super(DefaultWeightedEdge.class);
 	
 		this.rrMap = map;
+		this.startPosition = startPosition;
 		this.loadMap(this.rrMap);
 
 		
@@ -265,6 +268,22 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		//Alle ausgehenden Kanten bis auf die Kante in Pusher-Richtung entfernen
 		for(G4_Vertex vertex: this.conveyors){
 
+			//Kante zum "Drueberfahren" einrichten
+			G4_Vertex vertexCW1 = this.getVertexInDirection(vertex, G4_DirectionUtils.turnCW(vertex.conveyorDirection)); 
+			G4_Vertex vertexCCW1 = this.getVertexInDirection(vertex, G4_DirectionUtils.turnCCW(vertex.conveyorDirection));
+			
+			if (vertexCW1 != null && vertexCCW1 != null &&
+					!vertexCW1.isHole() && !vertexCCW1.isHole() && 
+					!vertexCW1.isCompactor() && !vertexCCW1.isCompactor() &&
+					!vertexCW1.conveyor && !vertexCCW1.conveyor){
+				//Lange Kanten einfuegen
+				DefaultWeightedEdge hinEdge = this.addEdge(vertexCW1, vertexCCW1);
+				this.setEdgeWeight(hinEdge, default2ConnWeight);
+				DefaultWeightedEdge zuEdge = this.addEdge(vertexCCW1, vertexCW1);
+				this.setEdgeWeight(zuEdge, default2ConnWeight);
+				
+			}			
+			
 			HashSet<DefaultWeightedEdge> outEdges = new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
 			HashSet<DefaultWeightedEdge> inEdges = new HashSet<DefaultWeightedEdge>(this.incomingEdgesOf(vertex));
 			
@@ -287,6 +306,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 						this.setEdgeWeight(edge, againstConveyorWeight);
 				}
 			}
+					
 		}
 	}
 	
@@ -602,7 +622,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	 */
 	private G4_GraphMap getAdaptedGraph(G4_Vertex position, Direction direction){
 
-		G4_GraphMap returnGraph = new G4_GraphMap(this.rrMap);
+		G4_GraphMap returnGraph = new G4_GraphMap(this.rrMap,this.startPosition);
 				
 		int x = position.getX();
 		int y = position.getY();
@@ -903,6 +923,31 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		 }
 				
 		return direction;
+	} 
+	
+	/**
+	 * Returns the length of the given edge
+	 * @param edge
+	 * @return the length of the edge as an Integer
+	 */
+	public int getLengthOfEdge(DefaultWeightedEdge edge){
+		
+		G4_Vertex source = this.getEdgeSource(edge);
+		G4_Vertex target = this.getEdgeTarget(edge);
+		int length = this.defaultConnWeight;
+		
+		 //--------- ENTFERNUNG DES NAECHSTEN KNOTEN BESTIMMEN -----------------------------------------
+		
+		 // x-Position bleibt gleich
+		 if (source.getX() == target.getX()){
+			 return Math.abs(source.getY() - target.getY());
+		 }
+		 // y-Position bleibt gleich
+		 else if (source.getY() == target.getY()){
+			return Math.abs(source.getX() - target.getX());
+		 }
+				
+		return length;
 	} 
 	
 	
