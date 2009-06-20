@@ -490,7 +490,7 @@ public class G4_CardChooser {
 					//Ueber-Naechste Kante geht in die gleiche Richtung
 					else{
 						//Ueber-Naechste Kante geht ueber 1 Knoten
-						if (this.graphMap.getLengthOfEdge(path.get(0)) == 1){
+						if (this.graphMap.getLengthOfEdge(path.get(1)) == 1){
 							this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
 						}
 						//Ueber-Naechste Kante geht ueber mehr als 1 Knoten
@@ -523,7 +523,7 @@ public class G4_CardChooser {
 							}
 							//Ueber-Naechste Kante geht ueber 1 Knoten
 							else if (this.graphMap.getLengthOfEdge(path.get(1)) == 1){
-								
+
 								//Ueber-Ueber-Naechste Kante existiert NICHT
 								if (path.size() < 3){
 									this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);	
@@ -544,17 +544,11 @@ public class G4_CardChooser {
 											this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);	
 										}
 									}
-
 								}
-
-								
 							}
-
 						}
 					}
-		//				
 				}
-				
 			}
 		}
 			

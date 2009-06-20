@@ -306,6 +306,15 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 						this.setEdgeWeight(edge, againstConveyorWeight);
 				}
 			}
+			
+			if (vertex.conveyorAndRotator){
+				G4_Vertex vertex1 = this.getVertexInDirection(vertex, vertex.conveyorDirection);
+				G4_Vertex vertex2 = this.getVertexInDirection(vertex1, vertex.conveyorDirection);
+				if (vertex2 != null){
+					DefaultWeightedEdge longEdge = this.addEdge(vertex, vertex2);
+					this.setEdgeWeight(longEdge, withConveyorWeight);
+				}
+			}
 					
 		}
 	}

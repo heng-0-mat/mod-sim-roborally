@@ -38,6 +38,7 @@ public class G4_Vertex {
 	public Direction pusherDirection = Direction.NONE;
 	
 	public boolean conveyor = false;
+	public boolean conveyorAndRotator = false;
 	public Direction conveyorDirection = Direction.NONE;
 	
 	public boolean laser = false;
@@ -165,13 +166,13 @@ public class G4_Vertex {
 			if (nodeString.contains("Conveyer(west")){
 				this.conveyorDirection = Constants.DIRECTION_WEST;
 			}
-//			if (nodeString.contains("counterclockwise")){
-//				this.rotationDirection = G4_DirectionUtils.RotateCCW;
-//			}
-//			else if (nodeString.contains("clockwise")){
-//				this.rotationDirection = G4_DirectionUtils.RotateCW;				
-//			}
-//			
+			if (nodeString.contains("counterclockwise")){
+				this.conveyorAndRotator = true;
+			}
+			else if (nodeString.contains("clockwise")){
+				this.conveyorAndRotator = true;				
+			}
+			
 		}
 		
 	}
