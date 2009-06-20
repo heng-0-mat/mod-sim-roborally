@@ -461,7 +461,6 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			}
 		}
 	}
-
 	
 	/**
 	 * Erzeugt Pusher im Grpahen
@@ -616,131 +615,48 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	/**
 	 * Adjusts the edge weights around the given position so that moving in the given direction
 	 * (at most 3 vertices) is less expensive than moving into the other directions
-	 * @param position 
+	 * @param vertex 
 	 * @param direction
 	 * @return A G4_GraphMap with adjusted weights around the given position
 	 */
-	private G4_GraphMap getAdaptedGraph(G4_Vertex position, Direction direction){
+	private G4_GraphMap getAdaptedGraph(G4_Vertex vertex, Direction direction){
 
 		G4_GraphMap returnGraph = new G4_GraphMap(this.rrMap,this.startPosition);
 				
-		int x = position.getX();
-		int y = position.getY();
+		HashSet<DefaultWeightedEdge> edges = new HashSet<DefaultWeightedEdge>();
+		HashSet<DefaultWeightedEdge> edges2 =  new HashSet<DefaultWeightedEdge>();
+		HashSet<DefaultWeightedEdge> edges3 =  new HashSet<DefaultWeightedEdge>();
 		
-		G4_Vertex coordinatesNorth = this.getVertex(x, y-1);	
-		G4_Vertex coordinatesNorth2 = this.getVertex(x, y-2);	
-		G4_Vertex coordinatesNorth3 = this.getVertex(x, y-3);	
-		G4_Vertex coordinatesEast =  this.getVertex(x+1, y);	
-		G4_Vertex coordinatesEast2 =  this.getVertex(x+2, y);	
-		G4_Vertex coordinatesEast3 =  this.getVertex(x+3, y);	
-		G4_Vertex coordinatesSouth = this.getVertex(x, y+1);	
-		G4_Vertex coordinatesSouth2 = this.getVertex(x, y+2);	
-		G4_Vertex coordinatesSouth3 = this.getVertex(x, y+3);	
-		G4_Vertex coordinatesWest =  this.getVertex(x-1, y);	
-		G4_Vertex coordinatesWest2 =  this.getVertex(x-2, y);	
-		G4_Vertex coordinatesWest3 =  this.getVertex(x-3, y);	
+		edges = returnGraph.getOutgoingEdgesInDirection(vertex, direction);
 		
-		//TODO Kantengewichte relativ anpassen
-
-		if (direction == Constants.DIRECTION_NORTH){
-			
-			try {
-				DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesNorth);
-				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
-				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
-					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-			} catch (Exception e) {}
-			
-			try {
-				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesNorth, coordinatesNorth2);
-				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
-				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
-					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-			} catch (Exception e) {}
-			
-			try {
-				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesNorth2, coordinatesNorth3);
-				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
-				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
-					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-			} catch (Exception e) {}
-						
+		for( DefaultWeightedEdge edge: edges){
+			returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			edges2.addAll(returnGraph.getOutgoingEdgesInDirection(returnGraph.getEdgeTarget(edge), direction));
 		}
 		
-		else if (direction == Constants.DIRECTION_EAST){
-			
-			try {
-				DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesEast);
-				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
-				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
-					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-			} catch (Exception e) {}
-			
-			try {
-				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesEast, coordinatesEast2);
-				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
-				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
-					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-			} catch (Exception e) {}
-			
-			try {
-				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesEast2, coordinatesEast3);
-				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
-				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
-					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-			} catch (Exception e) {}
+		for( DefaultWeightedEdge edge: edges2){
+			returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			edges3.addAll(returnGraph.getOutgoingEdgesInDirection(returnGraph.getEdgeTarget(edge), direction));
 		}
 		
-		else if (direction == Constants.DIRECTION_SOUTH){
-			
-			try {
-				DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesSouth);
-				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
-				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
-					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-			} catch (Exception e) {}
-			
-			try {
-				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesSouth, coordinatesSouth2);
-				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
-				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
-					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-			} catch (Exception e) {}
-			
-			try {
-				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesSouth2, coordinatesSouth3);
-				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
-				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
-					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-			} catch (Exception e) {}
+		for( DefaultWeightedEdge edge: edges3){
+			returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 		}
 		
-		else if (direction == Constants.DIRECTION_WEST){
-			
-			try {
-				DefaultWeightedEdge edge = returnGraph.getEdge(position, coordinatesWest);
-				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
-				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
-					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-			} catch (Exception e) {}
-			
-			try {
-				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesWest, coordinatesWest2);
-				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
-				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
-					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-			} catch (Exception e) {}
-			
-			try {
-				DefaultWeightedEdge edge = returnGraph.getEdge(coordinatesWest2, coordinatesWest3);
-				//returnGraph.setEdgeWeight(edge, reducedConnWeight);
-				if (returnGraph.getEdgeWeight(edge) - 1 > 0)
-					returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-			} catch (Exception e) {}
-			
-		}
-	
 		return returnGraph; 
+	}
+	
+	
+	private HashSet<DefaultWeightedEdge> getOutgoingEdgesInDirection(G4_Vertex vertex, Direction direction){
+		HashSet<DefaultWeightedEdge> returnEdges =  new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
+		HashSet<DefaultWeightedEdge> outEdges =  new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
+		
+		for (DefaultWeightedEdge edge: outEdges){
+			if (this.getDirectionOfEdge(edge) != direction)
+				returnEdges.remove(edge);
+		}
+		
+		return returnEdges;
 	}
 	
 	/**
@@ -756,8 +672,9 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		try {
 			//Kuerzesten Weg von momentaner Position zum Checkpoint bestimmen
 			return DijkstraShortestPath.findPathBetween(
-//					this.getAdaptedGraph(startVertex, startPosition.getDirection())
-					this, startVertex, endVertex);
+					this.getAdaptedGraph(startVertex, startPosition.getDirection())
+					//this
+					, startVertex, endVertex);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -872,7 +789,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			if (v.equals(vertex))
 				return v;
 		}
-		
+	
 		return null;		
 	}
 
