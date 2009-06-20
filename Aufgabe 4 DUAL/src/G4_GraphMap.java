@@ -26,10 +26,6 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	private MapObject rrMap;
 	private Vector<RobotInformation>  enemies = new Vector<RobotInformation>();
 	
-	public G4_Vertex checkpoint = null;
-	public G4_Vertex startpoint = null;
-	public Direction startDirection = null;
-	
 	public G4_Position startPosition = null; 
 	
 	public HashSet<G4_Vertex> pushers = new HashSet<G4_Vertex>();
@@ -37,8 +33,6 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	public HashSet<G4_Vertex> conveyors = new HashSet<G4_Vertex>();
 	public HashSet<G4_Vertex> holes = new HashSet<G4_Vertex>();
 	public HashSet<G4_Vertex> lasers = new HashSet<G4_Vertex>();
-	
-	public List<G4_Vertex> checkpoints;	
 	
 	final int defaultConnWeight = 2;
 	final int default2ConnWeight = 4;
@@ -60,118 +54,8 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	
 		this.rrMap = map;
 		this.startPosition = startPosition;
+		
 		this.loadMap(this.rrMap);
-
-		
-	}
-	
-	/**
-	 * Returns the position of the nearest enemy to the given position 
-	 * @param startPosition
-	 * @return position of nearest enemy
-	 */
-	public G4_Position getNextEnemy(G4_Position startPosition){
-		double pathToEnemyLength = 1000;
-		G4_Position enemyPosition = null;
-		
-		for (RobotInformation robot: this.enemies){
-			
-			G4_Position robotPosition = new G4_Position(robot.getNode().getX(), robot.getNode().getY(), robot.getOrientation());
-			double pathLength = this.getLengthOfShortestPath(startPosition, robotPosition);
-			
-			if (pathLength < pathToEnemyLength){
-				pathToEnemyLength = pathLength;
-				enemyPosition = robotPosition;
-			}
-		}
-		
-		if (enemyPosition == null){
-			return null;
-		}
-		
-		return enemyPosition;
-		
-	}
-	
-	/**
-	 * Loads the enemies' positions into the G4_GraphMap.
-	 * Marks direction as shooting direction on vertices if shooting in that direction from
-	 * the vertex would hit an enemy.
-	 * @param robots
-	 */
-	public void loadEnemies(RobotInformation[] robots, String myRobotName){
-		
-		for (RobotInformation robot: robots){
-			if (robot.getRobotName() != myRobotName)
-			 this.enemies.add(robot);				
-		}
-	
-		for (RobotInformation robot: this.enemies){
-		
-			G4_Position robotPosition = new G4_Position(robot.getNode().getX(), 
-														robot.getNode().getY(), 
-														robot.getOrientation());
-			
-			G4_Vertex startVertex = this.getVertex(robotPosition.x, robotPosition.y);
-			
-			//Positionen markieren von denen geschossen werden könnte
-			this.setShootingPositions(startVertex, Constants.DIRECTION_NORTH);
-			this.setShootingPositions(startVertex, Constants.DIRECTION_EAST);
-			this.setShootingPositions(startVertex, Constants.DIRECTION_SOUTH);
-			this.setShootingPositions(startVertex, Constants.DIRECTION_WEST);
-		}
-	}
-	
-	/**
-	 * "Walks" from a position into the given direction until a wall is hit
-	 * and marks every vertex on this path as a shooting position for the opposite direction
-	 * @param startVertex
-	 * @param direction
-	 */
-	private void setShootingPositions(G4_Vertex startVertex, Direction direction){
-		
-		G4_Vertex currentVertex = startVertex;
-		
-		try {
-			
-			do{
-				
-				currentVertex = this.getVertexInDirection(currentVertex, direction);
-				currentVertex.setShootingDirection(G4_DirectionUtils.turnU(direction),true);
-								
-			}while (!currentVertex.isWallinDirection(direction));
-			
-		} catch (Exception e) {
-			// Falls Position ausserhalb
-			//e.printStackTrace();
-		}
-		
-	}
-	
-	/**
-	 * "Walks" from a position into the given direction until a wall is hit
-	 * and sets the effectOnHealth 
-	 * @param startVertex
-	 * @param direction
-	 */
-	private void setLaserPositions(G4_Vertex startVertex, Direction direction){
-		
-		G4_Vertex currentVertex = startVertex;
-		currentVertex.getEffect().effectOnHealth--;
-
-		while (currentVertex != null && !currentVertex.isWallinDirection(direction)){
-			
-			try {	
-				currentVertex = this.getVertexInDirectionIgnoringEdges(currentVertex, direction);
-				currentVertex.getEffect().effectOnHealth--;
-				currentVertex.laserDirections.add(direction);
-			
-			} catch (Exception e) {
-				// Falls Position ausserhalb
-				//e.printStackTrace();
-			}					
-		}
-
 
 		
 	}
@@ -328,7 +212,6 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		}
 	}
 	
-	
 	private void loadCogwheels(){
 //		//DIAGONALKANTEN FUER ZAHNRAEDER EINFUEGEN
 //		}else if (currentNode.toString().contains("counterclockwise")){
@@ -400,8 +283,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 //		}
 //		
 	}
-	
-	
+		
 	/**
 	 * Laedt Loecher auf der Karte.
 	 * Entfernt alle ausgehenden Kanten.
@@ -447,13 +329,12 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			
 		}		
 	}
-	
-	
+		
 	private void loadLasers(){
 		//Beschossene Positionen markieren
 		for(G4_Vertex currentVertex: this.lasers){
 			//Laser verarbeiten
-			for(Direction dir: currentVertex.laserDirections){
+			for(Direction dir: currentVertex.shotAtFromDirections){
 				this.setLaserPositions(currentVertex, dir);
 			}
 		}
@@ -472,8 +353,8 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			if (currentVertex.getEffect().effectOnHealth < 0){
 				for (DefaultWeightedEdge outEdge: this.outgoingEdgesOf(currentVertex)){
 					//Kanten die in der Schusslinie laufen extrem hohe Gewichte geben
-					if (currentVertex.laserDirections.contains(this.getDirectionOfEdge(outEdge)) ||
-							currentVertex.laserDirections.contains(G4_DirectionUtils.turnU(this.getDirectionOfEdge(outEdge))))
+					if (currentVertex.shotAtFromDirections.contains(this.getDirectionOfEdge(outEdge)) ||
+							currentVertex.shotAtFromDirections.contains(G4_DirectionUtils.turnU(this.getDirectionOfEdge(outEdge))))
 						this.setEdgeWeight(outEdge, stayInLaserWeight);
 					else
 						this.setEdgeWeight(outEdge, outLaserWeight);
@@ -576,8 +457,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 			
 	}
-	
-	
+		
 	private void loadCompactors(){
 		//LANGE Kanten einfuegen
 		for(G4_Vertex vertex: this.compactors){
@@ -667,8 +547,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 		return returnGraph; 
 	}
-	
-	
+		
 	private HashSet<DefaultWeightedEdge> getOutgoingEdgesInDirection(G4_Vertex vertex, Direction direction){
 		HashSet<DefaultWeightedEdge> returnEdges =  new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
 		HashSet<DefaultWeightedEdge> outEdges =  new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
@@ -889,6 +768,115 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		return length;
 	} 
 	
+	/**
+	 * Returns the position of the nearest enemy to the given position 
+	 * @param startPosition
+	 * @return position of nearest enemy
+	 */
+	public G4_Position getNextEnemy(G4_Position startPosition){
+		double pathToEnemyLength = 1000;
+		G4_Position enemyPosition = null;
+		
+		for (RobotInformation robot: this.enemies){
+			
+			G4_Position robotPosition = new G4_Position(robot.getNode().getX(), robot.getNode().getY(), robot.getOrientation());
+			double pathLength = this.getLengthOfShortestPath(startPosition, robotPosition);
+			
+			if (pathLength < pathToEnemyLength){
+				pathToEnemyLength = pathLength;
+				enemyPosition = robotPosition;
+			}
+		}
+		
+		if (enemyPosition == null){
+			return null;
+		}
+		
+		return enemyPosition;
+		
+	}
+	
+	/**
+	 * Loads the enemies' positions into the G4_GraphMap.
+	 * Marks direction as shooting direction on vertices if shooting in that direction from
+	 * the vertex would hit an enemy.
+	 * @param robots
+	 */
+	public void loadEnemies(RobotInformation[] robots, String myRobotName){
+		
+		for (RobotInformation robot: robots){
+			if (robot.getRobotName() != myRobotName)
+			 this.enemies.add(robot);				
+		}
+	
+		for (RobotInformation robot: this.enemies){
+		
+			G4_Position robotPosition = new G4_Position(robot.getNode().getX(), 
+														robot.getNode().getY(), 
+														robot.getOrientation());
+			
+			G4_Vertex startVertex = this.getVertex(robotPosition.x, robotPosition.y);
+			
+			//Positionen markieren von denen geschossen werden könnte
+			this.setShootingPositions(startVertex, Constants.DIRECTION_NORTH);
+			this.setShootingPositions(startVertex, Constants.DIRECTION_EAST);
+			this.setShootingPositions(startVertex, Constants.DIRECTION_SOUTH);
+			this.setShootingPositions(startVertex, Constants.DIRECTION_WEST);
+		}
+	}
+	
+	/**
+	 * "Walks" from a position into the given direction until a wall is hit
+	 * and marks every vertex on this path as a shooting position for the opposite direction
+	 * @param startVertex
+	 * @param direction
+	 */
+	private void setShootingPositions(G4_Vertex startVertex, Direction direction){
+		
+		G4_Vertex currentVertex = startVertex;
+		
+		try {
+			
+			do{
+				
+				currentVertex = this.getVertexInDirection(currentVertex, direction);
+				currentVertex.setShootingDirection(G4_DirectionUtils.turnU(direction),true);
+								
+			}while (!currentVertex.isWallinDirection(direction));
+			
+		} catch (Exception e) {
+			// Falls Position ausserhalb
+			//e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * "Walks" from a position into the given direction until a wall is hit
+	 * and sets the effectOnHealth 
+	 * @param startVertex
+	 * @param direction
+	 */
+	private void setLaserPositions(G4_Vertex startVertex, Direction direction){
+		
+		G4_Vertex currentVertex = startVertex;
+		currentVertex.getEffect().effectOnHealth--;
+
+		while (currentVertex != null && !currentVertex.isWallinDirection(direction)){
+			
+			try {	
+				currentVertex = this.getVertexInDirectionIgnoringEdges(currentVertex, direction);
+				currentVertex.getEffect().effectOnHealth--;
+				currentVertex.shotAtFromDirections.add(direction);
+			
+			} catch (Exception e) {
+				//e.printStackTrace();
+			}					
+		}
+
+
+		
+	}
 	
 }
 

@@ -20,8 +20,10 @@ public class G4_CardChooser {
 
 	public G4_GraphMap graphMap;
 	public G4_GraphMapBall graphMapBall;
+	
 	private Vector<Card> cards = new Vector<Card>();
-	private Vector<Card> chosenCards = new Vector<Card>(); 
+	private Vector<Card> chosenCards = new Vector<Card>();
+	
 	private G4_Position myPosition;
 
 	private boolean checkpointReached = false;
@@ -47,11 +49,226 @@ public class G4_CardChooser {
 			this.cards.add(c);	
 		}		
 	}
+	
+	public Vector<Card> chooseMovingCards2(G4_Position start, G4_Position ziel){
+		
+		//Falls Zielposition erreicht oder 5 Karten gewählt sind, abbrechen!
+		if (start.equals(ziel) || this.chosenCards.size() >= 5){
+			return chosenCards;
+		}
+		
+		//Wenn wir in ein Loch oder aehnliches geraten sind, zurueck auf "die" Startposition
+		if (this.graphMap.getLengthOfShortestPath(start, ziel) == Double.POSITIVE_INFINITY){
+			if (this.debugOutput)
+				System.out.println("Wir sind gerade in ein Loch oder sowas gefahren!");
+			start = this.graphMap.startPosition;
+		}
+		
+		//Kuerzester Weg
+		List<DefaultWeightedEdge> path = this.graphMap.getEdgesOnShortestPath(start, ziel);
+		
+		//Anzahl bereits gewaehlter Karten
+		int countChosenCards = chosenCards.size();
+		
+		//Wenn der richtige Knoten erreicht ist, nur noch drehen
+		if (path.size() == 0){
+			if (ziel.getDirection() == G4_DirectionUtils.turnCW(start.getDirection())){
+				this.tryChoosingCard(Constants.CardType.Rotate_CW_Card);
+			}
+			else if (ziel.getDirection() == G4_DirectionUtils.turnCCW(start.getDirection())){
+				this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card);
+			}
+			else if (ziel.getDirection() == G4_DirectionUtils.turnU(start.getDirection())){
+				this.tryChoosingCard(Constants.CardType.U_Turn_Card );
+			}			
+		}
+		
+		//Der richtige Knoten ist noch NICHT erreicht
+		else{
+			// Wir schauen nicht in die richtige Richtung
+			if (this.graphMap.getDirectionOfEdge(path.get(0)) != start.getDirection()){
+				if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCW(start.getDirection())){
+					if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
+						this.tryChoosingCard(Constants.CardType.Rotate_CW_Card);
+				}
+				else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCCW(start.getDirection())){
+					if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
+						this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card);
+				}
+				else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnU(start.getDirection())){
+					//Wenns nur ein Feld weit in U-Turn Richtung gefahren werden muss
+					if ((this.graphMap.getDirectionOfEdge(path.get(1)) != G4_DirectionUtils.turnU(start.getDirection()) ||
+							(this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW || this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)))
+						this.tryChoosingCard(Constants.CardType.Move_Backward_Card);
+					else
+						this.tryChoosingCard(Constants.CardType.U_Turn_Card );
+				}
+			}
+			//Wir schauen in die richtige RIchtung
+			else{
+				//Naechste Kante geht ueber 3 Knoten
+				if (this.graphMap.getLengthOfEdge(path.get(0)) == 3){
+					this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
+				}
+				//Naechste Kante geht uber 2 Knoten
+				else if(this.graphMap.getLengthOfEdge(path.get(0)) == 2){
+					//Ueber-Naechste Kante geht NICHT in die gleiche Richtung
+					if (this.graphMap.getDirectionOfEdge(path.get(1)) != start.getDirection()){
+						this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
+					}
+					//Ueber-Naechste Kante geht in die gleiche Richtung
+					else{
+						//Ueber-Naechste Kante geht ueber 1 Knoten
+						if (this.graphMap.getLengthOfEdge(path.get(1)) == 1){
+							this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
+						}
+						//Ueber-Naechste Kante geht ueber mehr als 1 Knoten
+						else{
+							this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
+						}
+					}
+				}
+				//Naechste Kante geht ueber 1 Knoten
+				else{
+					//Ueber-Naechste Kante existiert NICHT
+					if (path.size() < 2){
+						this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+					}
+					//Ueber-Naechste Kante EXISTIERT
+					else{
+						//Ueber-Naechste Kante geht NICHT in die gleiche Richtung
+						if (this.graphMap.getDirectionOfEdge(path.get(1)) != start.getDirection()){
+							this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+						}
+						//Ueber-Naechste Kante geht in die gleiche Richtung
+						else{
+							//Ueber-Naechste Kante geht ueber 3 Knoten
+							if (this.graphMap.getLengthOfEdge(path.get(1)) == 3){
+								this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+							}
+							//Ueber-Naechste Kante geht ueber 2 Knoten
+							else if (this.graphMap.getLengthOfEdge(path.get(1)) == 2){
+								this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
+							}
+							//Ueber-Naechste Kante geht ueber 1 Knoten
+							else if (this.graphMap.getLengthOfEdge(path.get(1)) == 1){
 
-	public G4_GraphMap getMap(){
-		return this.graphMap;
+								//Ueber-Ueber-Naechste Kante existiert NICHT
+								if (path.size() < 3){
+									this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);	
+								}
+								else{
+									//Ueber-Ueber-Naechste Kante geht NICHT in die gleiche Richtung
+									if (this.graphMap.getDirectionOfEdge(path.get(2)) != start.getDirection()){
+										this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);	
+									}
+									//Ueber-Ueber-Naechste Kante geht in die gleiche Richtung							
+									else{
+										//Ueber-Ueber-Naechste Kante geht ueber 1 Knoten
+										if (this.graphMap.getLengthOfEdge(path.get(2)) == 1){
+											this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);	
+										}
+										//Ueber-Ueber-Naechste Kante geht ueber MEHR als 1 Knoten
+										else{
+											this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);	
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+			
+		//Wenn eine Karte gewaehlt wurde
+		if (countChosenCards < chosenCards.size()){
+			//Karteneffekt und Knoteneffekt anwenden
+			start = this.applyCardEffect(chosenCards.lastElement(), start);
+		}else{
+			if (this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW || this.graphMap.getEdgeSource(path.get(0)).cogwheelCW){
+				this.tryChoosingCard(Constants.CardType.U_Turn_Card );
+				start = this.applyCardEffect(chosenCards.lastElement(), start);
+			}else{
+				System.out.println("Keine passende Karte gefunden");
+				return null;
+			}
+		}
+		
+		start = this.applyVertexEffects(start);
+		
+		//Rekursiver Aufruf 
+		return this.chooseMovingCards2(start, ziel);
 	}
 
+	public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ballEndPosition){
+		
+		//G4_Position start = this.graphMapBall.getPositionOfBall(); 
+	
+		//Falls Zielposition erreicht oder 5 Karten gewählt sind, abbrechen!
+		if (this.graphMapBall.getPositionOfBall().equals(ballEndPosition) || this.chosenCards.size() >= 5){
+			return chosenCards;
+		}
+		
+		//Kuerzester Weg
+		List<DefaultWeightedEdge> path = this.graphMapBall.getEdgesOnShortestPath(this.graphMapBall.getPositionOfBall(), ballEndPosition);
+		Direction pushDirection = this.graphMapBall.getDirectionOfEdge(path.get(0));
+	
+		while (pushDirection == this.graphMapBall.getDirectionOfEdge(path.get(0))){
+			
+			//Bereits gewaehlte Karten
+			int countChosenCards = chosenCards.size();
+			
+			//Wenn der richtige Knoten erreicht ist oder genug Karten gewaehlt
+			if (path.size() == 0 || this.chosenCards.size() >= 5){
+				break;
+			}			
+			//Ansonsten so schnell wie moeglich geradeaus laufen
+			else if (path.size() >= 3 &&
+				this.graphMapBall.getDirectionOfEdge(path.get(0)) == robotPosition.getDirection() &&
+				this.graphMapBall.getDirectionOfEdge(path.get(1)) == robotPosition.getDirection() &&
+				this.graphMapBall.getDirectionOfEdge(path.get(2)) == robotPosition.getDirection()){
+						this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
+			}
+			else if (path.size() >= 2 &&
+					 this.graphMapBall.getDirectionOfEdge(path.get(0)) == robotPosition.getDirection() &&
+					 this.graphMapBall.getDirectionOfEdge(path.get(1)) == robotPosition.getDirection()){
+					this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
+					}
+			else if (this.graphMapBall.getDirectionOfEdge(path.get(0)) == robotPosition.getDirection()){
+				this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+			}	
+			
+			//Wenn eine Karte gewaehlt wurde
+			if (countChosenCards < chosenCards.size()){
+				
+				//Karteneffekt und Knoteneffekt auf Roboter anwenden
+				robotPosition = this.applyCardEffect(chosenCards.lastElement(), robotPosition);
+				robotPosition = this.applyVertexEffects(robotPosition);
+				
+				//Richtung aendern damit Karten/Knoteneffekt richtig wirkt
+				this.graphMapBall.getPositionOfBall().setDirection(pushDirection);
+				//Position des Balls aktualisieren
+				this.graphMapBall.setPositionOfBall(this.applyCardEffect(chosenCards.lastElement(),
+																		this.graphMapBall.getPositionOfBall()));
+				this.graphMapBall.setPositionOfBall(this.applyVertexEffects(this.graphMapBall.getPositionOfBall()));
+							
+			}else{
+				System.out.println("Keine passende Karte gefunden");
+				break;
+			}
+
+			//PFad neu berechnen
+			path = this.graphMapBall.getEdgesOnShortestPath(this.graphMapBall.getPositionOfBall(), ballEndPosition);		
+			//Wenn der richtige Knoten erreicht ist oder genug Karten gewaehlt
+			if (path.size() == 0 || this.chosenCards.size() >= 5){
+				break;
+			}	
+		}
+		
+		return chosenCards;
+	}
+	
 	public Card[] chooseCards(G4_Position Ziel){
 
 		Card[] myTurn = {null,null,null,null,null};
@@ -413,7 +630,16 @@ public class G4_CardChooser {
 		
 		return returnCard;
 	}
-	
+		
+	public void tryReplacingCard(int index, CardType cardType){
+		try {
+			this.chosenCards.set(index, this.tryPickingCard(cardType));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+
 	private Vector<Card> getDistinctUseableCards(Vector<Card> useableCards){
 
 		Vector<CardType> useableCardTypes = new Vector<CardType>();
@@ -428,226 +654,7 @@ public class G4_CardChooser {
 
 		return distinctUseableCards;
 	}
-	
-	public Vector<Card> chooseMovingCards2(G4_Position start, G4_Position ziel){
 		
-		//Falls Zielposition erreicht oder 5 Karten gewählt sind, abbrechen!
-		if (start.equals(ziel) || this.chosenCards.size() >= 5){
-			return chosenCards;
-		}
-		
-		//Wenn wir in ein Loch oder aehnliches geraten sind, zurueck auf "die" Startposition
-		if (this.graphMap.getLengthOfShortestPath(start, ziel) == Double.POSITIVE_INFINITY){
-			if (this.debugOutput)
-				System.out.println("Wir sind gerade in ein Loch oder sowas gefahren!");
-			start = this.graphMap.startPosition;
-		}
-		
-		//Kuerzester Weg
-		List<DefaultWeightedEdge> path = this.graphMap.getEdgesOnShortestPath(start, ziel);
-		
-		//Anzahl bereits gewaehlter Karten
-		int countChosenCards = chosenCards.size();
-		
-		//Wenn der richtige Knoten erreicht ist, nur noch drehen
-		if (path.size() == 0){
-			if (ziel.getDirection() == G4_DirectionUtils.turnCW(start.getDirection())){
-				this.tryChoosingCard(Constants.CardType.Rotate_CW_Card);
-			}
-			else if (ziel.getDirection() == G4_DirectionUtils.turnCCW(start.getDirection())){
-				this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card);
-			}
-			else if (ziel.getDirection() == G4_DirectionUtils.turnU(start.getDirection())){
-				this.tryChoosingCard(Constants.CardType.U_Turn_Card );
-			}			
-		}
-		
-		//Der richtige Knoten ist noch NICHT erreicht
-		else{
-			// Wir schauen nicht in die richtige Richtung
-			if (this.graphMap.getDirectionOfEdge(path.get(0)) != start.getDirection()){
-				if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCW(start.getDirection())){
-					if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
-						this.tryChoosingCard(Constants.CardType.Rotate_CW_Card);
-				}
-				else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCCW(start.getDirection())){
-					if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
-						this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card);
-				}
-				else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnU(start.getDirection())){
-					//Wenns nur ein Feld weit in U-Turn Richtung gefahren werden muss
-					if ((this.graphMap.getDirectionOfEdge(path.get(1)) != G4_DirectionUtils.turnU(start.getDirection()) ||
-							(this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW || this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)))
-						this.tryChoosingCard(Constants.CardType.Move_Backward_Card);
-					else
-						this.tryChoosingCard(Constants.CardType.U_Turn_Card );
-				}
-			}
-			//Wir schauen in die richtige RIchtung
-			else{
-				//Naechste Kante geht ueber 3 Knoten
-				if (this.graphMap.getLengthOfEdge(path.get(0)) == 3){
-					this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
-				}
-				//Naechste Kante geht uber 2 Knoten
-				else if(this.graphMap.getLengthOfEdge(path.get(0)) == 2){
-					//Ueber-Naechste Kante geht NICHT in die gleiche Richtung
-					if (this.graphMap.getDirectionOfEdge(path.get(1)) != start.getDirection()){
-						this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
-					}
-					//Ueber-Naechste Kante geht in die gleiche Richtung
-					else{
-						//Ueber-Naechste Kante geht ueber 1 Knoten
-						if (this.graphMap.getLengthOfEdge(path.get(1)) == 1){
-							this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
-						}
-						//Ueber-Naechste Kante geht ueber mehr als 1 Knoten
-						else{
-							this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
-						}
-					}
-				}
-				//Naechste Kante geht ueber 1 Knoten
-				else{
-					//Ueber-Naechste Kante existiert NICHT
-					if (path.size() < 2){
-						this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-					}
-					//Ueber-Naechste Kante EXISTIERT
-					else{
-						//Ueber-Naechste Kante geht NICHT in die gleiche Richtung
-						if (this.graphMap.getDirectionOfEdge(path.get(1)) != start.getDirection()){
-							this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-						}
-						//Ueber-Naechste Kante geht in die gleiche Richtung
-						else{
-							//Ueber-Naechste Kante geht ueber 3 Knoten
-							if (this.graphMap.getLengthOfEdge(path.get(1)) == 3){
-								this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-							}
-							//Ueber-Naechste Kante geht ueber 2 Knoten
-							else if (this.graphMap.getLengthOfEdge(path.get(1)) == 2){
-								this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
-							}
-							//Ueber-Naechste Kante geht ueber 1 Knoten
-							else if (this.graphMap.getLengthOfEdge(path.get(1)) == 1){
-
-								//Ueber-Ueber-Naechste Kante existiert NICHT
-								if (path.size() < 3){
-									this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);	
-								}
-								else{
-									//Ueber-Ueber-Naechste Kante geht NICHT in die gleiche Richtung
-									if (this.graphMap.getDirectionOfEdge(path.get(2)) != start.getDirection()){
-										this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);	
-									}
-									//Ueber-Ueber-Naechste Kante geht in die gleiche Richtung							
-									else{
-										//Ueber-Ueber-Naechste Kante geht ueber 1 Knoten
-										if (this.graphMap.getLengthOfEdge(path.get(2)) == 1){
-											this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);	
-										}
-										//Ueber-Ueber-Naechste Kante geht ueber MEHR als 1 Knoten
-										else{
-											this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);	
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-			
-		//Wenn eine Karte gewaehlt wurde
-		if (countChosenCards < chosenCards.size()){
-			//Karteneffekt und Knoteneffekt anwenden
-			start = this.applyCardEffect(chosenCards.lastElement(), start);
-		}else{
-			if (this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW || this.graphMap.getEdgeSource(path.get(0)).cogwheelCW){
-				this.tryChoosingCard(Constants.CardType.U_Turn_Card );
-				start = this.applyCardEffect(chosenCards.lastElement(), start);
-			}else{
-				System.out.println("Keine passende Karte gefunden");
-				return null;
-			}
-		}
-		
-		start = this.applyVertexEffects(start);
-		
-		//Rekursiver Aufruf 
-		return this.chooseMovingCards2(start, ziel);
-	}
-	
-	public Vector<Card> choosePushingCards(G4_Position robotPosition, G4_Position ballEndPosition){
-		
-		//G4_Position start = this.graphMapBall.getPositionOfBall(); 
-	
-		//Falls Zielposition erreicht oder 5 Karten gewählt sind, abbrechen!
-		if (this.graphMapBall.getPositionOfBall().equals(ballEndPosition) || this.chosenCards.size() >= 5){
-			return chosenCards;
-		}
-		
-		//Kuerzester Weg
-		List<DefaultWeightedEdge> path = this.graphMapBall.getEdgesOnShortestPath(this.graphMapBall.getPositionOfBall(), ballEndPosition);
-		Direction pushDirection = this.graphMapBall.getDirectionOfEdge(path.get(0));
-	
-		while (pushDirection == this.graphMapBall.getDirectionOfEdge(path.get(0))){
-			
-			//Bereits gewaehlte Karten
-			int countChosenCards = chosenCards.size();
-			
-			//Wenn der richtige Knoten erreicht ist oder genug Karten gewaehlt
-			if (path.size() == 0 || this.chosenCards.size() >= 5){
-				break;
-			}			
-			//Ansonsten so schnell wie moeglich geradeaus laufen
-			else if (path.size() >= 3 &&
-				this.graphMapBall.getDirectionOfEdge(path.get(0)) == robotPosition.getDirection() &&
-				this.graphMapBall.getDirectionOfEdge(path.get(1)) == robotPosition.getDirection() &&
-				this.graphMapBall.getDirectionOfEdge(path.get(2)) == robotPosition.getDirection()){
-						this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
-			}
-			else if (path.size() >= 2 &&
-					 this.graphMapBall.getDirectionOfEdge(path.get(0)) == robotPosition.getDirection() &&
-					 this.graphMapBall.getDirectionOfEdge(path.get(1)) == robotPosition.getDirection()){
-					this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
-					}
-			else if (this.graphMapBall.getDirectionOfEdge(path.get(0)) == robotPosition.getDirection()){
-				this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-			}	
-			
-			//Wenn eine Karte gewaehlt wurde
-			if (countChosenCards < chosenCards.size()){
-				
-				//Karteneffekt und Knoteneffekt auf Roboter anwenden
-				robotPosition = this.applyCardEffect(chosenCards.lastElement(), robotPosition);
-				robotPosition = this.applyVertexEffects(robotPosition);
-				
-				//Richtung aendern damit Karten/Knoteneffekt richtig wirkt
-				this.graphMapBall.getPositionOfBall().setDirection(pushDirection);
-				//Position des Balls aktualisieren
-				this.graphMapBall.setPositionOfBall(this.applyCardEffect(chosenCards.lastElement(),
-																		this.graphMapBall.getPositionOfBall()));
-				this.graphMapBall.setPositionOfBall(this.applyVertexEffects(this.graphMapBall.getPositionOfBall()));
-							
-			}else{
-				System.out.println("Keine passende Karte gefunden");
-				break;
-			}
-
-			//PFad neu berechnen
-			path = this.graphMapBall.getEdgesOnShortestPath(this.graphMapBall.getPositionOfBall(), ballEndPosition);		
-			//Wenn der richtige Knoten erreicht ist oder genug Karten gewaehlt
-			if (path.size() == 0 || this.chosenCards.size() >= 5){
-				break;
-			}	
-		}
-		
-		return chosenCards;
-	}
-
 	public Card[] getChosenCardsArray(){
 
 		Card[] myTurn = {null,null,null,null,null};
@@ -674,21 +681,8 @@ public class G4_CardChooser {
 		return this.chosenCards;
 	}
 
-	public G4_GraphMapBall getGraphMapBall() {
-		return graphMapBall;
-	}
-
 	public void setGraphMapBall(G4_GraphMapBall graphMapBall) {
 		this.graphMapBall = graphMapBall;
-	}
-	
-	public void tryReplacingCard(int index, CardType cardType){
-		try {
-			this.chosenCards.set(index, this.tryPickingCard(cardType));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
 	}
 }
 

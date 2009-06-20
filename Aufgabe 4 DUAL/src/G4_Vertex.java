@@ -26,11 +26,6 @@ public class G4_Vertex {
 	private boolean shootingWest = false;
 	private boolean shootingSouth = false;
 	
-	private boolean laserNorth = false;
-	private boolean laserEast = false;
-	private boolean laserWest = false;
-	private boolean laserSouth = false;
-	
 	public boolean cogwheelCW = false;
 	public boolean cogwheelCCW = false;
 	
@@ -41,16 +36,18 @@ public class G4_Vertex {
 	public boolean conveyorAndRotator = false;
 	public Direction conveyorDirection = Direction.NONE;
 	
-	public boolean laser = false;
-	public Direction laserDirection = Direction.NONE;
-	public Vector<Direction> laserDirections = new Vector<Direction>(); 
-	
 	public boolean rotator = false;
 	public String rotatorDirection = "";
 	
 	private boolean hole = false;
 	
 	private boolean compactor = false;
+	
+	public boolean laser = false;
+	public Direction laserDirection = Direction.NONE;
+	
+	public Vector<Direction> shotAtFromDirections = new Vector<Direction>(); 
+	
 	
 	
 	 
@@ -96,28 +93,24 @@ public class G4_Vertex {
 		
 		// ---------- LASER ---------------------------------------
 		if (nodeString.contains("LaserGun(north")){
-			this.laserNorth = true;
 			this.laser = true;
 			this.laserDirection = Direction.NORTH;
-			this.laserDirections.add(Direction.NORTH);
+			this.shotAtFromDirections.add(Direction.NORTH);
 		}
 		if (nodeString.contains("LaserGun(east")){
-			this.laserEast = true;
 			this.laser = true;
 			this.laserDirection = Direction.EAST;
-			this.laserDirections.add(Direction.EAST);
+			this.shotAtFromDirections.add(Direction.EAST);
 		}
 		if (nodeString.contains("LaserGun(south")){
-			this.laserSouth = true;
 			this.laser = true;
 			this.laserDirection = Direction.SOUTH;
-			this.laserDirections.add(Direction.SOUTH);
+			this.shotAtFromDirections.add(Direction.SOUTH);
 		}
 		if (nodeString.contains("LaserGun(west")){
-			this.laserWest = true;
 			this.laser = true;
 			this.laserDirection = Direction.WEST;
-			this.laserDirections.add(Direction.WEST);
+			this.shotAtFromDirections.add(Direction.WEST);
 		}
 		
 		// ---------- PUSHER ---------------------------------------
@@ -189,10 +182,6 @@ public class G4_Vertex {
 		this.shootingNorth = v.isShootingNorth();
 		this.shootingSouth = v.isShootingSouth();
 		this.shootingWest = v.isShootingWest();
-		this.laserEast = v.isLaserEast();
-		this.laserNorth = v.isLaserNorth();
-		this.laserSouth = v.isLaserSouth();
-		this.laserWest = v.isLaserWest();
 		this.nodeString = v.nodeString;
 		this.cogwheelCCW = v.cogwheelCCW;
 		this.cogwheelCW = v.cogwheelCW;
@@ -202,10 +191,82 @@ public class G4_Vertex {
 		this.conveyorDirection = v.conveyorDirection;
 		this.laser = v.laser;
 		this.laserDirection = v.laserDirection;
+		this.shotAtFromDirections = v.shotAtFromDirections;
 		this.rotator = v.rotator;
 		this.rotatorDirection = v.rotatorDirection;
 		this.hole = v.hole;		
 		this.compactor = v.compactor;
+	}
+	
+	/**
+	 * Determines if shooting in the given direction could hit an enemy 
+	 */
+	public boolean isShootingDirection(Direction direction) {
+		if (direction.equals(Constants.DIRECTION_NORTH)){
+			return this.isShootingNorth();
+		}
+		else if (direction.equals(Constants.DIRECTION_EAST)){
+			return this.isShootingEast();
+		}
+		else if (direction.equals(Constants.DIRECTION_SOUTH)){
+			return this.isShootingSouth();
+		}
+		else if (direction.equals(Constants.DIRECTION_WEST)){
+			return this.isShootingWest();
+		}
+		
+		//Optimismus...
+		return true;
+	}
+	
+	/**
+	 * Sets if shooting in the given direction could hit an enemy 
+	 */
+	public void setShootingDirection(Direction direction, boolean value) {
+		if (direction.equals(Constants.DIRECTION_NORTH)){
+			this.setShootingNorth(value);
+		}
+		else if (direction.equals(Constants.DIRECTION_EAST)){
+			this.setShootingEast(value);
+		}
+		else if (direction.equals(Constants.DIRECTION_SOUTH)){
+			this.setShootingSouth(value);
+		}
+		else if (direction.equals(Constants.DIRECTION_WEST)){
+			this.setShootingWest(value);
+		}
+	
+	}
+	
+	
+	/**
+	 * Determines if there is a wall or border in the given direction 
+	 */
+	public boolean isWallinDirection(Direction direction) {
+		if (direction.equals(Constants.DIRECTION_NORTH)){
+			return this.isWallNorth();
+		}
+		else if (direction.equals(Constants.DIRECTION_EAST)){
+			return this.isWallEast();
+		}
+		else if (direction.equals(Constants.DIRECTION_SOUTH)){
+			return this.isWallSouth();
+		}
+		else if (direction.equals(Constants.DIRECTION_WEST)){
+			return this.isWallWest();
+		}
+		
+		//Optimismus...
+		return true;
+	}
+	
+	/**
+	 * Applies the the rotation effects on this vertex to the given direction
+	 * @param direction
+	 * @return the new direction
+	 */
+	public Direction applyRotationEffects(Direction direction){
+		return (G4_DirectionUtils.rotate(direction, this.effect.getRotationDirection()));
 	}
 	
 	@Override
@@ -328,110 +389,6 @@ public class G4_Vertex {
 
 	public void setShootingSouth(boolean shootingSouth) {
 		this.shootingSouth = shootingSouth;
-	}
-
-	
-	/**
-	 * Determines if shooting in the given direction could hit an enemy 
-	 */
-	public boolean isShootingDirection(Direction direction) {
-		if (direction.equals(Constants.DIRECTION_NORTH)){
-			return this.isShootingNorth();
-		}
-		else if (direction.equals(Constants.DIRECTION_EAST)){
-			return this.isShootingEast();
-		}
-		else if (direction.equals(Constants.DIRECTION_SOUTH)){
-			return this.isShootingSouth();
-		}
-		else if (direction.equals(Constants.DIRECTION_WEST)){
-			return this.isShootingWest();
-		}
-		
-		//Optimismus...
-		return true;
-	}
-	
-	/**
-	 * Sets if shooting in the given direction could hit an enemy 
-	 */
-	public void setShootingDirection(Direction direction, boolean value) {
-		if (direction.equals(Constants.DIRECTION_NORTH)){
-			this.setShootingNorth(value);
-		}
-		else if (direction.equals(Constants.DIRECTION_EAST)){
-			this.setShootingEast(value);
-		}
-		else if (direction.equals(Constants.DIRECTION_SOUTH)){
-			this.setShootingSouth(value);
-		}
-		else if (direction.equals(Constants.DIRECTION_WEST)){
-			this.setShootingWest(value);
-		}
-	
-	}
-	
-	
-	/**
-	 * Determines if there is a wall or border in the given direction 
-	 */
-	public boolean isWallinDirection(Direction direction) {
-		if (direction.equals(Constants.DIRECTION_NORTH)){
-			return this.isWallNorth();
-		}
-		else if (direction.equals(Constants.DIRECTION_EAST)){
-			return this.isWallEast();
-		}
-		else if (direction.equals(Constants.DIRECTION_SOUTH)){
-			return this.isWallSouth();
-		}
-		else if (direction.equals(Constants.DIRECTION_WEST)){
-			return this.isWallWest();
-		}
-		
-		//Optimismus...
-		return true;
-	}
-	
-	/**
-	 * Applies the the rotation effects on this vertex to the given direction
-	 * @param direction
-	 * @return the new direction
-	 */
-	public Direction applyRotationEffects(Direction direction){
-		return (G4_DirectionUtils.rotate(direction, this.effect.getRotationDirection()));
-	}
-
-	public boolean isLaserNorth() {
-		return laserNorth;
-	}
-
-	public void setLaserNorth(boolean laserNorth) {
-		this.laserNorth = laserNorth;
-	}
-
-	public boolean isLaserEast() {
-		return laserEast;
-	}
-
-	public void setLaserEast(boolean laserEast) {
-		this.laserEast = laserEast;
-	}
-
-	public boolean isLaserWest() {
-		return laserWest;
-	}
-
-	public void setLaserWest(boolean laserWest) {
-		this.laserWest = laserWest;
-	}
-
-	public boolean isLaserSouth() {
-		return laserSouth;
-	}
-
-	public void setLaserSouth(boolean laserSouth) {
-		this.laserSouth = laserSouth;
 	}
 
 	public boolean isCompactor() {
