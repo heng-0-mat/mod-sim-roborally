@@ -11,20 +11,23 @@ import roborally.task.Card;
 public class QZ_AllCardChooser {
 
 	private Card[] userCards;
-	private Card[] myCards;
+	//private Card[] myCards;
 	private String[] userCardsString;
 	private String[] myCardsString;
 	private boolean[] tagT;
 	private boolean[] tag;
 	private int[] tagIndex;
 	private Card[] myTurn={null,null,null,null,null};
+	private String stringtemp;
 	
-	public QZ_AllCardChooser(Card[] userCards,Card[] myCards) {
+	public QZ_AllCardChooser(Card[] userCards,String stringtemp) {
 		this.userCards=userCards;
-		this.myCards=myCards;
+		//this.myCards=myCards;
 		this.userCardsString=new QZ_CardChangeToString(this.userCards).getStringCards();
-		this.myCardsString=new QZ_CardChangeToString(this.myCards).getStringCards();
-		//this.myCardsString=myCardsString;
+		//this.myCardsString=new QZ_CardChangeToString(this.myCards).getStringCards();
+		this.stringtemp=stringtemp;
+		this.myCardsString=new String[1];
+		this.myCardsString[0]=this.stringtemp;
 		tagT=new boolean[userCards.length];
 		tag=new boolean[userCards.length];
 		tagIndex=new int[userCards.length];

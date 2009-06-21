@@ -7,9 +7,9 @@ import javax.swing.ToolTipManager;
 
 import roborally.task.*;
 
-import org.jgraph.JGraph;
-import org.jgrapht.ext.JGraphModelAdapter;
-import org.jgrapht.graph.*;
+//import org.jgraph.JGraph;
+//import org.jgrapht.ext.JGraphModelAdapter;
+//import org.jgrapht.graph.*;
 
 
 
@@ -155,6 +155,8 @@ public class G4_agent extends AITask
 			System.out.println("Regular Game -- RUNDE " +  this.Game.Round.getRound());
 			    //chooser.chooseCards(zielPosition);
 	    return chooser.getChosenCardsArray();
+	
+	   
 	}
 	
 	public Card[] playLastManStanding(Card[] useableCards){

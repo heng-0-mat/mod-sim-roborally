@@ -614,6 +614,20 @@ public class G4_CardChooser {
 			}
 		}
 		
+		if (returnCard == null){
+			 //Von Qi
+			String cardString = this.cardTypeToQiString(cardtype);
+			
+			Card[] cards =new Card[this.cards.size()];
+			for(int i = 0; i < this.cards.size(); i++){
+				cards[i] = this.cards.get(i);
+			}
+			
+			QZ_AllCardChooser kkndkknd=new QZ_AllCardChooser(cards, cardString);
+		    returnCard = kkndkknd.getCards()[0];
+		    returnCard = this.cards.remove(this.cards.indexOf(returnCard));
+		}
+				
 		this.chosenCards.add(returnCard);
 	}
 	
@@ -661,12 +675,12 @@ public class G4_CardChooser {
 		
 		//Falls die Zielposition schon erreicht sein muesste ist einfach mal weiter nach vorne schieben
 		//vielleicht hat uns ja jemand zurueckgeschoben
-		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-			
+		this.chosenCards.addAll(this.cards);
+//		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+//		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+//		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+//		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+////			
 		//Die ersten 5 gewaehlten Karten zurueckgeben
 		for (int i = 0; i < 5; i++){
 			myTurn[i] = chosenCards.get(i);
@@ -683,6 +697,40 @@ public class G4_CardChooser {
 
 	public void setGraphMapBall(G4_GraphMapBall graphMapBall) {
 		this.graphMapBall = graphMapBall;
+	}
+	
+	private String cardTypeToQiString(CardType cardType)
+	{
+		if(Constants.CardType.Rotate_CW_Card == cardType)
+		{
+			return "CW";
+		}
+		if(Constants.CardType.Rotate_CCW_Card == cardType)
+		{
+			return "CCW";
+		}
+		if(Constants.CardType.U_Turn_Card == cardType)
+		{
+			return "U";
+		}
+		if(Constants.CardType.Move_Forward_Card == cardType)
+		{
+			return "ONEFW";
+		}
+		if(Constants.CardType.Move_Two_Forward_Card == cardType)
+		{
+			return "TWOFW";
+		}
+		if(Constants.CardType.Move_Three_Forward_Card == cardType)
+		{
+			return "THREEFW";
+		}
+		if(Constants.CardType.Move_Backward_Card == cardType)
+		{
+			return "BW";
+		}
+		
+		return null;
 	}
 }
 

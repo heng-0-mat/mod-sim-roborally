@@ -72,14 +72,16 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						utemp=true;
-						if(utemp==true && ccwtemp==true){return;}
+						//if(utemp==true && ccwtemp==true){return;}
+						return;
 					}
 					
 					if(userCards[i]=="CCW" && ccwtemp==false)
 					{
 						tag[i]=true;
 						ccwtemp=true;
-						if(utemp==true && ccwtemp==true){return;}
+						//if(utemp==true && ccwtemp==true){return;}
+						return;
 					}
 				}
 			}
@@ -98,7 +100,8 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						ccwtemp++;
-						if(ccwtemp==3){return;}
+						//if(ccwtemp==3){return;}
+						return;
 					}
 				}
 			}
@@ -137,14 +140,16 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						utemp=true;
-						if(utemp==true && cwtemp==true){return;}
+						//if(utemp==true && cwtemp==true){return;}
+						return;
 					}
 					
 					if(userCards[i]=="CW" && cwtemp==false)
 					{
 						tag[i]=true;
 						cwtemp=true;
-						if(utemp==true && cwtemp==true){return;}
+						//if(utemp==true && cwtemp==true){return;}
+						return;
 					}
 				}
 			}
@@ -163,7 +168,8 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						cwtemp++;
-						if(cwtemp==3){return;}
+						//if(cwtemp==3){return;}
+						return;
 					}
 				}
 			}
@@ -200,7 +206,8 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						cwtemp++;
-						if(cwtemp==2){return;}
+						//if(cwtemp==2){return;}
+						return;
 					}
 				}
 			}
@@ -219,7 +226,8 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						ccwtemp++;
-						if(ccwtemp==2){return;}
+						//if(ccwtemp==2){return;}
+						return;
 					}
 				}
 			}
@@ -257,14 +265,16 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						utemp=true;
-						if(utemp==true && bwtemp==true){return;}
+						//if(utemp==true && bwtemp==true){return;}
+						return;
 					}
 					
 					if(userCards[i]=="BW" && bwtemp==false)
 					{
 						tag[i]=true;
 						bwtemp=true;
-						if(utemp==true && bwtemp==true){return;}
+						//if(utemp==true && bwtemp==true){return;}
+						return;
 					}
 				}
 			}
@@ -352,7 +362,8 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						onefwtemp++;
-						if(onefwtemp==2){return;}
+						//if(onefwtemp==2){return;}
+						return;
 					}
 				}
 			}
@@ -399,13 +410,15 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						utemp=true;
-						if(utemp==true && bwtemp==2){return;}
+						//if(utemp==true && bwtemp==2){return;}
+						return;
 					}
 					if(userCards[i]=="BW" && bwtemp!=2)
 					{
 						tag[i]=true;
 						bwtemp++;
-						if(utemp==true && bwtemp==2){return;}
+						//if(utemp==true && bwtemp==2){return;}
+						return;
 					}
 				}
 			}
@@ -443,14 +456,16 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						twofwtemp=true;
-						if(onefwtemp==true && twofwtemp==true){return;}
+						//if(onefwtemp==true && twofwtemp==true){return;}
+						return;
 					}
 					
 					if(userCards[i]=="ONEFW" && onefwtemp==false)
 					{
 						tag[i]=true;
 						onefwtemp=true;
-						if(onefwtemp==true && twofwtemp==true){return;}
+						//if(onefwtemp==true && twofwtemp==true){return;}
+						return;
 					}
 				}
 			}
@@ -470,7 +485,8 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						onefwtemp++;
-						if(onefwtemp==3){return;}
+						//if(onefwtemp==3){return;}
+						return;
 					}
 				}
 			}
@@ -491,14 +507,16 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						utemp=true;
-						if(utemp==true && bwtemp==3){return;}
+						//if(utemp==true && bwtemp==3){return;}
+						return;
 					}
 					
 					if(userCards[i]=="BW" && bwtemp!=3)
 					{
 						tag[i]=true;
 						bwtemp++;
-						if(utemp==true && bwtemp==3){return;}
+						//if(utemp==true && bwtemp==3){return;}
+						return;
 					}
 				}
 			}
@@ -537,14 +555,16 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						utemp=true;
-						if(onefwtemp==true && utemp==true){return;}
+						//if(onefwtemp==true && utemp==true){return;}
+						return;
 					}
 				
 					if(userCards[i]=="ONEFW" && onefwtemp==false)
 					{
 						tag[i]=true;
 						onefwtemp=true;
-						if(onefwtemp==true && utemp==true){return;}
+						//if(onefwtemp==true && utemp==true){return;}
+						return;
 					}
 				}
 			}
@@ -565,14 +585,16 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						cwtemp++;
-						if(onefwtemp==true && cwtemp==2){return;}
+						//if(onefwtemp==true && cwtemp==2){return;}
+						return;
 					}
 			
 					if(userCards[i]=="ONEFW" && onefwtemp==false)
 					{
 						tag[i]=true;
 						onefwtemp=true;
-						if(onefwtemp==true && cwtemp==2){return;}
+						//if(onefwtemp==true && cwtemp==2){return;}
+						return;
 					}
 				}				
 			}
@@ -592,14 +614,16 @@ public class QZ_OneCardChooser {
 					{
 						tag[i]=true;
 						ccwtemp++;
-						if(onefwtemp==true && ccwtemp==2){return;}
+						//if(onefwtemp==true && ccwtemp==2){return;}
+						return;
 					}
 				
 					if(userCards[i]=="ONEFW" && onefwtemp==false)
 					{
 						tag[i]=true;
 						onefwtemp=true;
-						if(onefwtemp==true && ccwtemp==2){return;}
+						//if(onefwtemp==true && ccwtemp==2){return;}
+						return;
 					}
 				}			
 			}
