@@ -269,7 +269,7 @@ public class QZ_OneCardChooser {
 						return;
 					}
 					
-					if(userCards[i]=="BW" && bwtemp==false)
+					if(userCards[i]=="BW" && bwtemp==false && utemp==true)
 					{
 						tag[i]=true;
 						bwtemp=true;
@@ -413,7 +413,7 @@ public class QZ_OneCardChooser {
 						//if(utemp==true && bwtemp==2){return;}
 						return;
 					}
-					if(userCards[i]=="BW" && bwtemp!=2)
+					if(userCards[i]=="BW" && bwtemp!=2 && utemp==true)
 					{
 						tag[i]=true;
 						bwtemp++;
@@ -511,7 +511,7 @@ public class QZ_OneCardChooser {
 						return;
 					}
 					
-					if(userCards[i]=="BW" && bwtemp!=3)
+					if(userCards[i]=="BW" && bwtemp!=3 && utemp==true)
 					{
 						tag[i]=true;
 						bwtemp++;
@@ -559,7 +559,7 @@ public class QZ_OneCardChooser {
 						return;
 					}
 				
-					if(userCards[i]=="ONEFW" && onefwtemp==false)
+					if(userCards[i]=="ONEFW" && onefwtemp==false && utemp==true)
 					{
 						tag[i]=true;
 						onefwtemp=true;
@@ -589,7 +589,7 @@ public class QZ_OneCardChooser {
 						return;
 					}
 			
-					if(userCards[i]=="ONEFW" && onefwtemp==false)
+					if(userCards[i]=="ONEFW" && onefwtemp==false && cwtemp==2)
 					{
 						tag[i]=true;
 						onefwtemp=true;
@@ -618,7 +618,7 @@ public class QZ_OneCardChooser {
 						return;
 					}
 				
-					if(userCards[i]=="ONEFW" && onefwtemp==false)
+					if(userCards[i]=="ONEFW" && onefwtemp==false && ccwtemp==2)
 					{
 						tag[i]=true;
 						onefwtemp=true;
