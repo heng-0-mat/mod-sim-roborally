@@ -698,6 +698,28 @@ public class G4_CardChooser {
 	public void setGraphMapBall(G4_GraphMapBall graphMapBall) {
 		this.graphMapBall = graphMapBall;
 	}
+
+	public boolean containsTooLongEdges(List<DefaultWeightedEdge> path, int steps){
+		
+		for (int i = 0; i <= steps; i++){
+			DefaultWeightedEdge edge = path.get(i);
+			if (this.graphMap.getLengthOfEdge(edge) == 2)
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean containsThreeLongEdges(List<DefaultWeightedEdge> path, int steps){
+		
+		for (int i = 0; i <= steps; i++){
+			DefaultWeightedEdge edge = path.get(i);
+			if (this.graphMap.getLengthOfEdge(edge) == 3)
+				return true;
+		}
+		
+		return false;
+	}
 	
 	private String cardTypeToQiString(CardType cardType)
 	{
@@ -732,6 +754,7 @@ public class G4_CardChooser {
 		
 		return null;
 	}
+
 }
 
 
