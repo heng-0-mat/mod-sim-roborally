@@ -33,13 +33,14 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	public HashSet<G4_Vertex> conveyors = new HashSet<G4_Vertex>();
 	public HashSet<G4_Vertex> holes = new HashSet<G4_Vertex>();
 	public HashSet<G4_Vertex> lasers = new HashSet<G4_Vertex>();
+	public HashSet<G4_Vertex> mostDangerous = new HashSet<G4_Vertex>();
 	
 	final int defaultConnWeight = 2;
 	final int default2ConnWeight = 4;
 	final int default3ConnWeight = 6;
 	
-	final int inHoleWeight = 30;
-	final int inCompactorWeight = 30;
+	final int inHoleWeight = 50;
+	final int inCompactorWeight = 50;
 	
 	final int inLaserWeight = 10;
 	final int outLaserWeight = 2;
@@ -172,12 +173,26 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			HashSet<DefaultWeightedEdge> inEdges = new HashSet<DefaultWeightedEdge>(this.incomingEdgesOf(vertex));
 			
 			//Falls in ein Loch, ins Aus oder auf ein Compactor geschoben wird
-			// alle ausgehenden und eingehenden Kanten entfernen
+			// alle ausgehenden und eingehenden Kanten Gewichte erhoehen
 			if (this.getVertexInDirection(vertex, vertex.conveyorDirection) == null ||
 					this.getVertexInDirection(vertex, vertex.conveyorDirection).isHole() ||
 					this.getVertexInDirection(vertex, vertex.conveyorDirection).isCompactor()){
-				this.removeAllEdges(outEdges);
-				this.removeAllEdges(inEdges);
+				
+				vertex.betterGetOffThatDamnThing = true;
+				vertex.deathLiesInDirection = vertex.conveyorDirection;
+				this.mostDangerous.add(vertex);
+				
+				
+				for(DefaultWeightedEdge edge: outEdges){
+					this.setEdgeWeight(edge, inHoleWeight);
+				}
+				
+				for(DefaultWeightedEdge edge: inEdges){
+					this.setEdgeWeight(edge, inHoleWeight);
+				}
+				
+//				this.removeAllEdges(outEdges);
+//				this.removeAllEdges(inEdges);
 			}				
 			//Im Normalfall
 			else{
@@ -441,8 +456,18 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			if (this.getVertexInDirection(vertex, vertex.pusherDirection) == null ||
 					this.getVertexInDirection(vertex, vertex.pusherDirection).isHole() ||
 					this.getVertexInDirection(vertex, vertex.pusherDirection).isCompactor()){
-				this.removeAllEdges(outEdges);
-				this.removeAllEdges(inEdges);
+				
+				vertex.betterGetOffThatDamnThing = true;
+				vertex.deathLiesInDirection = vertex.pusherDirection;
+				this.mostDangerous.add(vertex);
+				
+				for(DefaultWeightedEdge edge: outEdges){
+					this.setEdgeWeight(edge, inHoleWeight);
+				}
+				
+				for(DefaultWeightedEdge edge: inEdges){
+					this.setEdgeWeight(edge, inHoleWeight);
+				}
 			//Im Normalfall
 			}else{
 				for(DefaultWeightedEdge edge: outEdges){
@@ -528,13 +553,18 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		//Bei Bedarf 2er und 3er Kanten entfernen
 		for(DefaultWeightedEdge edge: this.edgeSet()){
 			if (this.getLengthOfEdge(edge) == 2 && remove2Edges){
-				//returnGraph.removeEdge(edge);
-				returnGraph.setEdgeWeight(edge, this.stayInLaserWeight);
+				returnGraph.removeEdge(edge);
+				//returnGraph.setEdgeWeight(edge, this.stayInLaserWeight);
 			}
 			if (this.getLengthOfEdge(edge) == 3 && remove3Edges){
-				//returnGraph.removeEdge(edge);
-				returnGraph.setEdgeWeight(edge, this.stayInLaserWeight);
+				returnGraph.removeEdge(edge);
+				//returnGraph.setEdgeWeight(edge, this.stayInLaserWeight);
 			}
+		}
+		
+		for(G4_Vertex dangerVertex: this.mostDangerous){
+			HashSet<DefaultWeightedEdge> dangerEdges = new HashSet<DefaultWeightedEdge>(this.incomingEdgesOf(dangerVertex));
+			returnGraph.removeAllEdges(dangerEdges);
 		}
 				
 		HashSet<DefaultWeightedEdge> edges = new HashSet<DefaultWeightedEdge>();
@@ -562,7 +592,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	
 	
 		
-	private HashSet<DefaultWeightedEdge> getOutgoingEdgesInDirection(G4_Vertex vertex, Direction direction){
+	public HashSet<DefaultWeightedEdge> getOutgoingEdgesInDirection(G4_Vertex vertex, Direction direction){
 		HashSet<DefaultWeightedEdge> returnEdges =  new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
 		HashSet<DefaultWeightedEdge> outEdges =  new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
 		
@@ -659,19 +689,23 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		G4_Vertex nextVertex = new G4_Vertex(vertex);
 		
 		if (direction.equals(Constants.DIRECTION_NORTH)){
-			nextVertex.setY(vertex.getY() - 1);
+			if (!vertex.isWallNorth())
+				nextVertex.setY(vertex.getY() - 1);
 		}
 		else if (direction.equals(Constants.DIRECTION_EAST)){
+			if (!vertex.isWallEast())
 			nextVertex.setX(vertex.getX() + 1);
 		}
 		else if (direction.equals(Constants.DIRECTION_SOUTH)){
+			if (!vertex.isWallSouth())
 			nextVertex.setY(vertex.getY() + 1);
 		}
 		else if (direction.equals(Constants.DIRECTION_WEST)){
+			if (!vertex.isWallWest())
 			nextVertex.setX(vertex.getX() - 1);
 		}
 		
-		if (this.getEdge(vertex, nextVertex) != null){
+		if (this.getEdge(vertex, nextVertex) != null  || vertex.equals(nextVertex)){
 			return this.getVertex(nextVertex.getX(),nextVertex.getY());
 		}
 		else{

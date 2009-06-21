@@ -460,7 +460,7 @@ public class QZ_OneCardChooser {
 						return;
 					}
 					
-					if(userCards[i]=="ONEFW" && onefwtemp==false)
+					if(userCards[i]=="ONEFW" && onefwtemp==false && twofwtemp==true)
 					{
 						tag[i]=true;
 						onefwtemp=true;
@@ -743,7 +743,7 @@ public class QZ_OneCardChooser {
 		//Debug
 		for(int i=0;i<tag.length;i++)
 		{
-			System.out.println("Card"+i+"--->"+tag[i]);
+			//System.out.println("Card"+i+"--->"+tag[i]);
 		}
 		
 		return this.tag;

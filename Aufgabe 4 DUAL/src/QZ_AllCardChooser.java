@@ -99,6 +99,14 @@ public class QZ_AllCardChooser {
 			
 			if(indexTagTotal(tagIndex)==false)
 			{
+				QZ_OneCardChooser onecardchoosertemp=new QZ_OneCardChooser(userCardsString,"ZBW",tagT);
+				this.tag=onecardchoosertemp.getTag();
+				getTagIndex();
+				tagT=onecardchoosertemp.getTagT();
+			}
+			
+			if(indexTagTotal(tagIndex)==false)
+			{
 				QZ_OneCardChooser onecardchoosertemp=new QZ_OneCardChooser(userCardsString,"ZTWOFW",tagT);
 				this.tag=onecardchoosertemp.getTag();
 				getTagIndex();
@@ -108,14 +116,6 @@ public class QZ_AllCardChooser {
 			if(indexTagTotal(tagIndex)==false)
 			{
 				QZ_OneCardChooser onecardchoosertemp=new QZ_OneCardChooser(userCardsString,"ZTHREEFW",tagT);
-				this.tag=onecardchoosertemp.getTag();
-				getTagIndex();
-				tagT=onecardchoosertemp.getTagT();
-			}
-			
-			if(indexTagTotal(tagIndex)==false)
-			{
-				QZ_OneCardChooser onecardchoosertemp=new QZ_OneCardChooser(userCardsString,"ZBW",tagT);
 				this.tag=onecardchoosertemp.getTag();
 				getTagIndex();
 				tagT=onecardchoosertemp.getTagT();
@@ -214,12 +214,12 @@ public class QZ_AllCardChooser {
 	public Card[] getCards()
 	{
 		//Debug
-		System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-		for(int i=0;i<myTurn.length;i++)
-		{
-			System.out.println("Card"+i+"----->"+myTurn[i]);
-		}
-		System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n\n");	
+//		System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+//		for(int i=0;i<myTurn.length;i++)
+//		{
+//			System.out.println("Card"+i+"----->"+myTurn[i]);
+//		}
+//		System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n\n");	
 		
 		return myTurn;
 	}

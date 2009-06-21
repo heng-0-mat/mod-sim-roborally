@@ -48,7 +48,8 @@ public class G4_Vertex {
 	
 	public Vector<Direction> shotAtFromDirections = new Vector<Direction>(); 
 	
-	
+	public boolean betterGetOffThatDamnThing = false;
+	public Direction deathLiesInDirection = Direction.NONE;
 	
 	 
 	public boolean isHole() {

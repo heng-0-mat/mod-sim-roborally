@@ -77,7 +77,7 @@ public class G4_agent extends AITask
 	public Card[] executeTurn(Card[] useableCards)
 	{
 		//Ausgaben auf die Konsole (de-)aktivieren
-		this.debugOutput = true;
+		this.debugOutput = false;
 		
 		// Eigene Position bestimmen
 		this.position = new G4_Position(getCurrentNode().getX(),getCurrentNode().getY(),Game.Me.getOrientation());
@@ -427,15 +427,15 @@ public class G4_agent extends AITask
 
 						case 3:
 							if (this.Game.Round.getRound() < 3)
-								chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
+								chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card, false);
 							else
-								chooser.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card);
+								chooser.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card, false);
 							break;
 						case 2:
-							chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card);
+							chooser.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card, false);
 							break;
 						case 1:
-							chooser.tryChoosingCard(Constants.CardType.Move_Forward_Card);
+							chooser.tryChoosingCard(Constants.CardType.Move_Forward_Card, false);
 							break;
 						case 0:
 							continue;
