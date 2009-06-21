@@ -277,7 +277,7 @@ public class G4_GraphMapBall extends DefaultDirectedWeightedGraph<G4_Vertex, Def
 		try {
 			positionNorth = this.getVertexInDirection(this.positionOfBall.toG4_Vertex(), Constants.DIRECTION_NORTH).toG4_Position();
 			positionNorth.setDirection(Constants.DIRECTION_SOUTH);
-			double lengthNorth = MovingMap.getLengthOfShortestPath(position, positionNorth);
+			double lengthNorth = MovingMap.getLengthOfShortestPath_OLD(position, positionNorth);
 			if (shortestLength > lengthNorth){
 				shortestLength = lengthNorth;
 				nearestPosition = positionNorth;
@@ -291,7 +291,7 @@ public class G4_GraphMapBall extends DefaultDirectedWeightedGraph<G4_Vertex, Def
 		try {
 			positionEast = this.getVertexInDirection(this.positionOfBall.toG4_Vertex(), Constants.DIRECTION_EAST).toG4_Position();
 			positionEast.setDirection(Constants.DIRECTION_WEST);
-			double lengthEast = MovingMap.getLengthOfShortestPath(position, positionEast);
+			double lengthEast = MovingMap.getLengthOfShortestPath_OLD(position, positionEast);
 			if (shortestLength > lengthEast){
 				shortestLength = lengthEast;
 				nearestPosition = positionEast;
@@ -305,7 +305,7 @@ public class G4_GraphMapBall extends DefaultDirectedWeightedGraph<G4_Vertex, Def
 		try {
 			positionSouth = this.getVertexInDirection(this.positionOfBall.toG4_Vertex(), Constants.DIRECTION_SOUTH).toG4_Position();
 			positionSouth.setDirection(Constants.DIRECTION_NORTH);
-			double lengthSouth = MovingMap.getLengthOfShortestPath(position, positionSouth);
+			double lengthSouth = MovingMap.getLengthOfShortestPath_OLD(position, positionSouth);
 			if (shortestLength > lengthSouth){
 				shortestLength = lengthSouth;
 				nearestPosition = positionSouth;
@@ -319,7 +319,7 @@ public class G4_GraphMapBall extends DefaultDirectedWeightedGraph<G4_Vertex, Def
 		try {
 			positionWest = this.getVertexInDirection(this.positionOfBall.toG4_Vertex(), Constants.DIRECTION_WEST).toG4_Position();
 			positionWest.setDirection(Constants.DIRECTION_EAST);
-			double lengthWest = MovingMap.getLengthOfShortestPath(position, positionWest);
+			double lengthWest = MovingMap.getLengthOfShortestPath_OLD(position, positionWest);
 			if (shortestLength > lengthWest){
 				shortestLength = lengthWest;
 				nearestPosition = positionWest;

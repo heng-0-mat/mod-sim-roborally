@@ -240,7 +240,7 @@ public class G4_agent extends AITask
 				G4_Vertex nextVertexOfBall = chooser.graphMap.getVertexInDirection(vertexOfBall, position.getDirection());
 				chooser.graphMap.removeVertex(vertexOfBall);
 
-				if (chooser.graphMap.getLengthOfShortestPath(position, nextPushPosition) == Double.POSITIVE_INFINITY){
+				if (chooser.graphMap.getLengthOfShortestPath_OLD(position, nextPushPosition) == Double.POSITIVE_INFINITY){
 
 					if (this.debugOutput)
 						System.out.println("JETZT IST DER BALL MIR IM WEG!");
@@ -463,7 +463,7 @@ public class G4_agent extends AITask
 				}
 				// TODO "Ball im Weg"-Problem verlaesslich loesen
 
-				if (chooser.graphMap.getLengthOfShortestPath(position, nextPushPosition) == Double.POSITIVE_INFINITY){
+				if (chooser.graphMap.getLengthOfShortestPath_OLD(position, nextPushPosition) == Double.POSITIVE_INFINITY){
 
 					if (this.debugOutput)
 						System.out.println("JETZT IST DER BALL MIR IM WEG!");

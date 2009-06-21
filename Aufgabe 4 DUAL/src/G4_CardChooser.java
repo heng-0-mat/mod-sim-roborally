@@ -57,15 +57,23 @@ public class G4_CardChooser {
 			return chosenCards;
 		}
 		
+		//Koennen wir 2 Vorwaerts und 3 Vorwaerts Kanten gehen???
+		boolean remove2edges = false;
+		boolean remove3edges = false;
+		if (!this.handContainsCardType(Constants.CardType.Move_Three_Forward_Card))
+			remove3edges = true;
+		if (!this.handContainsCardType(Constants.CardType.Move_Two_Forward_Card))
+			remove2edges = true;
+		
 		//Wenn wir in ein Loch oder aehnliches geraten sind, zurueck auf "die" Startposition
-		if (this.graphMap.getLengthOfShortestPath(start, ziel) == Double.POSITIVE_INFINITY){
+		if (this.graphMap.getLengthOfShortestPath(start, ziel, remove2edges, remove3edges) == Double.POSITIVE_INFINITY){
 			if (this.debugOutput)
 				System.out.println("Wir sind gerade in ein Loch oder sowas gefahren!");
 			start = this.graphMap.startPosition;
 		}
 		
 		//Kuerzester Weg
-		List<DefaultWeightedEdge> path = this.graphMap.getEdgesOnShortestPath(start, ziel);
+		List<DefaultWeightedEdge> path = this.graphMap.getEdgesOnShortestPath(start, ziel, remove2edges, remove3edges);
 		
 		//Anzahl bereits gewaehlter Karten
 		int countChosenCards = chosenCards.size();
@@ -465,7 +473,7 @@ public class G4_CardChooser {
 					
 					double pathLength = 1000;
 					if (!this.checkpointReached){
-						pathLength = graphMap.getLengthOfShortestPath(currentPosition, endPosition);
+						pathLength = graphMap.getLengthOfShortestPath_OLD(currentPosition, endPosition);
 					}
 					
 					//The secret formula..... Rekursionsbaum etwas stuzten
@@ -643,6 +651,19 @@ public class G4_CardChooser {
 		}
 		
 		return returnCard;
+	}
+	
+	public boolean handContainsCardType(CardType cardtype){
+		
+		boolean contains = false;
+		
+		for (Card card: this.cards){
+			if (cardtype == card.getCardType()){
+				contains = true;		
+			}
+		}
+		
+		return contains;
 	}
 		
 	public void tryReplacingCard(int index, CardType cardType){

@@ -46,7 +46,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	final int stayInLaserWeight = 50;
 	
 	final int withConveyorWeight = 1;
-	final int againstConveyorWeight = 4;
+	final int againstConveyorWeight = 8;
 	
 	
 	public G4_GraphMap(MapObject map, G4_Position startPosition) {
@@ -521,9 +521,21 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	 * @param direction
 	 * @return A G4_GraphMap with adjusted weights around the given position
 	 */
-	private G4_GraphMap getAdaptedGraph(G4_Vertex vertex, Direction direction){
+	private G4_GraphMap getAdaptedGraph(G4_Vertex vertex, Direction direction, boolean remove2Edges, boolean remove3Edges){
 
 		G4_GraphMap returnGraph = new G4_GraphMap(this.rrMap,this.startPosition);
+		
+		//Bei Bedarf 2er und 3er Kanten entfernen
+		for(DefaultWeightedEdge edge: this.edgeSet()){
+			if (this.getLengthOfEdge(edge) == 2 && remove2Edges){
+				//returnGraph.removeEdge(edge);
+				returnGraph.setEdgeWeight(edge, this.stayInLaserWeight);
+			}
+			if (this.getLengthOfEdge(edge) == 3 && remove3Edges){
+				//returnGraph.removeEdge(edge);
+				returnGraph.setEdgeWeight(edge, this.stayInLaserWeight);
+			}
+		}
 				
 		HashSet<DefaultWeightedEdge> edges = new HashSet<DefaultWeightedEdge>();
 		HashSet<DefaultWeightedEdge> edges2 =  new HashSet<DefaultWeightedEdge>();
@@ -547,6 +559,8 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 		return returnGraph; 
 	}
+	
+	
 		
 	private HashSet<DefaultWeightedEdge> getOutgoingEdgesInDirection(G4_Vertex vertex, Direction direction){
 		HashSet<DefaultWeightedEdge> returnEdges =  new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
@@ -565,7 +579,8 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	 * @param startPosition
 	 * @return The edges on the shortest path
 	 */
-	public List<DefaultWeightedEdge> getEdgesOnShortestPath(G4_Position startPosition, G4_Position endPosition){
+	public List<DefaultWeightedEdge> getEdgesOnShortestPath(G4_Position startPosition, G4_Position endPosition, 
+			boolean remove2edges, boolean remove3edges){
 		
 		G4_Vertex startVertex = new G4_Vertex(startPosition.x,startPosition.y,"");
 		G4_Vertex endVertex = new G4_Vertex(endPosition.x, endPosition.y, "");
@@ -573,7 +588,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		try {
 			//Kuerzesten Weg von momentaner Position zum Checkpoint bestimmen
 			return DijkstraShortestPath.findPathBetween(
-					this.getAdaptedGraph(startVertex, startPosition.getDirection())
+					this.getAdaptedGraph(startVertex, startPosition.getDirection(), remove2edges, remove3edges)
 					//this
 					, startVertex, endVertex);
 			
@@ -589,7 +604,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	 * @param startPosition
 	 * @return The length of the shortest path
 	 */
-	public double getLengthOfShortestPath(G4_Position startPosition, G4_Position endPosition){
+	public double getLengthOfShortestPath_OLD(G4_Position startPosition, G4_Position endPosition){
 		
 		G4_Vertex startVertex = new G4_Vertex(startPosition.x, startPosition.y, "");
 		G4_Vertex endVertex = new G4_Vertex(endPosition.x, endPosition.y, "");
@@ -597,8 +612,29 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		 //Kuerzesten Weg von momentaner Position zum Checkpoint bestimmen
 		 DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge> shortestPath = 
 			 new DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge>(
-					 //this.getAdaptedGraph(startVertex,startPosition.getDirection()), 
-					 this, 
+					 this.getAdaptedGraph(startVertex,startPosition.getDirection(),true,true), 
+					 //this, 
+					 startVertex, 
+					 endVertex);
+		 return shortestPath.getPathLength();
+	}
+	
+	/**
+	 * Calculates Dijkstras shortest Path from the given Start-Position to the given End-Position
+	 * @param startPosition
+	 * @return The length of the shortest path
+	 */
+	public double getLengthOfShortestPath(G4_Position startPosition, G4_Position endPosition, 
+			boolean remove2edges, boolean remove3edges){
+		
+		G4_Vertex startVertex = new G4_Vertex(startPosition.x, startPosition.y, "");
+		G4_Vertex endVertex = new G4_Vertex(endPosition.x, endPosition.y, "");
+		
+		 //Kuerzesten Weg von momentaner Position zum Checkpoint bestimmen
+		 DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge> shortestPath = 
+			 new DijkstraShortestPath<G4_Vertex, DefaultWeightedEdge>(
+					 this.getAdaptedGraph(startVertex,startPosition.getDirection(), remove2edges, remove3edges), 
+					 //this, 
 					 startVertex, 
 					 endVertex);
 		 return shortestPath.getPathLength();
@@ -780,7 +816,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		for (RobotInformation robot: this.enemies){
 			
 			G4_Position robotPosition = new G4_Position(robot.getNode().getX(), robot.getNode().getY(), robot.getOrientation());
-			double pathLength = this.getLengthOfShortestPath(startPosition, robotPosition);
+			double pathLength = this.getLengthOfShortestPath_OLD(startPosition, robotPosition);
 			
 			if (pathLength < pathToEnemyLength){
 				pathToEnemyLength = pathLength;
