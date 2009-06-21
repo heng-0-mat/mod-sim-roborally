@@ -1,5 +1,4 @@
 import roborally.task.Card;
-import roborally.task.Constants.CardType;
 
 /**
  * Erzeugt die Karten,die der Roboter braucht
@@ -12,7 +11,7 @@ import roborally.task.Constants.CardType;
 public class QZ_AllCardChooser {
 
 	private Card[] userCards;
-	private Card[] myCards;
+	//private Card[] myCards;
 	private String[] userCardsString;
 	private String[] myCardsString;
 	private boolean[] tagT;
@@ -20,11 +19,12 @@ public class QZ_AllCardChooser {
 	private int[] tagIndex;
 	private Card[] myTurn={null,null,null,null,null};
 	
-	public QZ_AllCardChooser(Card[] userCards,Card[] myCards) {
+	public QZ_AllCardChooser(Card[] userCards,String[] myCardsString) {
 		this.userCards=userCards;
-		this.myCards=myCards;
+		//this.myCards=myCards;
 		this.userCardsString=new QZ_CardChangeToString(this.userCards).getStringCards();
-		this.myCardsString=new QZ_CardChangeToString(this.myCards).getStringCards();
+		//this.myCardsString=new QZ_CardChangeToString(this.myCards).getStringCards();
+		this.myCardsString=myCardsString;
 		tagT=new boolean[userCards.length];
 		tag=new boolean[userCards.length];
 		tagIndex=new int[userCards.length];
