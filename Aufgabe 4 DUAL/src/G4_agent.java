@@ -92,7 +92,7 @@ public class G4_agent extends AITask
 		
 		//Map Strings aktualisieren	
 		for (int i = 0; i < this.Game.Map.getHeight(); i++){
-			for (int j = 0; j < this.Game.Map.getHeight(); j++){
+			for (int j = 0; j < this.Game.Map.getWidth(); j++){
 				if (this.Game.Map.getNode(i, j) != null){
 					this.nodeStrings[i][j] = this.Game.Map.getNode(i, j).toString();
 				}
