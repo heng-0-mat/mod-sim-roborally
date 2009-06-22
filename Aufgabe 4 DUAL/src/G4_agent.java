@@ -26,6 +26,9 @@ public class G4_agent extends AITask
 	public G4_GraphMap graphMap;
 	public G4_Position position;
 	
+	public String[][] nodeStrings;
+	
+	
 	public boolean debugOutput;
 		
 	
@@ -82,7 +85,21 @@ public class G4_agent extends AITask
 		// Eigene Position bestimmen
 		this.position = new G4_Position(getCurrentNode().getX(),getCurrentNode().getY(),Game.Me.getOrientation());
 
-		   
+		//Map Strings intitaliesieren
+		if (this.Game.Round.getRound() == 1){
+			this.nodeStrings = new String[this.Game.Map.getWidth()][this.Game.Map.getHeight()];
+		}
+		
+		//Map Strings aktualisieren	
+		for (int i = 0; i < this.Game.Map.getHeight(); i++){
+			for (int j = 0; j < this.Game.Map.getHeight(); j++){
+				if (this.Game.Map.getNode(i, j) != null){
+					this.nodeStrings[i][j] = this.Game.Map.getNode(i, j).toString();
+				}
+			}
+		}
+		
+	   
 	    if (this.Settings.getGameMode().equals(Constants.GameMode.REGULAR_GAME)){
 	    	return this.playRegularGame(useableCards);
 	    }
@@ -107,10 +124,10 @@ public class G4_agent extends AITask
 
 	public Card[] playRegularGame(Card[] useableCards){
 		
-		if (Game.Round.getRound() == 1){
-			//Spielfeld als Graph erzeugen
-			this.graphMap = new G4_GraphMap(Game.Map, this.position );
-		}
+//		if (Game.Round.getRound() == 1){
+//			//Spielfeld als Graph erzeugen
+//			this.graphMap = new G4_GraphMap(Game.Map, this.position );
+//		}
 		
 //	    if (Game.Round.getRound() == 1){
 //	    	JGraph jgraph = new JGraph( new JGraphModelAdapter( myMapGraph ) );

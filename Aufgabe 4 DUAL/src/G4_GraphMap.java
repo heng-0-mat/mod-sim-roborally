@@ -24,6 +24,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	private static final long serialVersionUID = 1L;
 		
 	private MapObject rrMap;
+	private String[][] nodeStrings;
 	private Vector<RobotInformation>  enemies = new Vector<RobotInformation>();
 	
 	public G4_Position startPosition = null; 
@@ -34,6 +35,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	public HashSet<G4_Vertex> holes = new HashSet<G4_Vertex>();
 	public HashSet<G4_Vertex> lasers = new HashSet<G4_Vertex>();
 	public HashSet<G4_Vertex> mostDangerous = new HashSet<G4_Vertex>();
+	public HashSet<G4_Vertex> grenzKnoten = new HashSet<G4_Vertex>();
 	
 	final int defaultConnWeight = 2;
 	final int default2ConnWeight = 4;
@@ -61,6 +63,18 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 	}
 	
+	public G4_GraphMap(String[][] nodeStrings, G4_Position startPosition) {
+		super(DefaultWeightedEdge.class);
+	
+		this.rrMap = null;
+		this.nodeStrings = nodeStrings;
+		this.startPosition = startPosition;
+		
+		this.loadMap(nodeStrings);
+
+		
+	}
+	
 	/**
 	 * Creates a graph representation of a Roborally.MapObject
 	 * @param map
@@ -73,6 +87,62 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 					
 				G4_Vertex vertex = new G4_Vertex(x, y, map.getNode(x,y).toString());
 				//System.out.println(map.getNode(x,y).toString());
+				this.addVertex(vertex);
+				
+				if (vertex.isHole())
+					holes.add(vertex);
+				
+				if (vertex.pusher)
+					pushers.add(vertex);
+					
+				if (vertex.isCompactor())
+					compactors.add(vertex);
+				
+				if (vertex.conveyor)
+					conveyors.add(vertex);
+				
+				if (vertex.laser)
+					lasers.add(vertex);
+				
+			}
+		}
+		
+		//Alle Felder, die nicht durch Wände getrennt sind, verbinden
+		connectVertices();
+			
+		//Loecher verarbeiten
+		loadHoles();
+		
+		//Compactors verarbeiten
+		loadCompactors();
+		
+		//Zahnraeder verarbeiten
+		loadCogwheels();
+		
+		//Pusher/Conveyor-Kantengewichte anpassen
+		loadConveyors();
+		
+		//Pusher verarbeiten
+		loadPushers();
+								
+		//Laser verarbeiten
+		loadLasers();
+		
+	}	
+	
+	
+	/**
+	 * Creates a graph representation of a Roborally.MapObject
+	 * @param map
+	 */
+	public void loadMap(String[][] nodeStrings){
+		
+		//Knoten erstellen fuer alle Felder auf der Karte
+		for (int x = 0; x < nodeStrings.length; x++) {
+			for (int y = 0; y < nodeStrings[x].length; y++) {
+					
+				G4_Vertex vertex = new G4_Vertex(x, y, nodeStrings[x][y]);
+			
 				this.addVertex(vertex);
 				
 				if (vertex.isHole())
@@ -538,6 +608,14 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			
 		}		
 	} 
+	
+	
+	private void loadGrenzknoten(){
+		for (int x = 0; x < this.nodeStrings.length; x++){
+//			for (//inty....//)
+			//this.grenzKnoten.add(this.getVertex(x, y)))
+		}
+	}
 	
 	/**
 	 * Adjusts the edge weights around the given position so that moving in the given direction
