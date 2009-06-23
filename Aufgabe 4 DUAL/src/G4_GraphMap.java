@@ -644,6 +644,36 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		}
 	}
 	
+	//von Qi
+	public G4_Position getNextGrenzknoten(G4_Position start)
+	{
+		Double weglaenge=Double.POSITIVE_INFINITY;
+		G4_Vertex V=new G4_Vertex(-1,-1,"kknd");
+				
+		for(G4_Vertex v:grenzKnoten)
+		{
+			if(v.isHole()==false)
+			{
+				if(v.isCompactor()==false)
+				{
+					Double temp=this.getLengthOfShortestPath(start, v.toG4_Position(), true, true);
+					
+					if(temp!=Double.POSITIVE_INFINITY)
+					{
+						if(temp<weglaenge)
+						{
+							weglaenge=temp;
+							V=v;
+						}
+					}	
+				}
+			}
+		}
+						
+		return V.toG4_Position();
+	}
+	
+	
 	/**
 	 * Adjusts the edge weights around the given position so that moving in the given direction
 	 * (at most 3 vertices) is less expensive than moving into the other directions
