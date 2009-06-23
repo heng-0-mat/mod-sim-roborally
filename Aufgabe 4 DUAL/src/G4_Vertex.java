@@ -51,7 +51,20 @@ public class G4_Vertex {
 	public boolean betterGetOffThatDamnThing = false;
 	public Direction deathLiesInDirection = Direction.NONE;
 	
+	public boolean grenzknoten=false; //von Qi
 	 
+	//von Qi
+	public boolean isGrenzknoten()
+	{
+		return this.grenzknoten;
+	}
+	
+	//von Qi
+	public void setGrenzknoten(boolean isGrenzknoten)
+	{
+		this.grenzknoten=isGrenzknoten;
+	}
+	
 	public boolean isHole() {
 		return hole;
 	}
