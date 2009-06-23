@@ -610,10 +610,37 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	} 
 	
 	
+	//von Qi
+	//Fuegt Grenzknoten in Graphen hin 
 	private void loadGrenzknoten(){
-		for (int x = 0; x < this.nodeStrings.length; x++){
-//			for (//inty....//)
-			//this.grenzKnoten.add(this.getVertex(x, y)))
+		for (int x = 0; x < this.nodeStrings.length; x++)
+		{
+			for (int y=0;y<this.nodeStrings[x].length;y++)
+			{
+				if(nodeStrings[x+1][y]==null)
+				{
+					this.grenzKnoten.add(this.getVertex(x,y));
+					continue;
+				}
+				
+				if(nodeStrings[x-1][y]==null)
+				{
+					this.grenzKnoten.add(this.getVertex(x,y));
+					continue;
+				}
+				
+				if(nodeStrings[x][y+1]==null)
+				{
+					this.grenzKnoten.add(this.getVertex(x,y));
+					continue;
+				}
+				
+				if(nodeStrings[x][y-1]==null)
+				{
+					this.grenzKnoten.add(this.getVertex(x,y));
+					continue;
+				}
+			}
 		}
 	}
 	
