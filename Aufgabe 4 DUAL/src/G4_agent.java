@@ -163,14 +163,23 @@ public class G4_agent extends AITask
 			}
 			//Explorer-Modus
 			else{
-				zielPosition = this.graphMap.getNextGrenzknoten(position);
+			
+				zielPosition = this.graphMap.getNextGrenzknoten(position);	
+				if (position.equals(zielPosition))
+					break;
 			}
 									
 			chooser.chooseMovingCards2(position, zielPosition);
 		   
 			//Wenn wir (vermutlich) einen Checkpoint erreicht haben
-			if (position.equals(zielPosition))
-				nextCheckpoint++;		    
+			try {
+				if (position.equals(this.graphMap.getCheckpoint(nextCheckpoint).toG4_Position()))
+					nextCheckpoint++;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}		
+			
 		}
 				
 		

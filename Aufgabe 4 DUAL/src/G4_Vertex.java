@@ -83,6 +83,7 @@ public class G4_Vertex {
 		this.nodeString = nodeString;
 		
 		//System.out.println(nodeString);
+		if (this.nodeString!= null){
 		
 		// ---------- WALLS ---------------------------------------
 		if (nodeString.contains("north(wall()")){
@@ -203,7 +204,7 @@ public class G4_Vertex {
 			if (nodeString.contains("Checkpoint(4)")){
 				this.checkpointNr = 4;
 			}
-					
+		}	
 		}
 		
 	}

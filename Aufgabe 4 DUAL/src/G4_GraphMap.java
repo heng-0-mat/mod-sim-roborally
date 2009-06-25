@@ -129,6 +129,8 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		//Laser verarbeiten
 		loadLasers();
 		
+		
+		
 	}	
 	
 	
@@ -188,6 +190,8 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		//Laser verarbeiten
 		loadLasers();
 		
+		//Grenzknoten bestimmen
+		loadGrenzknoten();
 	}	
 	
 	private void connectVertices(){
@@ -617,34 +621,42 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	//von Qi
 	//Fuegt Grenzknoten in Graphen hin 
 	private void loadGrenzknoten(){
-		for (int x = 0; x < this.nodeStrings.length; x++)
-		{
-			for (int y=0;y<this.nodeStrings[x].length;y++)
+		try {
+			for (int x = 0; x < this.nodeStrings.length; x++)
 			{
-				if(x < nodeStrings.length && nodeStrings[x+1][y]==null)
+				for (int y=0;y<this.nodeStrings[x].length;y++)
 				{
-					this.grenzKnoten.add(this.getVertex(x,y));
-					continue;
-				}
-				
-				if(x > 0 && nodeStrings[x-1][y]==null)
-				{
-					this.grenzKnoten.add(this.getVertex(x,y));
-					continue;
-				}
-				
-				if(y < nodeStrings[x].length && nodeStrings[x][y+1]==null)
-				{
-					this.grenzKnoten.add(this.getVertex(x,y));
-					continue;
-				}
-				
-				if(y > 0 && nodeStrings[x][y-1]==null)
-				{
-					this.grenzKnoten.add(this.getVertex(x,y));
-					continue;
+					if (this.nodeStrings[x][y] != null){
+
+						if(x < nodeStrings.length - 1 && nodeStrings[x+1][y]==null)
+						{
+							this.grenzKnoten.add(this.getVertex(x,y));
+							continue;
+						}
+
+						if(x > 0 && nodeStrings[x-1][y]==null)
+						{
+							this.grenzKnoten.add(this.getVertex(x,y));
+							continue;
+						}
+
+						if(y < nodeStrings[x].length - 1 && nodeStrings[x][y+1]==null)
+						{
+							this.grenzKnoten.add(this.getVertex(x,y));
+							continue;
+						}
+
+						if(y > 0 && nodeStrings[x][y-1]==null)
+						{
+							this.grenzKnoten.add(this.getVertex(x,y));
+							continue;
+						}
+					}
 				}
 			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	

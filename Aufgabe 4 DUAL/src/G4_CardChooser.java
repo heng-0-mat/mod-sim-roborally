@@ -753,12 +753,12 @@ public class G4_CardChooser {
 		
 		//Falls die Zielposition schon erreicht sein muesste ist einfach mal weiter nach vorne schieben
 		//vielleicht hat uns ja jemand zurueckgeschoben
-		this.chosenCards.addAll(this.cards);
-//		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-//		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-//		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-//		this.tryChoosingCard(Constants.CardType.Move_Forward_Card);
-////			
+		//this.chosenCards.addAll(this.cards);
+		this.tryChoosingCard(Constants.CardType.U_Turn_Card, false);
+		this.tryChoosingCard(Constants.CardType.U_Turn_Card, false);
+		this.tryChoosingCard(Constants.CardType.U_Turn_Card, false);
+		this.tryChoosingCard(Constants.CardType.U_Turn_Card, false);
+//			
 		//Die ersten 5 gewaehlten Karten zurueckgeben
 		for (int i = 0; i < 5; i++){
 			myTurn[i] = chosenCards.get(i);
