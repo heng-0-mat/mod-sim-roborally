@@ -27,6 +27,7 @@ public class G4_agent extends AITask
 	public G4_Position position;
 	
 	public String[][] nodeStrings;
+	private int nextCheckpoint = 1;
 	
 	
 	public boolean debugOutput;
@@ -80,7 +81,7 @@ public class G4_agent extends AITask
 	public Card[] executeTurn(Card[] useableCards)
 	{
 		//Ausgaben auf die Konsole (de-)aktivieren
-		this.debugOutput = false;
+		this.debugOutput = true;
 		
 		// Eigene Position bestimmen
 		this.position = new G4_Position(getCurrentNode().getX(),getCurrentNode().getY(),Game.Me.getOrientation());
@@ -99,6 +100,23 @@ public class G4_agent extends AITask
 			}
 		}
 		
+		//Spielfeld als Graph erzeugen
+		this.graphMap = new G4_GraphMap(nodeStrings, this.position );
+		
+//		
+//	    if (Game.Round.getRound() == 1){
+//	    	JGraph jgraph = new JGraph( new JGraphModelAdapter( myMapGraph ) );
+//	    	JFrame myFrame;
+//
+//	    	myFrame = new JFrame("Meine Map");
+//	    	myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//
+//	    	myFrame.getContentPane().add(jgraph);
+//	    	myFrame.setSize(800, 800);
+//	    	myFrame.show();
+//	    	ToolTipManager.sharedInstance().registerComponent(jgraph);
+//
+//	    }
 	   
 	    if (this.Settings.getGameMode().equals(Constants.GameMode.REGULAR_GAME)){
 	    	return this.playRegularGame(useableCards);
@@ -124,25 +142,6 @@ public class G4_agent extends AITask
 
 	public Card[] playRegularGame(Card[] useableCards){
 		
-//		if (Game.Round.getRound() == 1){
-//			//Spielfeld als Graph erzeugen
-//			this.graphMap = new G4_GraphMap(Game.Map, this.position );
-//		}
-		
-//	    if (Game.Round.getRound() == 1){
-//	    	JGraph jgraph = new JGraph( new JGraphModelAdapter( myMapGraph ) );
-//	    	JFrame myFrame;
-//
-//	    	myFrame = new JFrame("Meine Map");
-//	    	myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//	    	myFrame.getContentPane().add(jgraph);
-//	    	myFrame.setSize(800, 800);
-//	    	myFrame.show();
-//	    	ToolTipManager.sharedInstance().registerComponent(jgraph);
-//
-//	    }
-	
 	    int attackCards = 0;
 	    int moveCards = 5;
 
@@ -150,20 +149,28 @@ public class G4_agent extends AITask
 		G4_CardChooser chooser = new G4_CardChooser(this.graphMap, useableCards, this.position, attackCards, moveCards);
 		chooser.debugOutput = this.debugOutput;
 		
-		int indexCheckpoint = 0;
-		Node[] checkpoints = this.Game.Me.getNextCheckpoints();
-		int maxIndex = checkpoints.length;
-		
-		while (chooser.getChosenCards().size() < 5 && indexCheckpoint < maxIndex){
-			if (checkpoints[indexCheckpoint] == null)
-				break;
 			
-			// Naechste ZielPosition bestimmen
-		    G4_Position zielPosition = new G4_Position(checkpoints[indexCheckpoint].getX(), 
-		    			checkpoints[indexCheckpoint].getY(), Constants.DIRECTION_STAY);
-		    chooser.chooseMovingCards2(position, zielPosition);
-		    		    
-		    indexCheckpoint++;		    
+		while (chooser.getChosenCards().size() < 5 && this.nextCheckpoint < 5){
+			G4_Position zielPosition;
+			
+			//Kennen wir einen Checkpoint ohne Reihenfolge
+			if (this.graphMap.getCheckpoint(0) != null){
+				zielPosition = this.graphMap.getCheckpoint(0).toG4_Position();
+			}
+			//Kennen wir den nächsten Checkpoint in der Reihenfolge
+			else if (this.graphMap.getCheckpoint(this.nextCheckpoint) != null){
+				zielPosition = this.graphMap.getCheckpoint(nextCheckpoint).toG4_Position();
+			}
+			//Explorer-Modus
+			else{
+				zielPosition = this.graphMap.getNextGrenzknoten(position);
+			}
+									
+			chooser.chooseMovingCards2(position, zielPosition);
+		   
+			//Wenn wir (vermutlich) einen Checkpoint erreicht haben
+			if (position.equals(zielPosition))
+				nextCheckpoint++;		    
 		}
 				
 		

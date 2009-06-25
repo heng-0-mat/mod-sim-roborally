@@ -52,6 +52,9 @@ public class G4_Vertex {
 	public Direction deathLiesInDirection = Direction.NONE;
 	
 	public boolean grenzknoten=false; //von Qi
+	
+	public boolean checkpoint = false;
+	public int checkpointNr = -1;
 	 
 	//von Qi
 	public boolean isGrenzknoten()
@@ -180,6 +183,27 @@ public class G4_Vertex {
 				this.conveyorAndRotator = true;				
 			}
 			
+		}
+		
+		// ---------- CHECKPOINTS ---------------------------------------
+		if (nodeString.contains("Checkpoint")){
+			this.checkpoint = true;
+			if (nodeString.contains("Checkpoint(0)")){
+				this.checkpointNr = 0;
+			}
+			if (nodeString.contains("Checkpoint(1)")){
+				this.checkpointNr = 1;
+			}
+			if (nodeString.contains("Checkpoint(2)")){
+				this.checkpointNr = 2;
+			}
+			if (nodeString.contains("Checkpoint(3)")){
+				this.checkpointNr = 3;
+			}
+			if (nodeString.contains("Checkpoint(4)")){
+				this.checkpointNr = 4;
+			}
+					
 		}
 		
 	}
@@ -311,7 +335,7 @@ public class G4_Vertex {
 	
 	public G4_Position toG4_Position(){
 		try {
-			return new G4_Position(this.x,this.y,Constants.DIRECTION_STAY);
+			return new G4_Position(this.x,this.y,Constants.DIRECTION_NONE);
 		} catch (Exception e) {
 			return null;
 		}

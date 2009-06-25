@@ -50,7 +50,8 @@ public class G4_Position {
 		G4_Position position = (G4_Position)obj;
 		return (this.x == position.x && this.y == position.y && 
 				(this.getDirection() == position.getDirection() || 
-						position.getDirection() == Constants.DIRECTION_STAY));
+						position.getDirection() == Constants.DIRECTION_STAY || 
+						position.getDirection() == Constants.DIRECTION_NONE));
 	}
 	
 	public G4_Position getPositionInDirection(Direction direction){

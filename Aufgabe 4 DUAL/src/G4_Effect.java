@@ -27,6 +27,8 @@ public class G4_Effect {
 	 * Reads a Roborally.Node to find out what effects are on the Node
 	 */
 	public G4_Effect(String nodeString) {
+		
+		//System.out.println(nodeString);
 		//this.activePhase = new ArrayList();
 		this.translationDirection = Constants.DIRECTION_STAY;
 		this.rotationDirection = "";

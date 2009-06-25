@@ -36,6 +36,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	public HashSet<G4_Vertex> lasers = new HashSet<G4_Vertex>();
 	public HashSet<G4_Vertex> mostDangerous = new HashSet<G4_Vertex>();
 	public HashSet<G4_Vertex> grenzKnoten = new HashSet<G4_Vertex>();
+	public HashSet<G4_Vertex> checkpoints = new HashSet<G4_Vertex>();
 	
 	final int defaultConnWeight = 2;
 	final int default2ConnWeight = 4;
@@ -159,6 +160,9 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 				
 				if (vertex.laser)
 					lasers.add(vertex);
+				
+				if (vertex.checkpoint)
+					checkpoints.add(vertex);
 				
 			}
 		}
@@ -617,25 +621,25 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		{
 			for (int y=0;y<this.nodeStrings[x].length;y++)
 			{
-				if(nodeStrings[x+1][y]==null)
+				if(x < nodeStrings.length && nodeStrings[x+1][y]==null)
 				{
 					this.grenzKnoten.add(this.getVertex(x,y));
 					continue;
 				}
 				
-				if(nodeStrings[x-1][y]==null)
+				if(x > 0 && nodeStrings[x-1][y]==null)
 				{
 					this.grenzKnoten.add(this.getVertex(x,y));
 					continue;
 				}
 				
-				if(nodeStrings[x][y+1]==null)
+				if(y < nodeStrings[x].length && nodeStrings[x][y+1]==null)
 				{
 					this.grenzKnoten.add(this.getVertex(x,y));
 					continue;
 				}
 				
-				if(nodeStrings[x][y-1]==null)
+				if(y > 0 && nodeStrings[x][y-1]==null)
 				{
 					this.grenzKnoten.add(this.getVertex(x,y));
 					continue;
@@ -683,7 +687,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	 */
 	private G4_GraphMap getAdaptedGraph(G4_Vertex vertex, Direction direction, boolean remove2Edges, boolean remove3Edges){
 
-		G4_GraphMap returnGraph = new G4_GraphMap(this.rrMap,this.startPosition);
+		G4_GraphMap returnGraph = new G4_GraphMap(this.nodeStrings ,this.startPosition);
 		
 		//Bei Bedarf 2er und 3er Kanten entfernen
 		for(DefaultWeightedEdge edge: this.edgeSet()){
@@ -1081,6 +1085,16 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 
 
 		
+	}
+	
+	public G4_Vertex getCheckpoint(int number){
+		
+		for (G4_Vertex vertex: this.checkpoints){
+			if (vertex.checkpointNr == number)
+				return vertex;
+		}
+		
+		return null;
 	}
 	
 }
