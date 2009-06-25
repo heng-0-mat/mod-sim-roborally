@@ -150,13 +150,13 @@ public class G4_CardChooser {
 				//Naechste Kante geht uber 2 Knoten
 				else if(this.graphMap.getLengthOfEdge(path.get(0)) == 2){
 					//Ueber-Naechste Kante geht NICHT in die gleiche Richtung
-					if (this.graphMap.getDirectionOfEdge(path.get(1)) != start.getDirection()){
+					if (path.size() > 1 && this.graphMap.getDirectionOfEdge(path.get(1)) != start.getDirection()){
 						this.tryChoosingCard(Constants.CardType.Move_Two_Forward_Card , true);
 					}
 					//Ueber-Naechste Kante geht in die gleiche Richtung
 					else{
 						//Ueber-Naechste Kante geht ueber 1 Knoten
-						if (this.graphMap.getLengthOfEdge(path.get(1)) == 1){
+						if (path.size() > 1 &&  this.graphMap.getLengthOfEdge(path.get(1)) == 1){
 							this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card, false);
 						}
 						//Ueber-Naechste Kante geht ueber mehr als 1 Knoten
