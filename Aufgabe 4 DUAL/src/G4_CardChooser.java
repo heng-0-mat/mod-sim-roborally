@@ -129,14 +129,16 @@ public class G4_CardChooser {
 						this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card , false);
 				}
 				else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnU(start.getDirection())){
-					//Wenns nur ein Feld weit in U-Turn Richtung gefahren werden muss 
-					if (path.size() == 1 || (path.size() > 1 && this.graphMap.getDirectionOfEdge(path.get(1)) != G4_DirectionUtils.turnU(start.getDirection()))){
-						this.tryChoosingCard(Constants.CardType.Move_Backward_Card, false);
+					if (this.graphMap.getLengthOfEdge(path.get(0)) == 2){
+						//Wenns nur ein Feld weit in U-Turn Richtung gefahren werden muss 
+						if (path.size() == 1 || ( path.size() > 1 && this.graphMap.getDirectionOfEdge(path.get(1)) != G4_DirectionUtils.turnU(start.getDirection()))){
+							this.tryChoosingCard(Constants.CardType.Move_Backward_Card, false);
+						}
+						//oder wir auf einem Zahnrad sind
+						else if (this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW || this.graphMap.getEdgeSource(path.get(0)).cogwheelCW){
+							this.tryChoosingCard(Constants.CardType.Move_Backward_Card, true);
+						}	
 					}
-					//oder wir auf einem Zahnrad sind
-					else if (this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW || this.graphMap.getEdgeSource(path.get(0)).cogwheelCW){
-						this.tryChoosingCard(Constants.CardType.Move_Backward_Card, true);
-					}					
 					else
 						this.tryChoosingCard(Constants.CardType.U_Turn_Card, false );
 				}
@@ -754,11 +756,10 @@ public class G4_CardChooser {
 		//Falls die Zielposition schon erreicht sein muesste ist einfach mal weiter nach vorne schieben
 		//vielleicht hat uns ja jemand zurueckgeschoben
 		//this.chosenCards.addAll(this.cards);
-		this.tryChoosingCard(Constants.CardType.U_Turn_Card, false);
-		this.tryChoosingCard(Constants.CardType.U_Turn_Card, false);
-		this.tryChoosingCard(Constants.CardType.U_Turn_Card, false);
-		this.tryChoosingCard(Constants.CardType.U_Turn_Card, false);
-//			
+		while (this.chosenCards.size() < 5){
+			this.tryChoosingCard(Constants.CardType.U_Turn_Card, false);	
+		}
+			
 		//Die ersten 5 gewaehlten Karten zurueckgeben
 		for (int i = 0; i < 5; i++){
 			myTurn[i] = chosenCards.get(i);
