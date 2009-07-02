@@ -1,3 +1,4 @@
+import java.util.HashSet;
 import java.util.Vector;
 
 import roborally.task.Constants;
@@ -11,23 +12,14 @@ import roborally.task.Direction;
  */
 public class G4_Vertex {
 	
+	
+
 	private int x;
 	private int y;
 	private G4_Effect effect;
 	public String nodeString;
-	
-	private boolean wallNorth = false;
-	private boolean wallEast = false;
-	private boolean wallSouth = false ;
-	private boolean wallWest = false;
-	
-	private boolean shootingNorth = false;
-	private boolean shootingEast = false;
-	private boolean shootingWest = false;
-	private boolean shootingSouth = false;
-	
-	public boolean cogwheelCW = false;
-	public boolean cogwheelCCW = false;
+
+	private HashSet<Direction> wallDirections = new HashSet<Direction>();
 	
 	public boolean pusher = false;
 	public Direction pusherDirection = Direction.NONE;
@@ -37,16 +29,17 @@ public class G4_Vertex {
 	public Direction conveyorDirection = Direction.NONE;
 	
 	public boolean rotator = false;
-	public String rotatorDirection = "";
+	public String rotatorDirection = G4_DirectionUtils.NoRotation;
 	
 	private boolean hole = false;
-	
 	private boolean compactor = false;
-	
+
 	public boolean laser = false;
 	public Direction laserDirection = Direction.NONE;
 	
-	public Vector<Direction> shotAtFromDirections = new Vector<Direction>(); 
+	public Vector<Direction> shotAtFromDirections = new Vector<Direction>();
+	public HashSet<Direction> shootDirections = new HashSet<Direction>(); 
+	public HashSet<Direction> ffDirections = new HashSet<Direction>(); 
 	
 	public boolean betterGetOffThatDamnThing = false;
 	public Direction deathLiesInDirection = Direction.NONE;
@@ -55,26 +48,7 @@ public class G4_Vertex {
 	
 	public boolean checkpoint = false;
 	public int checkpointNr = -1;
-	 
-	//von Qi
-	public boolean isGrenzknoten()
-	{
-		return this.grenzknoten;
-	}
-	
-	//von Qi
-	public void setGrenzknoten(boolean isGrenzknoten)
-	{
-		this.grenzknoten=isGrenzknoten;
-	}
-	
-	public boolean isHole() {
-		return hole;
-	}
 
-	public void setHole(boolean isHole) {
-		this.hole = isHole;
-	}
 
 	public G4_Vertex(int x, int y, String nodeString) {
 		this.x = x;
@@ -87,16 +61,16 @@ public class G4_Vertex {
 		
 		// ---------- WALLS ---------------------------------------
 		if (nodeString.contains("north(wall()")){
-			this.wallNorth = true;
+			this.wallDirections.add(Direction.NORTH);
 		}
 		if (nodeString.contains("east(wall()")){
-			this.wallEast = true;
+			this.wallDirections.add(Direction.EAST);
 		}
 		if (nodeString.contains("south(wall()")){
-			this.wallSouth = true;
+			this.wallDirections.add(Direction.SOUTH);
 		}
 		if (nodeString.contains("west(wall()")){
-			this.wallWest = true;
+			this.wallDirections.add(Direction.WEST);
 		}
 		
 		// ---------- HOLE ---------------------------------------
@@ -153,11 +127,9 @@ public class G4_Vertex {
 		if (nodeString.contains("CogRotate")){
 			this.rotator = true;
 			if (nodeString.contains("counterclockwise")){
-				this.cogwheelCCW = true;
 				this.rotatorDirection = G4_DirectionUtils.RotateCCW;
 			}
 			else if (nodeString.contains("clockwise")){
-				this.cogwheelCW = true;
 				this.rotatorDirection = G4_DirectionUtils.RotateCW;
 			}
 		}
@@ -210,93 +182,89 @@ public class G4_Vertex {
 	}
 	
 	public G4_Vertex(G4_Vertex v) {
-		this.x = v.getX();
-		this.y = v.getY();
-		this.effect = v.getEffect();
-		this.wallEast = v.isWallEast();
-		this.wallNorth = v.isWallNorth();
-		this.wallSouth = v.isWallSouth();
-		this.wallWest =v.isWallWest();
-		this.shootingEast = v.isShootingEast();
-		this.shootingNorth = v.isShootingNorth();
-		this.shootingSouth = v.isShootingSouth();
-		this.shootingWest = v.isShootingWest();
+		super();
+		this.x = v.x;
+		this.y = v.y;
+		this.effect = v.effect;
 		this.nodeString = v.nodeString;
-		this.cogwheelCCW = v.cogwheelCCW;
-		this.cogwheelCW = v.cogwheelCW;
+		this.wallDirections = v.wallDirections;
 		this.pusher = v.pusher;
 		this.pusherDirection = v.pusherDirection;
 		this.conveyor = v.conveyor;
+		this.conveyorAndRotator = v.conveyorAndRotator;
 		this.conveyorDirection = v.conveyorDirection;
+		this.rotator = v.rotator;
+		this.rotatorDirection = v.rotatorDirection;
+		this.hole = v.hole;
+		this.compactor = v.compactor;
 		this.laser = v.laser;
 		this.laserDirection = v.laserDirection;
 		this.shotAtFromDirections = v.shotAtFromDirections;
-		this.rotator = v.rotator;
-		this.rotatorDirection = v.rotatorDirection;
-		this.hole = v.hole;		
-		this.compactor = v.compactor;
+		this.shootDirections = v.shootDirections;
+		this.ffDirections = v.ffDirections;
+		this.betterGetOffThatDamnThing = v.betterGetOffThatDamnThing;
+		this.deathLiesInDirection = v.deathLiesInDirection;
+		this.grenzknoten = v.grenzknoten;
+		this.checkpoint = v.checkpoint;
+		this.checkpointNr = v.checkpointNr;
+	}
+
+	
+	/**
+	 * Determines if there is a wall or border in the given direction 
+	 */
+	public boolean isWallinDirection(Direction direction) {
+		return this.wallDirections.contains(direction);
+	}
+	
+	/**
+	 * Sets if there is a wall or border in the given direction 
+	 */
+	public void setWallinDirection(Direction direction, Boolean value) {
+		if (value)
+			this.wallDirections.add(direction);
+		else
+			this.wallDirections.remove(direction);
 	}
 	
 	/**
 	 * Determines if shooting in the given direction could hit an enemy 
 	 */
 	public boolean isShootingDirection(Direction direction) {
-		if (direction.equals(Constants.DIRECTION_NORTH)){
-			return this.isShootingNorth();
-		}
-		else if (direction.equals(Constants.DIRECTION_EAST)){
-			return this.isShootingEast();
-		}
-		else if (direction.equals(Constants.DIRECTION_SOUTH)){
-			return this.isShootingSouth();
-		}
-		else if (direction.equals(Constants.DIRECTION_WEST)){
-			return this.isShootingWest();
-		}
-		
-		//Optimismus...
-		return true;
+		return this.shootDirections.contains(direction);
 	}
+
 	
 	/**
 	 * Sets if shooting in the given direction could hit an enemy 
 	 */
 	public void setShootingDirection(Direction direction, boolean value) {
-		if (direction.equals(Constants.DIRECTION_NORTH)){
-			this.setShootingNorth(value);
+		if (value){
+			this.shootDirections.add(direction);
 		}
-		else if (direction.equals(Constants.DIRECTION_EAST)){
-			this.setShootingEast(value);
+		else{
+			this.shootDirections.remove(direction);
 		}
-		else if (direction.equals(Constants.DIRECTION_SOUTH)){
-			this.setShootingSouth(value);
-		}
-		else if (direction.equals(Constants.DIRECTION_WEST)){
-			this.setShootingWest(value);
-		}
-	
 	}
 	
+	/**
+	 * Determines if shooting in the given direction could hit a team mate
+	 */
+	public boolean isffDirection(Direction direction) {
+		return this.shootDirections.contains(direction);
+	}
+
 	
 	/**
-	 * Determines if there is a wall or border in the given direction 
+	 * Sets if shooting in the given direction could hit a team mate
 	 */
-	public boolean isWallinDirection(Direction direction) {
-		if (direction.equals(Constants.DIRECTION_NORTH)){
-			return this.isWallNorth();
+	public void setffDirection(Direction direction, boolean value) {
+		if (value){
+			this.shootDirections.add(direction);
 		}
-		else if (direction.equals(Constants.DIRECTION_EAST)){
-			return this.isWallEast();
+		else{
+			this.shootDirections.remove(direction);
 		}
-		else if (direction.equals(Constants.DIRECTION_SOUTH)){
-			return this.isWallSouth();
-		}
-		else if (direction.equals(Constants.DIRECTION_WEST)){
-			return this.isWallWest();
-		}
-		
-		//Optimismus...
-		return true;
 	}
 	
 	/**
@@ -342,38 +310,6 @@ public class G4_Vertex {
 		}
 	}
 	
-	public boolean isWallNorth() {
-		return wallNorth;
-	}
-
-	public boolean isWallEast() {
-		return wallEast;
-	}
-
-	public boolean isWallSouth() {
-		return wallSouth;
-	}
-
-	public boolean isWallWest() {
-		return wallWest;
-	}
-	
-	public void setWallNorth(boolean wallNorth) {
-		this.wallNorth = wallNorth;
-	}
-
-	public void setWallEast(boolean wallEast) {
-		this.wallEast = wallEast;
-	}
-
-	public void setWallSouth(boolean wallSouth) {
-		this.wallSouth = wallSouth;
-	}
-
-	public void setWallWest(boolean wallWest) {
-		this.wallWest = wallWest;
-	}
-
 	public int getX(){
 		return this.x;
 	}
@@ -398,38 +334,7 @@ public class G4_Vertex {
 		this.effect = effect;
 	}
 	
-	public boolean isShootingNorth() {
-		return shootingNorth;
-	}
-
-	public void setShootingNorth(boolean shootingNorth) {
-		this.shootingNorth = shootingNorth;
-	}
-
-	public boolean isShootingEast() {
-		return shootingEast;
-	}
-
-	public void setShootingEast(boolean shootingEast) {
-		this.shootingEast = shootingEast;
-	}
-
-	public boolean isShootingWest() {
-		return shootingWest;
-	}
-
-	public void setShootingWest(boolean shootingWest) {
-		this.shootingWest = shootingWest;
-	}
-
-	public boolean isShootingSouth() {
-		return shootingSouth;
-	}
-
-	public void setShootingSouth(boolean shootingSouth) {
-		this.shootingSouth = shootingSouth;
-	}
-
+	
 	public boolean isCompactor() {
 		return compactor;
 	}
@@ -437,4 +342,25 @@ public class G4_Vertex {
 	public void setCompactor(boolean compactor) {
 		this.compactor = compactor;
 	}	
+	
+	 
+	//von Qi
+	public boolean isGrenzknoten()
+	{
+		return this.grenzknoten;
+	}
+	
+	//von Qi
+	public void setGrenzknoten(boolean isGrenzknoten)
+	{
+		this.grenzknoten=isGrenzknoten;
+	}
+	
+	public boolean isHole() {
+		return hole;
+	}
+
+	public void setHole(boolean isHole) {
+		this.hole = isHole;
+	}
 }

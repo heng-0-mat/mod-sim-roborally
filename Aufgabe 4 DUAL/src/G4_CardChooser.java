@@ -122,11 +122,11 @@ public class G4_CardChooser {
 			// Wir schauen nicht in die richtige Richtung
 			if (this.graphMap.getDirectionOfEdge(path.get(0)) != start.getDirection()){
 				if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCW(start.getDirection())){
-					if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
+					if (!this.graphMap.getEdgeSource(path.get(0)).rotator)
 						this.tryChoosingCard(Constants.CardType.Rotate_CW_Card, false);
 				}
 				else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnCCW(start.getDirection())){
-					if (!this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW && !this.graphMap.getEdgeSource(path.get(0)).cogwheelCW)
+					if (!this.graphMap.getEdgeSource(path.get(0)).rotator)
 						this.tryChoosingCard(Constants.CardType.Rotate_CCW_Card , false);
 				}
 				else if (this.graphMap.getDirectionOfEdge(path.get(0)) == G4_DirectionUtils.turnU(start.getDirection())){
@@ -136,7 +136,7 @@ public class G4_CardChooser {
 							this.tryChoosingCard(Constants.CardType.Move_Backward_Card, false);
 						}
 						//oder wir auf einem Zahnrad sind
-						else if (this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW || this.graphMap.getEdgeSource(path.get(0)).cogwheelCW){
+						else if (this.graphMap.getEdgeSource(path.get(0)).rotator){
 							this.tryChoosingCard(Constants.CardType.Move_Backward_Card, true);
 						}	
 					}
@@ -228,7 +228,7 @@ public class G4_CardChooser {
 			//Karteneffekt und Knoteneffekt anwenden
 			start = this.applyCardEffect(chosenCards.lastElement(), start);
 		}else{
-			if (this.graphMap.getEdgeSource(path.get(0)).cogwheelCCW || this.graphMap.getEdgeSource(path.get(0)).cogwheelCW){
+			if (this.graphMap.getEdgeSource(path.get(0)).rotator){
 				this.tryChoosingCard(Constants.CardType.U_Turn_Card, false );
 				start = this.applyCardEffect(chosenCards.lastElement(), start);
 			}else{

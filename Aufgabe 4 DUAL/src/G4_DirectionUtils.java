@@ -10,6 +10,7 @@ public class G4_DirectionUtils{
 	
 	public final static String RotateCW = "clockwise";
 	public final static String RotateCCW = "counterclockwise";
+	public final static String NoRotation = "noRotation";
 	
 	public G4_DirectionUtils(Direction direction){
 	

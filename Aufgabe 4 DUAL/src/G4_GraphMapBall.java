@@ -51,32 +51,32 @@ public class G4_GraphMapBall extends DefaultDirectedWeightedGraph<G4_Vertex, Def
 				//KNOTEN MITEINANDER VERKNUEPFEN
 				if (this.vertexSet().contains(vertexNorth) 
 						&& this.vertexSet().contains(vertexSouth) 
-						&& !currentVertex.isWallNorth()
-						&& !currentVertex.isWallSouth()
+						&& !currentVertex.isWallinDirection(Direction.NORTH)
+						&& !currentVertex.isWallinDirection(Direction.SOUTH)
 						&& !vertexSouth.isHole()){
 					this.addEdge(currentVertex,vertexNorth);
 				}
 
 				if (this.vertexSet().contains(vertexEast) 
 						&& this.vertexSet().contains(vertexWest) 
-						&& !currentVertex.isWallEast()
-						&& !currentVertex.isWallWest()
+						&& !currentVertex.isWallinDirection(Direction.EAST)
+						&& !currentVertex.isWallinDirection(Direction.WEST )
 						&& !vertexWest.isHole()){
 					this.addEdge(currentVertex,vertexEast);
 				}
 
 				if (this.vertexSet().contains(vertexSouth) 
 						&& this.vertexSet().contains(vertexNorth) 
-						&& !currentVertex.isWallSouth()
-						&& !currentVertex.isWallNorth()
+						&& !currentVertex.isWallinDirection(Direction.SOUTH)
+						&& !currentVertex.isWallinDirection(Direction.NORTH)
 						&& !vertexNorth.isHole()){
 					this.addEdge(currentVertex,vertexSouth);
 				}
 
 				if (this.vertexSet().contains(vertexWest) 
 						&& this.vertexSet().contains(vertexEast) 
-						&& !currentVertex.isWallWest()
-						&& !currentVertex.isWallEast()
+						&& !currentVertex.isWallinDirection(Direction.WEST )
+						&& !currentVertex.isWallinDirection(Direction.EAST)
 						&& !vertexEast.isHole()){
 					this.addEdge(currentVertex,vertexWest);
 				}

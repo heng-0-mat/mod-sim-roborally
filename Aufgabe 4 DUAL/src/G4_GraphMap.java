@@ -25,7 +25,6 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 	private MapObject rrMap;
 	private String[][] nodeStrings;
-	private Vector<RobotInformation>  enemies = new Vector<RobotInformation>();
 	
 	public G4_Position startPosition = null; 
 	
@@ -36,7 +35,23 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	public HashSet<G4_Vertex> lasers = new HashSet<G4_Vertex>();
 	public HashSet<G4_Vertex> mostDangerous = new HashSet<G4_Vertex>();
 	public HashSet<G4_Vertex> grenzKnoten = new HashSet<G4_Vertex>();
+	
 	public HashSet<G4_Vertex> checkpoints = new HashSet<G4_Vertex>();
+	
+	public HashSet<G4_Vertex> dominationPoints = new HashSet<G4_Vertex>();
+	
+	private Vector<RobotInformation>  enemies = new Vector<RobotInformation>();
+	private Vector<RobotInformation>  mates = new Vector<RobotInformation>();
+	
+	public HashSet<G4_Vertex> enemiesVertices = new HashSet<G4_Vertex>();
+	public HashSet<G4_Vertex> matesVertices = new HashSet<G4_Vertex>();
+	
+	public HashSet<G4_Position> enemiesPositions = new HashSet<G4_Position>();
+	public HashSet<G4_Position> matesPositions = new HashSet<G4_Position>();
+	
+	public HashSet<G4_Position> shootPositions = new HashSet<G4_Position>();
+	public HashSet<G4_Position> ffPositions = new HashSet<G4_Position>();
+	
 	
 	final int defaultConnWeight = 2;
 	final int default2ConnWeight = 4;
@@ -163,8 +178,13 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 				if (vertex.laser)
 					lasers.add(vertex);
 				
-				if (vertex.checkpoint)
+				if (vertex.checkpoint){
 					checkpoints.add(vertex);
+					//Domination Punkte merken
+					if (vertex.checkpointNr == 1 || vertex.checkpointNr == 2)
+						this.dominationPoints.add(vertex);
+				}
+				
 				
 			}
 		}
@@ -194,38 +214,33 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		loadGrenzknoten();
 	}	
 	
+	/**
+	 * Verbindet alle Knoten die nicht durch Waende getrennt sind
+	 */
 	private void connectVertices(){
 		
 		//Kanten fuer verbundene Tiles einfuegen
-		for(G4_Vertex currentVertex: this.vertexSet()){
-							
-				G4_Vertex vertexNorth = this.getVertex(currentVertex.getX(),currentVertex.getY()-1);
-				G4_Vertex vertexEast =  this.getVertex(currentVertex.getX()+1,currentVertex.getY());
-				G4_Vertex vertexSouth = this.getVertex(currentVertex.getX(),currentVertex.getY()+1);
-				G4_Vertex vertexWest =  this.getVertex(currentVertex.getX()-1,currentVertex.getY());
+		for(G4_Vertex vertex: this.vertexSet()){
+			
+			for (Direction direction: Direction.getDirectionsNESW()){
 				
-				//ALLE KNOTEN MITEINANDER VERKNUEPFEN
-				if (this.vertexSet().contains(vertexNorth) && !currentVertex.isWallNorth()){
-					this.addEdge(currentVertex,vertexNorth);
-					this.setEdgeWeight(this.getEdge(currentVertex, vertexNorth), defaultConnWeight);
-				}
-				if (this.vertexSet().contains(vertexEast) && !currentVertex.isWallEast()){
-					this.addEdge(currentVertex,vertexEast);
-					this.setEdgeWeight(this.getEdge(currentVertex, vertexEast), defaultConnWeight);
-				}
-				if (this.vertexSet().contains(vertexSouth) && !currentVertex.isWallSouth()){
-					this.addEdge(currentVertex,vertexSouth);
-					this.setEdgeWeight(this.getEdge(currentVertex, vertexSouth), defaultConnWeight);
-				}
-				if (this.vertexSet().contains(vertexWest) && !currentVertex.isWallWest()){
-					this.addEdge(currentVertex,vertexWest);
-					this.setEdgeWeight(this.getEdge(currentVertex, vertexWest), defaultConnWeight);
+				G4_Vertex vertexInDirection = this.getVertexInDirectionIgnoringEdges(vertex, direction);
+				
+				if (this.vertexSet().contains(vertexInDirection) && !vertex.isWallinDirection(direction)){
+					
+					DefaultWeightedEdge edge = this.addEdge(vertex,vertexInDirection);
+					this.setEdgeWeight(edge, defaultConnWeight);
+					
 				}
 				
 			}
+		}
 		
 	}
 
+	/**
+	 * Laedt Fliessbaender auf der Karte
+	 */
 	private void loadConveyors(){
 
 		//Alle ausgehenden Kanten bis auf die Kante in Pusher-Richtung entfernen
@@ -310,6 +325,10 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		}
 	}
 	
+	/**
+	 * (Deprecated) Laedt Zahnraeder auf der Karte 
+	 * 
+	 */
 	private void loadCogwheels(){
 //		//DIAGONALKANTEN FUER ZAHNRAEDER EINFUEGEN
 //		}else if (currentNode.toString().contains("counterclockwise")){
@@ -427,7 +446,10 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			
 		}		
 	}
-		
+	
+	/**
+	 * Laedt Laser auf der Karte
+	 */
 	private void loadLasers(){
 		//Beschossene Positionen markieren
 		for(G4_Vertex currentVertex: this.lasers){
@@ -565,7 +587,10 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 			
 	}
-		
+	
+	/**
+	 * Erzeugt Kompaktoren im Graphen 
+	 */
 	private void loadCompactors(){
 		//LANGE Kanten einfuegen
 		for(G4_Vertex vertex: this.compactors){
@@ -621,8 +646,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			
 		}		
 	} 
-	
-	
+		
 	//von Qi
 	//Fuegt Grenzknoten in Graphen hin 
 	private void loadGrenzknoten(){
@@ -746,8 +770,12 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		return returnGraph; 
 	}
 	
-	
-		
+	/**
+	 * Gibt alle ausgehenden Kanten eines Knoten in einer bestimmten RIchtung zurueck
+	 * @param vertex 
+	 * @param direction
+	 * @return
+	 */
 	public HashSet<DefaultWeightedEdge> getOutgoingEdgesInDirection(G4_Vertex vertex, Direction direction){
 		HashSet<DefaultWeightedEdge> returnEdges =  new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
 		HashSet<DefaultWeightedEdge> outEdges =  new HashSet<DefaultWeightedEdge>(this.outgoingEdgesOf(vertex));
@@ -834,7 +862,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	 */
 	public G4_Vertex getVertexInDirection(G4_Vertex vertex, Direction direction){
 		
-		//HIER LAG EIN PROBLEM!!!
+		//Von nichts kommt nichts
 		if (vertex == null)
 			return null;
 		
@@ -843,24 +871,24 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		}
 		
 		G4_Vertex nextVertex = new G4_Vertex(vertex);
-		
-		if (direction.equals(Constants.DIRECTION_NORTH)){
-			if (!vertex.isWallNorth())
+
+		if (!vertex.isWallinDirection(direction)){
+			
+			if (direction.equals(Constants.DIRECTION_NORTH)){
 				nextVertex.setY(vertex.getY() - 1);
+			}
+			else if (direction.equals(Constants.DIRECTION_EAST)){
+				nextVertex.setX(vertex.getX() + 1);
+			}
+			else if (direction.equals(Constants.DIRECTION_SOUTH)){
+				nextVertex.setY(vertex.getY() + 1);
+			}
+			else if (direction.equals(Constants.DIRECTION_WEST)){
+				nextVertex.setX(vertex.getX() - 1);
+			}
+
 		}
-		else if (direction.equals(Constants.DIRECTION_EAST)){
-			if (!vertex.isWallEast())
-			nextVertex.setX(vertex.getX() + 1);
-		}
-		else if (direction.equals(Constants.DIRECTION_SOUTH)){
-			if (!vertex.isWallSouth())
-			nextVertex.setY(vertex.getY() + 1);
-		}
-		else if (direction.equals(Constants.DIRECTION_WEST)){
-			if (!vertex.isWallWest())
-			nextVertex.setX(vertex.getX() - 1);
-		}
-		
+
 		if (this.getEdge(vertex, nextVertex) != null  || vertex.equals(nextVertex)){
 			return this.getVertex(nextVertex.getX(),nextVertex.getY());
 		}
@@ -1051,6 +1079,49 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		}
 	}
 	
+	public void setEnemies(Vector<RobotInformation> robots, String myRobotName){
+		
+		this.enemies = robots;				
+		
+		for (RobotInformation robot: this.enemies){
+		
+			G4_Position robotPosition = new G4_Position(robot.getNode().getX(), 
+														robot.getNode().getY(), 
+														robot.getOrientation());
+			this.enemiesPositions.add(startPosition);
+			
+			G4_Vertex startVertex = this.getVertex(robotPosition.x, robotPosition.y);
+			this.enemiesVertices.add(startVertex);
+			
+			//Positionen markieren von denen geschossen werden könnte
+			for (Direction direction: Direction.getDirectionsNESW()){
+				this.setShootingPositions(startVertex, direction);
+			}
+		}
+	}
+
+	public void setMates(Vector<RobotInformation> robots, String myRobotName){
+		
+		this.mates = robots;				
+		
+		for (RobotInformation robot: this.mates){
+		
+			G4_Position robotPosition = new G4_Position(robot.getNode().getX(), 
+														robot.getNode().getY(), 
+														robot.getOrientation());
+			this.matesPositions.add(startPosition);
+			
+			G4_Vertex startVertex = this.getVertex(robotPosition.x, robotPosition.y);
+			this.matesVertices.add(startVertex);
+			
+			//Positionen markieren von denen geschossen werden könnte
+			for (Direction direction: Direction.getDirectionsNESW()){
+				this.setShootingPositions(startVertex, direction);
+			}
+		}
+	}
+
+	
 	/**
 	 * "Walks" from a position into the given direction until a wall is hit
 	 * and marks every vertex on this path as a shooting position for the opposite direction
@@ -1067,6 +1138,32 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 				
 				currentVertex = this.getVertexInDirection(currentVertex, direction);
 				currentVertex.setShootingDirection(G4_DirectionUtils.turnU(direction),true);
+								
+			}while (!currentVertex.isWallinDirection(direction));
+			
+		} catch (Exception e) {
+			// Falls Position ausserhalb
+			//e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * "Walks" from a position into the given direction until a wall is hit
+	 * and marks every vertex on this path as a shooting position for the opposite direction
+	 * @param startVertex
+	 * @param direction
+	 */
+	private void setffPositions(G4_Vertex startVertex, Direction direction){
+		
+		G4_Vertex currentVertex = startVertex;
+		
+		try {
+			
+			do{
+				
+				currentVertex = this.getVertexInDirection(currentVertex, direction);
+				currentVertex.setffDirection(G4_DirectionUtils.turnU(direction),true);
 								
 			}while (!currentVertex.isWallinDirection(direction));
 			
@@ -1104,6 +1201,11 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 	}
 	
+	/**
+	 * Returns the number-th checkpoint. 
+	 * @param number The number in the checkpoint order. 0 for "no order" checkpoints (not really supported)
+	 * @return
+	 */
 	public G4_Vertex getCheckpoint(int number){
 		
 		for (G4_Vertex vertex: this.checkpoints){
