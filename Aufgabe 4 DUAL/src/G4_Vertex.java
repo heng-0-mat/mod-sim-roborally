@@ -12,8 +12,6 @@ import roborally.task.Direction;
  */
 public class G4_Vertex {
 	
-	
-
 	private int x;
 	private int y;
 	private G4_Effect effect;
@@ -84,6 +82,7 @@ public class G4_Vertex {
 		}
 		
 		// ---------- LASER ---------------------------------------
+		// TODO Mehrere Laser auf einem Knoten
 		if (nodeString.contains("LaserGun(north")){
 			this.laser = true;
 			this.laserDirection = Direction.NORTH;
