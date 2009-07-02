@@ -18,7 +18,7 @@ public class G4_Position {
 	}
 	
 	public Direction getDirection() {
-		return direction;
+		return this.direction;
 	}
 
 	public void setDirection(Direction direction) {

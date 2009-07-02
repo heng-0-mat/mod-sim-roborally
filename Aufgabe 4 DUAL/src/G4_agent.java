@@ -31,7 +31,6 @@ public class G4_agent extends AITask
 	public String[][] nodeStrings;
 	private int nextCheckpoint = 1;
 	
-	
 	public boolean debugOutput;
 		
 	
