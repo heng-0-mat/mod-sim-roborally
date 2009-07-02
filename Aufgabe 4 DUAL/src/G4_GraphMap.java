@@ -297,7 +297,6 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 				G4_Vertex vertex1 = this.getVertexInDirection(vertex, vertex.conveyorDirection);
 				G4_Vertex vertex2 = this.getVertexInDirection(vertex1, vertex.conveyorDirection);
 				if (vertex2 != null){
-					
 					try {
 						DefaultWeightedEdge longEdge = this.addEdge(vertex, vertex2);
 						this.setEdgeWeight(longEdge, withConveyorWeight);
@@ -580,7 +579,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 				this.setEdgeWeight(edgeNS, default2ConnWeight);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				//e.printStackTrace();
+//				e.printStackTrace();
 			}
 			
 			try {
@@ -588,7 +587,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 				this.setEdgeWeight(edgeSN, default2ConnWeight);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				//e.printStackTrace();
+//				e.printStackTrace();
 			}
 			
 			try {
@@ -596,7 +595,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 				this.setEdgeWeight(edgeEW, default2ConnWeight);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				//e.printStackTrace();
+//				e.printStackTrace();
 			}
 			
 			try {
@@ -604,7 +603,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 				this.setEdgeWeight(edgeWE, default2ConnWeight);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				//e.printStackTrace();
+//				e.printStackTrace();
 			}
 			
 		}		
@@ -729,28 +728,21 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		HashSet<DefaultWeightedEdge> edges3 =  new HashSet<DefaultWeightedEdge>();
 		
 		edges = returnGraph.getOutgoingEdgesInDirection(vertex, direction);
-
+		
 		for( DefaultWeightedEdge edge: edges){
-			if (this.getEdgeSource(edge).conveyorDirection != direction){
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-				edges2.addAll(returnGraph.getOutgoingEdgesInDirection(returnGraph.getEdgeTarget(edge), direction));
-			}
+			returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			edges2.addAll(returnGraph.getOutgoingEdgesInDirection(returnGraph.getEdgeTarget(edge), direction));
 		}
-
+		
 		for( DefaultWeightedEdge edge: edges2){
-			if (this.getEdgeSource(edge).conveyorDirection != direction){
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-				edges3.addAll(returnGraph.getOutgoingEdgesInDirection(returnGraph.getEdgeTarget(edge), direction));
-			}
+			returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+			edges3.addAll(returnGraph.getOutgoingEdgesInDirection(returnGraph.getEdgeTarget(edge), direction));
 		}
-
+		
 		for( DefaultWeightedEdge edge: edges3){
-			if (this.getEdgeSource(edge).conveyorDirection != direction){
-
-				returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
-			}
+			returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 		}
-
+		
 		return returnGraph; 
 	}
 	

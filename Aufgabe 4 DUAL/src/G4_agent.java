@@ -25,6 +25,8 @@ public class G4_agent extends AITask
 {
 	public G4_GraphMap graphMap;
 	public G4_Position position;
+	public G4_Position startposition;
+	
 	
 	public String[][] nodeStrings;
 	private int nextCheckpoint = 1;
@@ -81,7 +83,7 @@ public class G4_agent extends AITask
 	public Card[] executeTurn(Card[] useableCards)
 	{
 		//Ausgaben auf die Konsole (de-)aktivieren
-		this.debugOutput = true;
+		this.debugOutput = false;
 		
 		// Eigene Position bestimmen
 		this.position = new G4_Position(getCurrentNode().getX(),getCurrentNode().getY(),Game.Me.getOrientation());
@@ -89,6 +91,7 @@ public class G4_agent extends AITask
 		//Map Strings intitaliesieren
 		if (this.Game.Round.getRound() == 1){
 			this.nodeStrings = new String[this.Game.Map.getWidth()][this.Game.Map.getHeight()];
+			this.startposition = position;
 		}
 		
 		//Map Strings aktualisieren	
@@ -102,7 +105,7 @@ public class G4_agent extends AITask
 		
 		//Spielfeld als Graph erzeugen
 		this.graphMap = new G4_GraphMap(nodeStrings, this.position );
-		
+		this.graphMap.startPosition = this.startposition;
 //		
 //	    if (Game.Round.getRound() == 1){
 //	    	JGraph jgraph = new JGraph( new JGraphModelAdapter( myMapGraph ) );

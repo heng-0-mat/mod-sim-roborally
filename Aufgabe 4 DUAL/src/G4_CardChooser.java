@@ -84,27 +84,28 @@ public class G4_CardChooser {
 		
 		//Wenn wir auf einem "Todesknoten" stehen
 		G4_Vertex startVertex = this.graphMap.getVertex(start.x, start.y);
-		if (startVertex.betterGetOffThatDamnThing){
-			//AAAAAH wir gucken genau in den Abgrund!!!! ZURUECKRUDERN
-			if (start.getDirection() == startVertex.deathLiesInDirection){
-				this.tryChoosingCard(Constants.CardType.Move_Backward_Card, false);
-			}
-			//Vielleicht kommen wir ja noch weg, hoffentlich fahren wir nicht woanders rein
-			else if (start.getDirection() ==  G4_DirectionUtils.turnU(startVertex.deathLiesInDirection)){
-				this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card, false);
-			}
-			else{
-				//Irgendwie runter davon...
-				if (this.graphMap.getOutgoingEdgesInDirection(startVertex, start.getDirection()).size() > 0)
-					this.tryChoosingCard(Constants.CardType.Move_Forward_Card, false);
-				else
-					this.tryChoosingCard(Constants.CardType.Move_Backward_Card, false);
-					
-			}
-		}
+	
+//		if (startVertex.betterGetOffThatDamnThing){
+//			//AAAAAH wir gucken genau in den Abgrund!!!! ZURUECKRUDERN
+//			if (start.getDirection() == startVertex.deathLiesInDirection){
+//				this.tryChoosingCard(Constants.CardType.Move_Backward_Card, false);
+//			}
+//			//Vielleicht kommen wir ja noch weg, hoffentlich fahren wir nicht woanders rein
+//			else if (start.getDirection() ==  G4_DirectionUtils.turnU(startVertex.deathLiesInDirection)){
+//				this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card, false);
+//			}
+//			else{
+//				//Irgendwie runter davon...
+//				if (this.graphMap.getOutgoingEdgesInDirection(startVertex, start.getDirection()).size() > 0)
+//					this.tryChoosingCard(Constants.CardType.Move_Forward_Card, false);
+//				else
+//					this.tryChoosingCard(Constants.CardType.Move_Backward_Card, false);
+//					
+//			}
+//	else	}
 		
 		//Wenn der richtige Knoten erreicht ist, nur noch drehen
-		else if (path.size() == 0){
+		 if (path.size() == 0){
 			if (ziel.getDirection() == G4_DirectionUtils.turnCW(start.getDirection())){
 				this.tryChoosingCard(Constants.CardType.Rotate_CW_Card,  false);
 			}
