@@ -690,6 +690,25 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	}
 	
 	//von Qi
+	public G4_Position getKnotenMyCheckpoint(G4_Position myposition,G4_Position partnerposition,G4_Position checkpoint0,G4_Position checkpoint1)
+	{
+		Double mypositiontocheckpoint0=this.getLengthOfShortestPath(myposition, checkpoint0, true, true);
+		Double mypositiontocheckpoint1=this.getLengthOfShortestPath(myposition, checkpoint1, true, true);
+		Double partnerpositiontocheckpoint0=this.getLengthOfShortestPath(partnerposition, checkpoint0, true, true);
+		Double partnerpositiontocheckpoint1=this.getLengthOfShortestPath(partnerposition, checkpoint1, true, true);
+		
+		if(partnerpositiontocheckpoint0<=partnerpositiontocheckpoint1)
+		{
+			return checkpoint1;
+		}
+		else
+		{
+			return checkpoint0;
+		}
+
+	}
+	
+	//von Qi
 	public G4_Position getNextGrenzknoten(G4_Position start)
 	{
 		Double weglaenge=Double.POSITIVE_INFINITY;
