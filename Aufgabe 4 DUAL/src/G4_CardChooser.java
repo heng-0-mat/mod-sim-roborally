@@ -680,7 +680,7 @@ public class G4_CardChooser {
 		    	returnCard = this.cards.remove(this.cards.indexOf(returnCard));				
 			}
 			else{	
-			 /
+			 
 				String cardString = this.cardTypeToQiString(cardtype);
 			
 				Card[] cards =new Card[this.cards.size()];
