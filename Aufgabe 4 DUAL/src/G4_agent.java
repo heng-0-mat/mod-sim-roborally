@@ -27,6 +27,8 @@ public class G4_agent extends AITask
 	public G4_Position position;
 	public G4_Position startposition;
 	
+	private boolean imattacking = false;
+	
 	
 	public String[][] nodeStrings;
 	private int nextCheckpoint = 1;
@@ -140,6 +142,80 @@ public class G4_agent extends AITask
 	    
 	    return null;
 
+	}
+	
+	public Card[] playDomination(Card[] useableCards){
+		
+	    int attackCards = 0;
+	    int moveCards = 5;
+
+		//Kartenauswaehler initialisieren
+		G4_CardChooser chooser = new G4_CardChooser(this.graphMap, useableCards, this.position, attackCards, moveCards);
+		chooser.debugOutput = this.debugOutput;
+		
+		G4_Position zielPosition = null;
+		
+		if (this.imattacking){
+			
+			//QI ANGRIFF
+		}
+		else{
+			
+			G4_Vertex dom1 = (G4_Vertex) this.graphMap.dominationPoints.toArray()[0];
+			G4_Vertex dom2 = (G4_Vertex) this.graphMap.dominationPoints.toArray()[1];
+			
+			//Ist ein Domination Punkt belaqert?
+			if (this.graphMap.isVertexUnderHeavyAttack(dom1) ||
+					this.graphMap.isVertexUnderHeavyAttack(dom2)){
+				//JAGEN
+				zielPosition = this.graphMap.getNextEnemy(this.position);
+			}
+			else{	
+				
+				//Sind beide DOMs bewacht?
+				boolean dom1guarded = false;
+				boolean dom2guarded = false;
+				
+				//DOM1
+				for (G4_Vertex vertex: this.graphMap.matesVertices){
+					if (this.graphMap.isVertexInProximity(vertex, dom1))
+						dom1guarded = true;
+				}
+				
+				//DOM2
+				for (G4_Vertex vertex: this.graphMap.matesVertices){
+					if (this.graphMap.isVertexInProximity(vertex, dom2))
+						dom2guarded = true;
+				}
+				
+				if (dom1guarded && dom2guarded){
+					//JAGEN
+					zielPosition = this.graphMap.getNextEnemy(this.position);
+				}
+				else{
+					if (!dom1guarded){
+						//FAHR ZU DOM1
+						zielPosition = dom1.toG4_Position();
+					}
+					else{
+						//FAHR ZU DOM2
+						zielPosition = dom2.toG4_Position();
+					}
+				}
+							
+			}
+		
+			chooser.chooseMovingCards2(position, zielPosition);
+			chooser.backBackNForthNForth();	
+				
+			}
+		
+		if (this.debugOutput)
+			System.out.println("DOMINATION -- RUNDE " +  this.Game.Round.getRound());
+			    //chooser.chooseCards(zielPosition);
+	    return chooser.getChosenCardsArray();
+	
+	   
 	}
 
 	public Card[] playRegularGame(Card[] useableCards){

@@ -837,7 +837,22 @@ public class G4_CardChooser {
 		
 		return null;
 	}
-
+	
+	public void backBackNForthNForth(){
+	
+		while (this.getChosenCards().size() <= 5){
+			
+			if (this.getChosenCards().size() % 2 == 0)
+				this.tryChoosingCard(Constants.CardType.Move_Forward_Card,  false);
+			else
+				this.tryChoosingCard(Constants.CardType.Move_Backward_Card,  false);
+		}
+			
+	}
+	
+		
 }
+	
+	
 
 

@@ -67,6 +67,9 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	final int withConveyorWeight = 1;
 	final int againstConveyorWeight = 8;
 	
+	final int proximityRadius = 3;
+	final int proximityEdgeWeightSum = 12;
+	
 	
 	public G4_GraphMap(MapObject map, G4_Position startPosition) {
 		super(DefaultWeightedEdge.class);
@@ -765,7 +768,9 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			HashSet<DefaultWeightedEdge> dangerEdges = new HashSet<DefaultWeightedEdge>(this.incomingEdgesOf(dangerVertex));
 			returnGraph.removeAllEdges(dangerEdges);
 		}
-				
+		
+		
+		//NACH VORNE FAHREN "ERLEICHTERN"
 		HashSet<DefaultWeightedEdge> edges = new HashSet<DefaultWeightedEdge>();
 		HashSet<DefaultWeightedEdge> edges2 =  new HashSet<DefaultWeightedEdge>();
 		HashSet<DefaultWeightedEdge> edges3 =  new HashSet<DefaultWeightedEdge>();
@@ -784,6 +789,28 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 		for( DefaultWeightedEdge edge: edges3){
 			returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
+		}
+		
+		//FEINDBESCHUSS ATTRAKTIV (im invincible!) 
+		for (G4_Position position: this.shootPositions){
+			
+			G4_Vertex shootVertex = returnGraph.getVertex(position.x, position.y);
+			
+			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(shootVertex, position.getDirection())){
+				returnGraph.setEdgeWeight(edge, 0);
+			}			
+		}
+		
+		
+		//FREUNDBESCHUSS UN-ATTRAKTIV (Friendly Fire ISN'T...)
+		for (G4_Position position: this.ffPositions){
+			
+			G4_Vertex ffVertex = returnGraph.getVertex(position.x, position.y);
+			
+			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(ffVertex, position.getDirection())){
+				returnGraph.setEdgeWeight(edge,  returnGraph.getEdgeWeight(edge) + 4);
+			}			
+			
 		}
 		
 		return returnGraph; 
@@ -1047,25 +1074,25 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	 * @return position of nearest enemy
 	 */
 	public G4_Position getNextEnemy(G4_Position startPosition){
-		double pathToEnemyLength = 1000;
-		G4_Position enemyPosition = null;
 		
-		for (RobotInformation robot: this.enemies){
+		double pathToEnemyLength = Double.POSITIVE_INFINITY;
+		G4_Position nearestEnemy = null;
+		
+		for (G4_Position enemyPosition: this.enemiesPositions  ){
 			
-			G4_Position robotPosition = new G4_Position(robot.getNode().getX(), robot.getNode().getY(), robot.getOrientation());
-			double pathLength = this.getLengthOfShortestPath_OLD(startPosition, robotPosition);
+			double pathLength = this.getLengthOfShortestPath(startPosition, enemyPosition, false, false);
 			
 			if (pathLength < pathToEnemyLength){
 				pathToEnemyLength = pathLength;
-				enemyPosition = robotPosition;
+				nearestEnemy = enemyPosition;
 			}
 		}
 		
-		if (enemyPosition == null){
+		if (nearestEnemy == null){
 			return null;
 		}
 		
-		return enemyPosition;
+		return nearestEnemy;
 		
 	}
 	
@@ -1149,16 +1176,18 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	 */
 	private void setShootingPositions(G4_Vertex startVertex, Direction direction){
 		
-		G4_Vertex currentVertex = startVertex;
+		G4_Vertex vertex = startVertex;
 		
 		try {
 			
 			do{
 				
-				currentVertex = this.getVertexInDirection(currentVertex, direction);
-				currentVertex.setShootingDirection(G4_DirectionUtils.turnU(direction),true);
+				vertex = this.getVertexInDirection(vertex, direction);
+				vertex.setShootingDirection(G4_DirectionUtils.turnU(direction),true);
+				
+				this.shootPositions.add(new G4_Position(vertex.getX(),vertex.getY(),direction));				
 								
-			}while (!currentVertex.isWallinDirection(direction));
+			}while (!vertex.isWallinDirection(direction));
 			
 		} catch (Exception e) {
 			// Falls Position ausserhalb
@@ -1175,16 +1204,18 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	 */
 	private void setffPositions(G4_Vertex startVertex, Direction direction){
 		
-		G4_Vertex currentVertex = startVertex;
+		G4_Vertex vertex = startVertex;
 		
 		try {
 			
 			do{
 				
-				currentVertex = this.getVertexInDirection(currentVertex, direction);
-				currentVertex.setffDirection(G4_DirectionUtils.turnU(direction),true);
+				vertex = this.getVertexInDirection(vertex, direction);
+				vertex.setffDirection(G4_DirectionUtils.turnU(direction),true);
+				
+				this.ffPositions.add(new G4_Position(vertex.getX(),vertex.getY(),direction));				
 								
-			}while (!currentVertex.isWallinDirection(direction));
+			}while (!vertex.isWallinDirection(direction));
 			
 		} catch (Exception e) {
 			// Falls Position ausserhalb
@@ -1229,11 +1260,105 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 		for (G4_Vertex vertex: this.checkpoints){
 			if (vertex.checkpointNr == number)
-				return vertex;
+				if (this.getLengthOfShortestPath(this.startPosition , vertex.toG4_Position(), false, false) == Double.POSITIVE_INFINITY){
+					return null;
+				}
+				else
+					return vertex;
 		}
 		
 		return null;
 	}
+	
+	public boolean isVertexInProximity(G4_Vertex coreVertex, G4_Vertex proxiVertex){
+		
+		if (isVertexInRadius(coreVertex, proxiVertex, this.proximityRadius)){
+			if (this.getLengthOfShortestPath(coreVertex.toG4_Position(),
+					proxiVertex.toG4_Position(), false, false) <= this.proximityEdgeWeightSum ){
+				return true;
+			}
+		}
+				
+		return false;
+	}
+	
+	public boolean isVertexInRadius(G4_Vertex center, G4_Vertex vertex, int radius){
+		
+		int centerY = center.getY();
+		int centerX = center.getX();
+		int vertexY = center.getY();
+		int	vertexX = center.getX();
+		
+		int offsetX = Math.abs(centerX - vertexX);
+		int offsetY = Math.abs(centerY - vertexY);
+		
+		return ((offsetX + offsetY) <= radius);
+		
+		
+	}
+	
+	
+	public boolean isVertexGuarded(G4_Vertex vertex){
+		
+		for (G4_Vertex mateVertex: this.matesVertices ){
+			//Richtung (von Teammate zu Vertex) wichtig wegen Conveyors
+			if (this.isVertexInProximity(mateVertex, vertex))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isVertexUnderHeavyAttack(G4_Vertex vertex){
+		
+		int attackers = 0;
+		
+		for (G4_Vertex enemyVertex: this.enemiesVertices  ){
+			if (this.isVertexInProximity(enemyVertex, vertex))
+				attackers++;
+		}
+		
+		if (attackers >= 2){
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	public G4_Position getNextShootingPosition(G4_Position position){
+				
+		HashSet<G4_Position> candidates = new HashSet<G4_Position>();
+		
+		//Erstes Casting
+		for (G4_Position currentPos: this.shootPositions){
+			//Falls keine FF Gefahr
+			if (!this.ffPositions.contains(currentPos)){
+		
+				G4_Vertex currentVertex = currentPos.toG4_Vertex();
+				currentVertex = this.getVertex(currentVertex.getX(), currentVertex.getY());
+				//Wenn nah genug
+				if (this.isVertexInProximity(position.toG4_Vertex(), currentVertex)){
+					if (!currentVertex.isCompactor() &&
+							!currentVertex.isHole())
+					candidates.add(currentPos);
+				}			
+			}			
+		}
+		
+		
+		//RECALL
+		double shortest = Double.POSITIVE_INFINITY;
+		G4_Position shootPosition = null;
+		
+		for (G4_Position currentPosition: candidates){
+			if (this.getLengthOfShortestPath(position, currentPosition, false, false) < shortest)
+				shootPosition = currentPosition;
+		}
+
+		return shootPosition;
+		
+	}
+
 	
 }
 
