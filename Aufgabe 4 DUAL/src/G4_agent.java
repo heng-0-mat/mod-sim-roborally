@@ -206,16 +206,20 @@ public class G4_agent extends AITask
 		chooser.debugOutput = this.debugOutput;
 		
 		G4_Position zielPosition = null;
+		G4_Vertex dom1 = (G4_Vertex) this.graphMap.dominationPoints.toArray()[0];
+		G4_Vertex dom2 = (G4_Vertex) this.graphMap.dominationPoints.toArray()[1];
 		
 		if (this.imattacking){
 			
 			//QI ANGRIFF
+			G4_Position freund = (G4_Position) this.graphMap.matesPositions.toArray()[0];
+			chooser.chooseMovingCards2(position, angriefZielPosition(freund));
+			chooser.backBackNForthNForth();
+			
 		}
 		else{
 			
-			G4_Vertex dom1 = (G4_Vertex) this.graphMap.dominationPoints.toArray()[0];
-			G4_Vertex dom2 = (G4_Vertex) this.graphMap.dominationPoints.toArray()[1];
-			
+				
 			boolean imHunting = false;
 			
 			//Ist ein Domination Punkt belaqert?
