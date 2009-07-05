@@ -691,6 +691,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			e.printStackTrace();
 		}
 	}
+		
 	
 	//von Qi
 	public G4_Position getKnotenMyCheckpoint(G4_Position myposition,G4_Position partnerposition,G4_Position checkpoint0,G4_Position checkpoint1)
@@ -700,16 +701,38 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		Double partnerpositiontocheckpoint0=this.getLengthOfShortestPath(partnerposition, checkpoint0, true, true);
 		Double partnerpositiontocheckpoint1=this.getLengthOfShortestPath(partnerposition, checkpoint1, true, true);
 		
-		if(partnerpositiontocheckpoint0<=partnerpositiontocheckpoint1)
+		G4_Position temp=new G4_Position(-1,-1,Direction.EAST);
+		
+		if(partnerpositiontocheckpoint0 == Double.POSITIVE_INFINITY || partnerpositiontocheckpoint1 == Double.POSITIVE_INFINITY)
 		{
-			return checkpoint1;
+
+			if(partnerpositiontocheckpoint0 == Double.POSITIVE_INFINITY)
+			{
+				temp=checkpoint0;
+			}
+			
+			if(partnerpositiontocheckpoint1 == Double.POSITIVE_INFINITY)
+			{
+				temp=checkpoint1;
+			}
 		}
+		
 		else
 		{
-			return checkpoint0;
+			if(partnerpositiontocheckpoint0<=partnerpositiontocheckpoint1)
+			{
+				temp=checkpoint1;
+			}
+			else
+			{
+				temp=checkpoint0;
+			}
 		}
-
+		
+			
+		return temp;
 	}
+	
 	
 	//von Qi
 	public G4_Position getNextGrenzknoten(G4_Position start)

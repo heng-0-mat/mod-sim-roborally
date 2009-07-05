@@ -865,4 +865,15 @@ public class G4_agent extends AITask
 			return new G4_Position(nextNodeX,nextNodeY,Game.Me.getOrientation());
 		}
 	}
+	
+	//Von Qi
+	//Angrief_Strategie
+	public G4_Position angriefZielPosition(G4_Position partnerposition)
+	{
+		G4_Position myposition=new G4_Position(this.Game.Me.getCurrentNode().getX(),this.Game.Me.getCurrentNode().getY(),this.Game.Me.getOrientation());
+		G4_Position checkpoint0=new G4_Position(this.Game.Me.getCheckpoints()[0].getX(),this.Game.Me.getCheckpoints()[0].getY(),this.Game.Me.getOrientation());
+		G4_Position checkpoint1=new G4_Position(this.Game.Me.getCheckpoints()[1].getX(),this.Game.Me.getCheckpoints()[1].getY(),this.Game.Me.getOrientation());
+				
+		return this.graphMap.getKnotenMyCheckpoint(myposition, partnerposition, checkpoint0, checkpoint1);
+	}
 }
