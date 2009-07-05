@@ -175,7 +175,7 @@ public class G4_agent extends AITask
 //	    }
 	   
 	    if (this.Settings.getGameMode().equals(Constants.GameMode.REGULAR_GAME)){
-	    	return this.playRegularGame(useableCards);
+	    	return this.playDomination(useableCards);//this.playRegularGame(useableCards);
 	    }
 	    else if (this.Settings.getGameMode().equals(Constants.GameMode.LAST_MAN_STANDING)){
 	    	return this.playLastManStanding(useableCards);
