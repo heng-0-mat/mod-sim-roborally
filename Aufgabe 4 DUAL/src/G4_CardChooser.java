@@ -52,6 +52,11 @@ public class G4_CardChooser {
 	
 	public Vector<Card> chooseMovingCards2(G4_Position start, G4_Position ziel){
 		
+		if (ziel == null){
+			this.backBackNForthNForth();
+			return chosenCards;
+		}
+		
 		//Falls Zielposition erreicht oder 5 Karten gewählt sind, abbrechen!
 		if (start.equals(ziel) || this.chosenCards.size() >= 5){
 			return chosenCards;

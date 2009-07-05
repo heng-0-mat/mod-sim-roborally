@@ -216,6 +216,8 @@ public class G4_agent extends AITask
 			G4_Vertex dom1 = (G4_Vertex) this.graphMap.dominationPoints.toArray()[0];
 			G4_Vertex dom2 = (G4_Vertex) this.graphMap.dominationPoints.toArray()[1];
 			
+			boolean imHunting = false;
+			
 			//Ist ein Domination Punkt belaqert?
 			if (this.graphMap.isVertexUnderHeavyAttack(dom1) ||
 					this.graphMap.isVertexUnderHeavyAttack(dom2)){
@@ -227,6 +229,8 @@ public class G4_agent extends AITask
 				//Sind beide DOMs bewacht?
 				boolean dom1guarded = false;
 				boolean dom2guarded = false;
+				
+			
 				
 				//DOM1
 				for (G4_Vertex vertex: this.graphMap.matesVertices){
@@ -243,6 +247,7 @@ public class G4_agent extends AITask
 				if (dom1guarded && dom2guarded){
 					//JAGEN
 					zielPosition = this.graphMap.getNextEnemy(this.position);
+					imHunting = true;
 				}
 				else{
 					if (!dom1guarded){
@@ -258,8 +263,10 @@ public class G4_agent extends AITask
 			}
 		
 			chooser.chooseMovingCards2(position, zielPosition);
-			chooser.backBackNForthNForth();	
-				
+			if (imHunting)
+				chooser.backBackNForthNForth();	
+			else
+				chooser.chooseMovingCards2(position, this.graphMap.getNextShootingPosition(position));
 			}
 		
 		if (this.debugOutput)
