@@ -1,3 +1,5 @@
+import java.awt.Robot;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -27,6 +29,13 @@ public class G4_agent extends AITask
 	public G4_Position position;
 	public G4_Position startposition;
 	
+	//OMAR 
+	private HashSet<String> friendNames = new HashSet<String>();
+	private HashSet<String> enemyNames = new HashSet<String>();
+	
+	private Vector<RobotInformation> friends = new Vector<RobotInformation>();
+	private Vector<RobotInformation> enemies = new Vector<RobotInformation>();
+		
 	private boolean imattacking = false;
 	
 	
@@ -107,6 +116,49 @@ public class G4_agent extends AITask
 		//Spielfeld als Graph erzeugen
 		this.graphMap = new G4_GraphMap(nodeStrings, this.position );
 		this.graphMap.startPosition = this.startposition;
+		
+		//FREUND UND FEIND BESTIMMEN -- ERSTE RUNDE
+		if (this.Game.Round.getRound() == 1){
+			for (RobotInformation robot: this.Game.Robots.getAllRobots()){
+				if (robot.getRobotName() != this.getRobotName()){
+					G4_Position robotPosition = new G4_Position(robot.getNode().getX(),
+																robot.getNode().getY(),
+																robot.getOrientation());
+					if (this.graphMap.getLengthOfShortestPath(this.position, 
+								robotPosition, false, false) <= 4){
+						this.friendNames.add(robot.getRobotName());
+						this.friends.add(robot);
+					}else{
+						this.enemyNames.add(robot.getRobotName());
+						this.enemies.add(robot);
+					}
+				}
+			}
+			
+			if (this.friends.size() == 1)
+				this.imattacking = true;
+		}
+		//RUNDEN DANACH -- PSOITIONEN AKTUALISIEREN omar
+		else{
+			
+			this.enemies.clear();
+			this.friends.clear();
+			
+			for (RobotInformation robot: this.Game.Robots.getAllRobots()){
+				if (robot.getRobotName() != this.getRobotName()){
+					if (this.friendNames.contains(robot.getRobotName())){
+						this.friends.add(robot);
+					}else{
+						this.enemies.add(robot);
+					}
+				}
+			}
+		}
+		
+		//ROBOTERINFO AN GRAPHEN GEBEN omar
+		this.graphMap.setEnemies(this.enemies, this.getRobotName());
+		this.graphMap.setMates(this.friends, this.getRobotName());
+		
 //		
 //	    if (Game.Round.getRound() == 1){
 //	    	JGraph jgraph = new JGraph( new JGraphModelAdapter( myMapGraph ) );
