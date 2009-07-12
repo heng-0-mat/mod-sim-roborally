@@ -696,8 +696,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	//von Qi
 	public G4_Position getKnotenMyCheckpoint(G4_Position myposition,G4_Position partnerposition,G4_Position checkpoint0,G4_Position checkpoint1)
 	{
-		boolean tag=false;
-		
+				
 		//Double mypositiontocheckpoint0=this.getLengthOfShortestPath(myposition, checkpoint0, true, true);
 		//Double mypositiontocheckpoint1=this.getLengthOfShortestPath(myposition, checkpoint1, true, true);
 		Double partnerpositiontocheckpoint0=this.getLengthOfShortestPath(partnerposition, checkpoint0, true, true);
@@ -705,9 +704,9 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 		G4_Position temp=new G4_Position(-1,-1,Direction.EAST);
 		
-		if(tag==true)
-		{
-			if(partnerpositiontocheckpoint0 == Double.POSITIVE_INFINITY || partnerpositiontocheckpoint1 == Double.POSITIVE_INFINITY)
+		
+			/*
+			 * if(partnerpositiontocheckpoint0 == Double.POSITIVE_INFINITY || partnerpositiontocheckpoint1 == Double.POSITIVE_INFINITY)
 			{
 
 				if(partnerpositiontocheckpoint0 == Double.POSITIVE_INFINITY)
@@ -718,6 +717,20 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 				if(partnerpositiontocheckpoint1 == Double.POSITIVE_INFINITY)
 				{
 					temp=checkpoint1;
+				}
+			}
+			 */
+			if((partnerposition.x == checkpoint0.x && partnerposition.y == checkpoint0.y) || (partnerposition.x == checkpoint1.x && partnerposition.y == checkpoint1.y))
+			{
+
+				if(partnerposition.x == checkpoint0.x && partnerposition.y == checkpoint0.y)
+				{
+					temp=checkpoint1;
+				}
+				
+				else
+				{
+					temp=checkpoint0;
 				}
 			}
 			
@@ -732,19 +745,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 					temp=checkpoint0;
 				}
 			}
-		}
-		else
-		{
-			if(partnerpositiontocheckpoint0<=partnerpositiontocheckpoint1)
-			{
-				temp=checkpoint1;
-			}
-			else
-			{
-				temp=checkpoint0;
-			}
-		}
-				
+					
 			
 		return temp;
 	}
