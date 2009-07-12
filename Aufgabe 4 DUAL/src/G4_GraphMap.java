@@ -831,27 +831,27 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 		}
 		
-		//FEINDBESCHUSS ATTRAKTIV (im invincible!) 
-		for (G4_Position position: this.shootPositions){
-			
-			G4_Vertex shootVertex = returnGraph.getVertex(position.x, position.y);
-			
-			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(shootVertex, position.getDirection())){
-				returnGraph.setEdgeWeight(edge, 0);
-			}			
-		}
-		
-		
-		//FREUNDBESCHUSS UN-ATTRAKTIV (Friendly Fire ISN'T...)
-		for (G4_Position position: this.ffPositions){
-			
-			G4_Vertex ffVertex = returnGraph.getVertex(position.x, position.y);
-			
-			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(ffVertex, position.getDirection())){
-				returnGraph.setEdgeWeight(edge,  returnGraph.getEdgeWeight(edge) + 4);
-			}			
-			
-		}
+//		//FEINDBESCHUSS ATTRAKTIV (im invincible!) 
+//		for (G4_Position position: this.shootPositions){
+//			
+//			G4_Vertex shootVertex = returnGraph.getVertex(position.x, position.y);
+//			
+//			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(shootVertex, position.getDirection())){
+//				returnGraph.setEdgeWeight(edge, 0);
+//			}			
+//		}
+//		
+//		
+//		//FREUNDBESCHUSS UN-ATTRAKTIV (Friendly Fire ISN'T...)
+//		for (G4_Position position: this.ffPositions){
+//			
+//			G4_Vertex ffVertex = returnGraph.getVertex(position.x, position.y);
+//			
+//			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(ffVertex, position.getDirection())){
+//				returnGraph.setEdgeWeight(edge,  returnGraph.getEdgeWeight(edge) + 4);
+//			}			
+//			
+//		}
 		
 		return returnGraph; 
 	}
