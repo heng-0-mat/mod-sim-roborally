@@ -362,7 +362,7 @@ public class G4_GraphMapBall extends DefaultDirectedWeightedGraph<G4_Vertex, Def
 	 * (at most 3 vertices) is less expensive than moving into the other directions
 	 * @param position 
 	 * @param direction
-	 * @return A G4_GraphMap with adjusted weights around the given position
+	 * @return A D_GraphMap with adjusted weights around the given position
 	 */
 	private G4_GraphMapBall getAdaptedGraph(G4_Vertex position, Direction direction){
 

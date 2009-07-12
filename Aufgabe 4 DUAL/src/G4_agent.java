@@ -79,7 +79,7 @@ public class G4_agent extends AITask
 	public String getRobotName()
 	{
 		// TODO: Add your group name here
-		return "Gruppe4";
+		return "GGG";
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class G4_agent extends AITask
 	public Card[] executeTurn(Card[] useableCards)
 	{
 		//Ausgaben auf die Konsole (de-)aktivieren
-		this.debugOutput = false;
+		this.debugOutput = true;
 		
 		// Eigene Position bestimmen
 		this.position = new G4_Position(getCurrentNode().getX(),getCurrentNode().getY(),Game.Me.getOrientation());
@@ -227,6 +227,7 @@ public class G4_agent extends AITask
 					this.graphMap.isVertexUnderHeavyAttack(dom2)){
 				//JAGEN
 				zielPosition = this.graphMap.getNextEnemy(this.position);
+				imHunting = true;
 			}
 			else{	
 				
@@ -234,27 +235,37 @@ public class G4_agent extends AITask
 				boolean dom1guarded = false;
 				boolean dom2guarded = false;
 				
-			
+				double dist2dom1 = this.graphMap.getLengthOfShortestPath(position,dom1.toG4_Position(), false, false);
+				double dist2dom2 = this.graphMap.getLengthOfShortestPath(position,dom2.toG4_Position(), false, false);
 				
+				boolean imClosest2Dom1 = true;
+				boolean imClosest2Dom2 = true;
+						
 				//DOM1
 				for (G4_Vertex vertex: this.graphMap.matesVertices){
+					if (this.graphMap.getLengthOfShortestPath(vertex.toG4_Position(), dom1.toG4_Position(), false, false) < dist2dom1)
+						imClosest2Dom1 = false;
 					if (this.graphMap.isVertexInProximity(vertex, dom1))
 						dom1guarded = true;
 				}
 				
 				//DOM2
 				for (G4_Vertex vertex: this.graphMap.matesVertices){
+					if (this.graphMap.getLengthOfShortestPath(vertex.toG4_Position(), dom2.toG4_Position(), false, false) < dist2dom1)
+						imClosest2Dom2 = false;
 					if (this.graphMap.isVertexInProximity(vertex, dom2))
 						dom2guarded = true;
 				}
 				
-				if (dom1guarded && dom2guarded){
+				//if (dom1guarded && dom2guarded){
+				if (!imClosest2Dom1 && !imClosest2Dom2){
 					//JAGEN
 					zielPosition = this.graphMap.getNextEnemy(this.position);
 					imHunting = true;
 				}
 				else{
-					if (!dom1guarded){
+					//if (!dom1guarded){
+					if (!imClosest2Dom2){
 						//FAHR ZU DOM1
 						zielPosition = dom1.toG4_Position();
 					}

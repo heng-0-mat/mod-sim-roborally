@@ -82,7 +82,15 @@ public class G4_CardChooser {
 		//Kuerzester Weg
 		List<DefaultWeightedEdge> path = this.graphMap.getEdgesOnShortestPath(start, ziel, remove2edges, remove3edges);
 		if (this.debugOutput)
-			System.out.println("NAECHSTE KANTE: " + path.get(0).toString());		
+			try {
+				for (DefaultWeightedEdge edge: path){
+					System.out.println("WEG:  " + edge.toString());
+				}
+				//System.out.println("NAECHSTE KANTE: " + path.get(0).toString());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
 		
 		//Anzahl bereits gewaehlter Karten
 		int countChosenCards = chosenCards.size();
@@ -96,7 +104,7 @@ public class G4_CardChooser {
 //				this.tryChoosingCard(Constants.CardType.Move_Backward_Card, false);
 //			}
 //			//Vielleicht kommen wir ja noch weg, hoffentlich fahren wir nicht woanders rein
-//			else if (start.getDirection() ==  G4_DirectionUtils.turnU(startVertex.deathLiesInDirection)){
+//			else if (start.getDirection() ==  D_DirectionUtils.turnU(startVertex.deathLiesInDirection)){
 //				this.tryChoosingCard(Constants.CardType.Move_Three_Forward_Card, false);
 //			}
 //			else{
@@ -658,7 +666,7 @@ public class G4_CardChooser {
 		if (this.debugOutput) System.out.println("NEEDING: " + cardtype.toString());
 		
 		for (Card card: this.cards){
-			if (this.debugOutput) System.out.println("HAVING: --- " + card.getCardTypeString().toString());			
+			//if (this.debugOutput) System.out.println("HAVING: --- " + card.getCardTypeString().toString());			
 		}
 		Card returnCard = null;
 		
