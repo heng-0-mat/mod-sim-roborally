@@ -3,7 +3,7 @@
  *
  *Mit dieser Klasse koennen die Information ueber alle vier Richtungen einer Mauern gespeicht werden.
  */
-public class QZ_Wall {
+public class G4_Wall {
 	private boolean east;	//Definiere die Richtung East
 	private boolean south;	//Definiere die Richtung South
 	private boolean west;	//Definiere die Richtung West
@@ -12,7 +12,7 @@ public class QZ_Wall {
 	/**
 	 * Jede Knoten besitzt die Infomation ueber Mauer fuer alle vier Richtung um ihr 
 	 */
-	public QZ_Wall(){
+	public G4_Wall(){
 		east=false;
 		south=false;
 		west=false;

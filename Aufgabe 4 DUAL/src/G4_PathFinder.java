@@ -6,17 +6,17 @@ import java.util.List;
  * @author Qi Zheng
  *
  */
-public class QZ_PathFinder {
+public class G4_PathFinder {
 	  private LevelList _levelList;
-      private LinkedList<QZ_Node> _closedList;
+      private LinkedList<G4_Node> _closedList;
 	  private int[][] _map;
 	  private int[] _limit;
 	 
-	  public QZ_PathFinder(int[][] map, int[] limit) {
+	  public G4_PathFinder(int[][] map, int[] limit) {
 	    _map = map;
 	    _limit = limit;
 	    _levelList = new LevelList();
-	    _closedList = new LinkedList<QZ_Node>();
+	    _closedList = new LinkedList<G4_Node>();
 	  }
 	  
 	  /**
@@ -24,10 +24,10 @@ public class QZ_PathFinder {
 	 * @param Zielsposition
 	 * @return Liefert eine Liste des kurzsten Wegs
 	 */
-	public List<QZ_Node> searchPath(Point startPos, Point objectPos) {
+	public List<G4_Node> searchPath(Point startPos, Point objectPos) {
 	    // Anfangsknoten und Endknoten
-	    QZ_Node startNode = new QZ_Node(startPos);
-	    QZ_Node objectNode = new QZ_Node(objectPos);
+	    G4_Node startNode = new G4_Node(startPos);
+	    G4_Node objectNode = new G4_Node(objectPos);
 	    
 	    startNode._costFromStart = 0;
 	    startNode._costToObject = startNode.getCost(objectNode);
@@ -37,7 +37,7 @@ public class QZ_PathFinder {
 	    // durchsuchen bis levelList leer ist
 	    while (!_levelList.isEmpty()) {
 	      // loeschen den Anfangsknoten
-	      QZ_Node firstNode = (QZ_Node) _levelList.removeFirst();
+	      G4_Node firstNode = (G4_Node) _levelList.removeFirst();
 	      // ob gleich ist
 	      if (firstNode.equals(objectNode)) {
 	        //Menge der Knoten zurueckgeben
@@ -47,11 +47,11 @@ public class QZ_PathFinder {
 	        // sonst wird es in List eingefuegt
 	        _closedList.add(firstNode);
 	        
-	        LinkedList<QZ_Node> _limit = firstNode.getLimit();
+	        LinkedList<G4_Node> _limit = firstNode.getLimit();
 	        // durchensuchen
 	        for (int i = 0; i < _limit.size(); i++) {
 	          // Nachbarknoten
-	          QZ_Node neighborNode = (QZ_Node) _limit.get(i);
+	          G4_Node neighborNode = (G4_Node) _limit.get(i);
 	          
 	          boolean isOpen = _levelList.contains(neighborNode);
 	          
@@ -101,8 +101,8 @@ public class QZ_PathFinder {
 	   * @param node
 	   * @return
 	   */
-	  private LinkedList<QZ_Node> makePath(QZ_Node node) {
-	    LinkedList<QZ_Node> path = new LinkedList<QZ_Node>();
+	  private LinkedList<G4_Node> makePath(G4_Node node) {
+	    LinkedList<G4_Node> path = new LinkedList<G4_Node>();
 	    
 	    while (node._parentNode != null) {
 	      // der erste Knoten wird hier eingefuegt
@@ -123,7 +123,7 @@ public class QZ_PathFinder {
 	     * 
 	     * @param node
 	     */
-	    public void add(QZ_Node node) {
+	    public void add(G4_Node node) {
 	      for (int i = 0; i < size(); i++) {
 	        if (node.compareTo(get(i)) <= 0) {
 	          add(i, node);

@@ -705,17 +705,17 @@ public class G4_agent extends AITask
 	}
 
 	//Erzeugt wallsInformation von Qi
-	public QZ_Wall[][] getWallsInfo(int ballNodeX,int ballNodeY,int currentNodeX,int currentNodeY,int flagNodeX,int flagNodeY){
+	public G4_Wall[][] getWallsInfo(int ballNodeX,int ballNodeY,int currentNodeX,int currentNodeY,int flagNodeX,int flagNodeY){
 
 		int height=Game.Map.getHeight();
 		int width=Game.Map.getWidth();
-		QZ_Wall[][] wallsInfo=new QZ_Wall[height][width];
+		G4_Wall[][] wallsInfo=new G4_Wall[height][width];
 
 		for(int i=0;i<height;i++)
 		{
 			for(int j=0;j<width;j++)
 			{
-				wallsInfo[i][j]=new QZ_Wall();
+				wallsInfo[i][j]=new G4_Wall();
 			}
 		}
 
@@ -830,15 +830,15 @@ public class G4_agent extends AITask
 		int ballNodeY=positionOfBall.y;
 		int nextNodeX=-1;
 		int nextNodeY=-1;
-		QZ_Wall[][] wallsInfo=getWallsInfo(ballNodeX,ballNodeY,currentNodeX,currentNodeY,flagNodeX,flagNodeY);
-		QZ_Wall[][] wallsInfoNoBall=getWallsInfo(-1,-1,currentNodeX,currentNodeY,flagNodeX,flagNodeY);
-		QZ_Wall[][] wallsInfoE=getWallsInfo(ballNodeX-1,ballNodeY,currentNodeX,currentNodeY,flagNodeX,flagNodeY);
-		QZ_Wall[][] wallsInfoS=getWallsInfo(ballNodeX,ballNodeY-1,currentNodeX,currentNodeY,flagNodeX,flagNodeY);
-		QZ_Wall[][] wallsInfoW=getWallsInfo(ballNodeX+1,ballNodeY,currentNodeX,currentNodeY,flagNodeX,flagNodeY);
-		QZ_Wall[][] wallsInfoN=getWallsInfo(ballNodeX,ballNodeY+1,currentNodeX,currentNodeY,flagNodeX,flagNodeY);
+		G4_Wall[][] wallsInfo=getWallsInfo(ballNodeX,ballNodeY,currentNodeX,currentNodeY,flagNodeX,flagNodeY);
+		G4_Wall[][] wallsInfoNoBall=getWallsInfo(-1,-1,currentNodeX,currentNodeY,flagNodeX,flagNodeY);
+		G4_Wall[][] wallsInfoE=getWallsInfo(ballNodeX-1,ballNodeY,currentNodeX,currentNodeY,flagNodeX,flagNodeY);
+		G4_Wall[][] wallsInfoS=getWallsInfo(ballNodeX,ballNodeY-1,currentNodeX,currentNodeY,flagNodeX,flagNodeY);
+		G4_Wall[][] wallsInfoW=getWallsInfo(ballNodeX+1,ballNodeY,currentNodeX,currentNodeY,flagNodeX,flagNodeY);
+		G4_Wall[][] wallsInfoN=getWallsInfo(ballNodeX,ballNodeY+1,currentNodeX,currentNodeY,flagNodeX,flagNodeY);
 
 		//waehlt eine Position aus
-		QZ_BallSperren ballsperren=new QZ_BallSperren(wallsInfo,wallsInfoE,wallsInfoS,wallsInfoW,wallsInfoN,wallsInfoNoBall,width,height,ballNodeX,ballNodeY,currentNodeX,currentNodeY);
+		G4_BallSperren ballsperren=new G4_BallSperren(wallsInfo,wallsInfoE,wallsInfoS,wallsInfoW,wallsInfoN,wallsInfoNoBall,width,height,ballNodeX,ballNodeY,currentNodeX,currentNodeY);
 
 		//Debug
 //		System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");

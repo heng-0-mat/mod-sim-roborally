@@ -6,29 +6,29 @@
  *
  */
 //Init
-public class QZ_BallSperren {
+public class G4_BallSperren {
 	private int ballNodeX;
 	private int ballNodeY;
 	private int roboNodeX;
 	private int roboNodeY;
-	private QZ_Wall[][] wallsInfo;
-	private QZ_Wall[][] wallsInfoE;
-	private QZ_Wall[][] wallsInfoS;
-	private QZ_Wall[][] wallsInfoW;
-	private QZ_Wall[][] wallsInfoN;
-	private QZ_Wall[][] wallsInfoNoBall;
-	private QZ_Wall[][] wallsInfoNew;
-	private QZ_Wall[][] wallsInfoENew;
-	private QZ_Wall[][] wallsInfoSNew;
-	private QZ_Wall[][] wallsInfoWNew;
-	private QZ_Wall[][] wallsInfoNNew;
-	private QZ_Wall[][] wallsInfoNoBallNew;
+	private G4_Wall[][] wallsInfo;
+	private G4_Wall[][] wallsInfoE;
+	private G4_Wall[][] wallsInfoS;
+	private G4_Wall[][] wallsInfoW;
+	private G4_Wall[][] wallsInfoN;
+	private G4_Wall[][] wallsInfoNoBall;
+	private G4_Wall[][] wallsInfoNew;
+	private G4_Wall[][] wallsInfoENew;
+	private G4_Wall[][] wallsInfoSNew;
+	private G4_Wall[][] wallsInfoWNew;
+	private G4_Wall[][] wallsInfoNNew;
+	private G4_Wall[][] wallsInfoNoBallNew;
 	private int width;
 	private int height;
 	private int[] positionTag={0,0,0,0};
 		
 	//Init
-	public QZ_BallSperren(QZ_Wall[][] wallsInfo,QZ_Wall[][] wallsInfoE,QZ_Wall[][] wallsInfoS,QZ_Wall[][] wallsInfoW,QZ_Wall[][] wallsInfoN,QZ_Wall[][] wallsInfoNoBall,int width,int height,int ballNodeX,int ballNodeY,int roboNodeX,int roboNodeY)
+	public G4_BallSperren(G4_Wall[][] wallsInfo,G4_Wall[][] wallsInfoE,G4_Wall[][] wallsInfoS,G4_Wall[][] wallsInfoW,G4_Wall[][] wallsInfoN,G4_Wall[][] wallsInfoNoBall,int width,int height,int ballNodeX,int ballNodeY,int roboNodeX,int roboNodeY)
 	{
 		this.ballNodeX=ballNodeX;
 		this.ballNodeY=ballNodeY;
@@ -60,9 +60,9 @@ public class QZ_BallSperren {
 		try
 		{				
 			//schiebt den Ball vom East zum West
-			new QZ_TestMap(wallsInfo,roboNodeX,roboNodeY,ballNodeX+1,ballNodeY,height,width);
+			new G4_TestMap(wallsInfo,roboNodeX,roboNodeY,ballNodeX+1,ballNodeY,height,width);
 			//System.out.println("einmal schieben Vom East zum West");
-			new QZ_TestMap(wallsInfoE,ballNodeX,ballNodeY,ballNodeX-2,ballNodeY,height,width);
+			new G4_TestMap(wallsInfoE,ballNodeX,ballNodeY,ballNodeX-2,ballNodeY,height,width);
 			//System.out.println("zweimal schieben vom East zum West");
 
 			//Debug
@@ -118,9 +118,9 @@ public class QZ_BallSperren {
 		try
 		{	
 			//schiebt den Ball vom West zum East
-			new QZ_TestMap(wallsInfo,roboNodeX,roboNodeY,ballNodeX-1,ballNodeY,height,width);
+			new G4_TestMap(wallsInfo,roboNodeX,roboNodeY,ballNodeX-1,ballNodeY,height,width);
 			//System.out.println("einmal schieben vom West zum East");
-			new QZ_TestMap(wallsInfoW,ballNodeX,ballNodeY,ballNodeX+2,ballNodeY,height,width);
+			new G4_TestMap(wallsInfoW,ballNodeX,ballNodeY,ballNodeX+2,ballNodeY,height,width);
 			//System.out.println("zweimal schieben vom West zum East");
 			
 			//Debug
@@ -175,9 +175,9 @@ public class QZ_BallSperren {
 		try
 		{	
 			//schiebt den Ball vom North zum South
-			new QZ_TestMap(wallsInfo,roboNodeX,roboNodeY,ballNodeX,ballNodeY-1,height,width);
+			new G4_TestMap(wallsInfo,roboNodeX,roboNodeY,ballNodeX,ballNodeY-1,height,width);
 			//System.out.println("einmal schieben vom North zum South");
-			new QZ_TestMap(wallsInfoN,ballNodeX,ballNodeY,ballNodeX,ballNodeY+2,height,width);
+			new G4_TestMap(wallsInfoN,ballNodeX,ballNodeY,ballNodeX,ballNodeY+2,height,width);
 			//System.out.println("zweimal schieben vom North zum South");
 			
 			//Debug
@@ -233,9 +233,9 @@ public class QZ_BallSperren {
 		try
 		{	
 			//schiebt den vom South zum North
-			new QZ_TestMap(wallsInfo,roboNodeX,roboNodeY,ballNodeX,ballNodeY+1,height,width);
+			new G4_TestMap(wallsInfo,roboNodeX,roboNodeY,ballNodeX,ballNodeY+1,height,width);
 			//System.out.println("einmal schieben vom South zum North");
-			new QZ_TestMap(wallsInfoS,ballNodeX,ballNodeY,ballNodeX,ballNodeY-2,height,width);
+			new G4_TestMap(wallsInfoS,ballNodeX,ballNodeY,ballNodeX,ballNodeY-2,height,width);
 			//System.out.println("zweimal schieben vom South zum North");
 				
 			//Debug
@@ -290,15 +290,15 @@ public class QZ_BallSperren {
 	}
 	
 	//umtauscht Zeile und Spalte von Wallsinformation
-	public QZ_Wall[][] change(QZ_Wall[][] input)
+	public G4_Wall[][] change(G4_Wall[][] input)
 	{
-		QZ_Wall[][] output=new QZ_Wall[width][height];
+		G4_Wall[][] output=new G4_Wall[width][height];
 		
 		for(int i=0;i<width;i++)
 		{
 			for(int j=0;j<height;j++)
 			{
-				output[i][j]=new QZ_Wall();
+				output[i][j]=new G4_Wall();
 				output[i][j].setEast(input[j][i].getEast());
 				output[i][j].setSouth(input[j][i].getSouth());
 				output[i][j].setWest(input[j][i].getWest());

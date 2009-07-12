@@ -5,12 +5,12 @@ import roborally.task.Constants.CardType;
  * @author Qi Zheng
  *
  */
-public class QZ_CardChangeToString {
+public class G4_CardChangeToString {
 
 	private Card[] cards;
 	private String[] stringCards;
 	
-	public QZ_CardChangeToString(Card[] cards) 
+	public G4_CardChangeToString(Card[] cards) 
 	{
 		this.cards=cards;
 		stringCards=new String[cards.length];

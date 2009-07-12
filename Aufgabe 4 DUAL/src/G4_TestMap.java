@@ -7,12 +7,12 @@ import java.util.List;
  *
  *Diese Klasse erzeugt einen kurzsten Weg von Startposition bis Zielsposition .
  */
-public class QZ_TestMap {
+public class G4_TestMap {
 	
 	final static public int[] HIT = { 1 };	
 	private List list=new LinkedList();		
-	private QZ_Node[] minPath=null;	
-	private List<QZ_Node> templist=new LinkedList<QZ_Node>();	
+	private G4_Node[] minPath=null;	
+	private List<G4_Node> templist=new LinkedList<G4_Node>();	
 	
 	/**
 	 * @param wallsInfo		//Die Mauern Information ueber dem Spielfeld
@@ -23,7 +23,7 @@ public class QZ_TestMap {
 	 * @param heightt		//Die Hoehe des Spielfeldes
 	 * @param widthh		//die Laenge des Spielfeldes
 	 */
-	public QZ_TestMap(QZ_Wall[][] wallsInfo,int currentNodeXX,int currentNodeYY,int flagNodeXX,int flagNodeYY,int heightt,int widthh) {
+	public G4_TestMap(G4_Wall[][] wallsInfo,int currentNodeXX,int currentNodeYY,int flagNodeXX,int flagNodeYY,int heightt,int widthh) {
 		
 		myMiniPath(wallsInfo,currentNodeXX,currentNodeYY,flagNodeXX,flagNodeYY,heightt,widthh);
 										
@@ -41,7 +41,7 @@ public class QZ_TestMap {
 	 * 
 	 *Erzeugt eine Liste fuer einen kurzsten Weg von Startposition bis Zielsposition von Spielfeld. 
 	 */
-	public void myMiniPath(QZ_Wall[][] wallsInfo,int currentNodeXX,int currentNodeYY,int flagNodeXX,int flagNodeYY,int heightt,int widthh){
+	public void myMiniPath(G4_Wall[][] wallsInfo,int currentNodeXX,int currentNodeYY,int flagNodeXX,int flagNodeYY,int heightt,int widthh){
 		
 		int currentNodeX=currentNodeYY*2+1;
 		int currentNodeY=currentNodeXX*2+1;
@@ -148,9 +148,9 @@ public class QZ_TestMap {
 		//Debug
 		//int[][] pp={{1,1,1,1,1,1},{1,0,1,0,0,1},{1,0,1,0,0,1},{1,0,1,0,0,1},{1,0,0,0,0,1},{1,1,1,1,1,1}};
 						
-		QZ_PathFinder pathfinder=new QZ_PathFinder(temp,HIT);
+		G4_PathFinder pathfinder=new G4_PathFinder(temp,HIT);
 		list=pathfinder.searchPath(new Point(currentNodeX,currentNodeY), new Point(flagNodeX,flagNodeY));
-		minPath=new QZ_Node[list.size()];
+		minPath=new G4_Node[list.size()];
 		list.toArray(minPath);
 		
 		//Debug
@@ -225,7 +225,7 @@ public class QZ_TestMap {
 	/**
 	 * Liefert eine Liste des kurzsten Wegs
 	 */
-	public List<QZ_Node> getMiniPath()
+	public List<G4_Node> getMiniPath()
 	{
 		return this.templist;
 	}

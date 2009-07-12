@@ -8,7 +8,7 @@ import roborally.task.Card;
  * @author Qi Zheng
  *
  */
-public class QZ_AllCardChooser {
+public class G4_AllCardChooser {
 
 	private Card[] userCards;
 	//private Card[] myCards;
@@ -20,10 +20,10 @@ public class QZ_AllCardChooser {
 	private Card[] myTurn={null,null,null,null,null};
 	private String stringtemp;
 	
-	public QZ_AllCardChooser(Card[] userCards,String stringtemp) {
+	public G4_AllCardChooser(Card[] userCards,String stringtemp) {
 		this.userCards=userCards;
 		//this.myCards=myCards;
-		this.userCardsString=new QZ_CardChangeToString(this.userCards).getStringCards();
+		this.userCardsString=new G4_CardChangeToString(this.userCards).getStringCards();
 		//this.myCardsString=new QZ_CardChangeToString(this.myCards).getStringCards();
 		this.stringtemp=stringtemp;
 		this.myCardsString=new String[1];
@@ -42,7 +42,7 @@ public class QZ_AllCardChooser {
 		//Ob eine Kommbination der ausgewaehlt Karte zu Verfuegung steht	
 		for(int i=0;i<myCardsString.length;i++)
 		{
-			QZ_OneCardChooser onecardchoosertemp=new QZ_OneCardChooser(userCardsString,myCardsString[i],tagT);
+			G4_OneCardChooser onecardchoosertemp=new G4_OneCardChooser(userCardsString,myCardsString[i],tagT);
 			
 			if(!onecardchoosertemp.getE())
 			{
@@ -67,7 +67,7 @@ public class QZ_AllCardChooser {
 		{
 			if(indexTagTotal(tagIndex)==false)
 			{
-				QZ_OneCardChooser onecardchoosertemp=new QZ_OneCardChooser(userCardsString,"ZCW",tagT);
+				G4_OneCardChooser onecardchoosertemp=new G4_OneCardChooser(userCardsString,"ZCW",tagT);
 				this.tag=onecardchoosertemp.getTag();
 				getTagIndex();
 				tagT=onecardchoosertemp.getTagT();
@@ -75,7 +75,7 @@ public class QZ_AllCardChooser {
 			
 			if(indexTagTotal(tagIndex)==false)
 			{
-				QZ_OneCardChooser onecardchoosertemp=new QZ_OneCardChooser(userCardsString,"ZCCW",tagT);
+				G4_OneCardChooser onecardchoosertemp=new G4_OneCardChooser(userCardsString,"ZCCW",tagT);
 				this.tag=onecardchoosertemp.getTag();
 				getTagIndex();
 				tagT=onecardchoosertemp.getTagT();
@@ -83,7 +83,7 @@ public class QZ_AllCardChooser {
 			
 			if(indexTagTotal(tagIndex)==false)
 			{
-				QZ_OneCardChooser onecardchoosertemp=new QZ_OneCardChooser(userCardsString,"ZU",tagT);
+				G4_OneCardChooser onecardchoosertemp=new G4_OneCardChooser(userCardsString,"ZU",tagT);
 				this.tag=onecardchoosertemp.getTag();
 				getTagIndex();
 				tagT=onecardchoosertemp.getTagT();
@@ -91,7 +91,7 @@ public class QZ_AllCardChooser {
 			
 			if(indexTagTotal(tagIndex)==false)
 			{
-				QZ_OneCardChooser onecardchoosertemp=new QZ_OneCardChooser(userCardsString,"ZONEFW",tagT);
+				G4_OneCardChooser onecardchoosertemp=new G4_OneCardChooser(userCardsString,"ZONEFW",tagT);
 				this.tag=onecardchoosertemp.getTag();
 				getTagIndex();
 				tagT=onecardchoosertemp.getTagT();
@@ -99,7 +99,7 @@ public class QZ_AllCardChooser {
 			
 			if(indexTagTotal(tagIndex)==false)
 			{
-				QZ_OneCardChooser onecardchoosertemp=new QZ_OneCardChooser(userCardsString,"ZBW",tagT);
+				G4_OneCardChooser onecardchoosertemp=new G4_OneCardChooser(userCardsString,"ZBW",tagT);
 				this.tag=onecardchoosertemp.getTag();
 				getTagIndex();
 				tagT=onecardchoosertemp.getTagT();
@@ -107,7 +107,7 @@ public class QZ_AllCardChooser {
 			
 			if(indexTagTotal(tagIndex)==false)
 			{
-				QZ_OneCardChooser onecardchoosertemp=new QZ_OneCardChooser(userCardsString,"ZTWOFW",tagT);
+				G4_OneCardChooser onecardchoosertemp=new G4_OneCardChooser(userCardsString,"ZTWOFW",tagT);
 				this.tag=onecardchoosertemp.getTag();
 				getTagIndex();
 				tagT=onecardchoosertemp.getTagT();
@@ -115,7 +115,7 @@ public class QZ_AllCardChooser {
 			
 			if(indexTagTotal(tagIndex)==false)
 			{
-				QZ_OneCardChooser onecardchoosertemp=new QZ_OneCardChooser(userCardsString,"ZTHREEFW",tagT);
+				G4_OneCardChooser onecardchoosertemp=new G4_OneCardChooser(userCardsString,"ZTHREEFW",tagT);
 				this.tag=onecardchoosertemp.getTag();
 				getTagIndex();
 				tagT=onecardchoosertemp.getTagT();

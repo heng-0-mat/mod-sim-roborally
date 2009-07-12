@@ -680,7 +680,7 @@ public class G4_CardChooser {
 					cards[i] = this.cards.get(i);
 				}
 			
-				QZ_AllCardChooser kkndkknd=new QZ_AllCardChooser(cards, cardString);
+				G4_AllCardChooser kkndkknd=new G4_AllCardChooser(cards, cardString);
 		    	returnCard = kkndkknd.getCards()[0];
 		    	returnCard = this.cards.remove(this.cards.indexOf(returnCard));				
 			}
@@ -693,7 +693,7 @@ public class G4_CardChooser {
 					cards[i] = this.cards.get(i);
 				}
 			
-				QZ_AllCardChooser kkndkknd=new QZ_AllCardChooser(cards, cardString);
+				G4_AllCardChooser kkndkknd=new G4_AllCardChooser(cards, cardString);
 		    	returnCard = kkndkknd.getCards()[0];
 		    	returnCard = this.cards.remove(this.cards.indexOf(returnCard));
 			}

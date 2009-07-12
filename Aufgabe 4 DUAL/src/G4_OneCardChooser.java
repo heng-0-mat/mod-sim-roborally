@@ -4,14 +4,14 @@
  *
  *Stellt alle moegliche Kartenkombination
  */
-public class QZ_OneCardChooser {
+public class G4_OneCardChooser {
 
 	private String[] userCards;
 	private String myCard;
 	private boolean tagT[];
 	private boolean tag[];
 	
-	public QZ_OneCardChooser(String[] userCards,String myCard,boolean[] tagT) 
+	public G4_OneCardChooser(String[] userCards,String myCard,boolean[] tagT) 
 	{
 		this.userCards=userCards;
 		this.myCard=myCard;

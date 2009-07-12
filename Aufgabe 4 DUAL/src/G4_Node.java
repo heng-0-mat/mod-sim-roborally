@@ -6,21 +6,21 @@ import java.util.LinkedList;
  *
  *Definiert eine Node
  */
-public class QZ_Node implements Comparable  {
+public class G4_Node implements Comparable  {
 	  
 	  public Point _pos;
 	  public int _costFromStart;
 	  public int _costToObject;
-	  public QZ_Node _parentNode;
-	  private QZ_Node()  {
+	  public G4_Node _parentNode;
+	  private G4_Node()  {
 	  }
 	  	  
-	  public QZ_Node(Point _pos)  {
+	  public G4_Node(Point _pos)  {
 	    this._pos = _pos;
 	  }
 	  
 	  //knotengewicht
-	  public int getCost(QZ_Node node)  {
+	  public int getCost(G4_Node node)  {
 	    int m = node._pos.x - _pos.x;
 	    int n = node._pos.y - _pos.y;
 	    
@@ -30,7 +30,7 @@ public class QZ_Node implements Comparable  {
 	  //equals Methode
 	  public boolean equals(Object node)  {
 	    
-	    if (_pos.x == ((QZ_Node) node)._pos.x && _pos.y == ((QZ_Node) node)._pos.y)  {
+	    if (_pos.x == ((G4_Node) node)._pos.x && _pos.y == ((G4_Node) node)._pos.y)  {
 	      return true;
 	    }
 	    return false;
@@ -38,7 +38,7 @@ public class QZ_Node implements Comparable  {
 	 	 
 	  public int compareTo(Object node)  {
 	    int a1 = _costFromStart + _costToObject;
-	    int a2 = ((QZ_Node) node)._costFromStart + ((QZ_Node) node)._costToObject;
+	    int a2 = ((G4_Node) node)._costFromStart + ((G4_Node) node)._costToObject;
 	    if (a1 < a2)  {
 	      return -1;
 	    } else if (a1 == a2)  {
@@ -53,13 +53,13 @@ public class QZ_Node implements Comparable  {
 	    int x = _pos.x;
 	    int y = _pos.y;
 	   
-	    limit.add(new QZ_Node(new Point(x, y - 1)));
+	    limit.add(new G4_Node(new Point(x, y - 1)));
 	    
-	    limit.add(new QZ_Node(new Point(x + 1, y)));
+	    limit.add(new G4_Node(new Point(x + 1, y)));
 	   
-	    limit.add(new QZ_Node(new Point(x, y + 1)));
+	    limit.add(new G4_Node(new Point(x, y + 1)));
 	   
-	    limit.add(new QZ_Node(new Point(x - 1, y)));
+	    limit.add(new G4_Node(new Point(x - 1, y)));
 	   
 	    return limit;
 	  }
