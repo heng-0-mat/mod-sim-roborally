@@ -243,23 +243,33 @@ public class G4_agent extends AITask
 						
 				//DOM1
 				for (G4_Vertex vertex: this.graphMap.matesVertices){
-					if (this.graphMap.getLengthOfShortestPath(vertex.toG4_Position(), dom1.toG4_Position(), false, false) < myDist2dom1)
-						imClosest2Dom1 = false;
-					if (this.graphMap.isVertexInProximity(vertex, dom1))
+						if (this.graphMap.isVertexInProximity(vertex, dom1))
 						dom1guarded = true;
+				}
+				
+				//DOM1
+				for (G4_Position pos: this.graphMap.matesPositions){
+					if (this.graphMap.getLengthOfShortestPath(pos, dom1.toG4_Position(), false, false) < myDist2dom1)
+						imClosest2Dom1 = false;
 				}
 				
 				//DOM2
 				for (G4_Vertex vertex: this.graphMap.matesVertices){
-					if (this.graphMap.getLengthOfShortestPath(vertex.toG4_Position(), dom2.toG4_Position(), false, false) < myDist2dom2)
-						imClosest2Dom2 = false;
 					if (this.graphMap.isVertexInProximity(vertex, dom2))
 						dom2guarded = true;
+				}
+				
+				//DOM1
+				for (G4_Position pos: this.graphMap.matesPositions){
+					if (this.graphMap.getLengthOfShortestPath(pos, dom2.toG4_Position(), false, false) < myDist2dom2)
+						imClosest2Dom2 = false;
 				}
 				
 				//if (dom1guarded && dom2guarded){
 				if (!imClosest2Dom1 && !imClosest2Dom2){
 					//JAGEN
+					if (this.debugOutput)
+						System.out.println("JAGEN: " + this.graphMap.getNextEnemy(this.position));
 					zielPosition = this.graphMap.getNextEnemy(this.position);
 					imHunting = true;
 				}
@@ -281,8 +291,8 @@ public class G4_agent extends AITask
 					
 			//Position zum Schiessen in der Naehe?
 			G4_Position next = this.graphMap.getNextShootingPosition(position);
-			if (this.graphMap.isVertexInProximity(position.toG4_Vertex(),next.toG4_Vertex()))
-					chooser.chooseMovingCards2(position, next);
+//			if (this.graphMap.isVertexInProximity(position.toG4_Vertex(),next.toG4_Vertex()))
+//					chooser.chooseMovingCards2(position, next);
 					
 			chooser.FREEZE();
 		}

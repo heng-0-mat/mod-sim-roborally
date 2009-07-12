@@ -704,6 +704,10 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 		G4_Position temp=new G4_Position(-1,-1,Direction.EAST);
 		
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("0: "+partnerpositiontocheckpoint0);
+		System.out.println("1: "+partnerpositiontocheckpoint1);
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		
 			/*
 			 * if(partnerpositiontocheckpoint0 == Double.POSITIVE_INFINITY || partnerpositiontocheckpoint1 == Double.POSITIVE_INFINITY)
@@ -720,29 +724,22 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 				}
 			}
 			 */
-			if((partnerposition.x == checkpoint0.x && partnerposition.y == checkpoint0.y) || (partnerposition.x == checkpoint1.x && partnerposition.y == checkpoint1.y))
-			{
-
-				if(partnerposition.x == checkpoint0.x && partnerposition.y == checkpoint0.y)
-				{
-					temp=checkpoint1;
-				}
-				
-				else
-				{
-					temp=checkpoint0;
-				}
+			if(partnerposition.equals(checkpoint0)){
+				temp=checkpoint0;
+			}
+			else if(partnerposition.equals(checkpoint1)){
+				temp=checkpoint1;
 			}
 			
 			else
 			{
-				if(partnerpositiontocheckpoint0<=partnerpositiontocheckpoint1)
+				if(partnerpositiontocheckpoint0 <= partnerpositiontocheckpoint1)
 				{
-					temp=checkpoint1;
+					temp=checkpoint0;
 				}
 				else
 				{
-					temp=checkpoint0;
+					temp=checkpoint1;
 				}
 			}
 					

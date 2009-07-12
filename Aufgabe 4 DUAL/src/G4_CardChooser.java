@@ -59,6 +59,8 @@ public class G4_CardChooser {
 		
 		//Falls Zielposition erreicht oder 5 Karten gewählt sind, abbrechen!
 		if (start.equals(ziel) || this.chosenCards.size() >= 5){
+			if (this.debugOutput)
+				System.out.println("CARD CHOOSING FINISHED: " + start + " -> " + ziel);
 			return chosenCards;
 		}
 		if (this.debugOutput)
