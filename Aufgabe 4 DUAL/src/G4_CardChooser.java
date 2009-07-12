@@ -863,6 +863,24 @@ public class G4_CardChooser {
 			
 	}
 	
+	public void roundNround(){
+		
+		while (this.getChosenCards().size() <= 5){
+			
+			this.tryChoosingCard(Constants.CardType.Rotate_CW_Card,  false);
+		}
+			
+	}
+	
+	public void FREEZE(){
+		
+		while (this.getChosenCards().size() <= 5){
+			
+			this.tryChoosingCard(Constants.CardType.Stationary_Card ,  false);
+		}
+			
+	}
+	
 		
 }
 	

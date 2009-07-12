@@ -214,7 +214,7 @@ public class G4_agent extends AITask
 			//QI ANGRIFF
 			G4_Position freund = (G4_Position) this.graphMap.matesPositions.toArray()[0];
 			chooser.chooseMovingCards2(position, angriefZielPosition(freund));
-			chooser.backBackNForthNForth();
+			chooser.roundNround();
 			
 		}
 		else{
@@ -235,15 +235,15 @@ public class G4_agent extends AITask
 				boolean dom1guarded = false;
 				boolean dom2guarded = false;
 				
-				double dist2dom1 = this.graphMap.getLengthOfShortestPath(position,dom1.toG4_Position(), false, false);
-				double dist2dom2 = this.graphMap.getLengthOfShortestPath(position,dom2.toG4_Position(), false, false);
+				double myDist2dom1 = this.graphMap.getLengthOfShortestPath(position,dom1.toG4_Position(), false, false);
+				double myDist2dom2 = this.graphMap.getLengthOfShortestPath(position,dom2.toG4_Position(), false, false);
 				
 				boolean imClosest2Dom1 = true;
 				boolean imClosest2Dom2 = true;
 						
 				//DOM1
 				for (G4_Vertex vertex: this.graphMap.matesVertices){
-					if (this.graphMap.getLengthOfShortestPath(vertex.toG4_Position(), dom1.toG4_Position(), false, false) < dist2dom1)
+					if (this.graphMap.getLengthOfShortestPath(vertex.toG4_Position(), dom1.toG4_Position(), false, false) < myDist2dom1)
 						imClosest2Dom1 = false;
 					if (this.graphMap.isVertexInProximity(vertex, dom1))
 						dom1guarded = true;
@@ -251,7 +251,7 @@ public class G4_agent extends AITask
 				
 				//DOM2
 				for (G4_Vertex vertex: this.graphMap.matesVertices){
-					if (this.graphMap.getLengthOfShortestPath(vertex.toG4_Position(), dom2.toG4_Position(), false, false) < dist2dom1)
+					if (this.graphMap.getLengthOfShortestPath(vertex.toG4_Position(), dom2.toG4_Position(), false, false) < myDist2dom2)
 						imClosest2Dom2 = false;
 					if (this.graphMap.isVertexInProximity(vertex, dom2))
 						dom2guarded = true;
@@ -278,11 +278,14 @@ public class G4_agent extends AITask
 			}
 		
 			chooser.chooseMovingCards2(position, zielPosition);
-			if (imHunting)
-				chooser.backBackNForthNForth();	
-			else
-				chooser.chooseMovingCards2(position, this.graphMap.getNextShootingPosition(position));
-			}
+					
+			//Position zum Schiessen in der Naehe?
+			G4_Position next = this.graphMap.getNextShootingPosition(position);
+			if (this.graphMap.isVertexInProximity(position.toG4_Vertex(),next.toG4_Vertex()))
+					chooser.chooseMovingCards2(position, next);
+					
+			chooser.FREEZE();
+		}
 		
 		if (this.debugOutput)
 			System.out.println("DOMINATION -- RUNDE " +  this.Game.Round.getRound());
