@@ -725,21 +725,21 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			}
 			 */
 			if(partnerposition.equals(checkpoint0)){
-				temp=checkpoint0;
+				temp=checkpoint1;
 			}
 			else if(partnerposition.equals(checkpoint1)){
-				temp=checkpoint1;
+				temp=checkpoint0;
 			}
 			
 			else
 			{
 				if(partnerpositiontocheckpoint0 <= partnerpositiontocheckpoint1)
 				{
-					temp=checkpoint0;
+					temp=checkpoint1;
 				}
 				else
 				{
-					temp=checkpoint1;
+					temp=checkpoint0;
 				}
 			}
 					
@@ -828,27 +828,27 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 		}
 		
-//		//FEINDBESCHUSS ATTRAKTIV (im invincible!) 
-//		for (G4_Position position: this.shootPositions){
-//			
-//			G4_Vertex shootVertex = returnGraph.getVertex(position.x, position.y);
-//			
-//			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(shootVertex, position.getDirection())){
-//				returnGraph.setEdgeWeight(edge, 0);
-//			}			
-//		}
-//		
-//		
-//		//FREUNDBESCHUSS UN-ATTRAKTIV (Friendly Fire ISN'T...)
-//		for (G4_Position position: this.ffPositions){
-//			
-//			G4_Vertex ffVertex = returnGraph.getVertex(position.x, position.y);
-//			
-//			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(ffVertex, position.getDirection())){
-//				returnGraph.setEdgeWeight(edge,  returnGraph.getEdgeWeight(edge) + 4);
-//			}			
-//			
-//		}
+		//FEINDBESCHUSS ATTRAKTIV (im invincible!) 
+		for (G4_Position position: this.shootPositions){
+			
+			G4_Vertex shootVertex = returnGraph.getVertex(position.x, position.y);
+			
+			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(shootVertex, position.getDirection())){
+				returnGraph.setEdgeWeight(edge, 0);
+			}			
+		}
+		
+		
+		//FREUNDBESCHUSS UN-ATTRAKTIV (Friendly Fire ISN'T...)
+		for (G4_Position position: this.ffPositions){
+			
+			G4_Vertex ffVertex = returnGraph.getVertex(position.x, position.y);
+			
+			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(ffVertex, position.getDirection())){
+				returnGraph.setEdgeWeight(edge,  returnGraph.getEdgeWeight(edge) + 4);
+			}			
+			
+		}
 		
 		return returnGraph; 
 	}
@@ -1171,7 +1171,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			G4_Position robotPosition = new G4_Position(robot.getNode().getX(), 
 														robot.getNode().getY(), 
 														robot.getOrientation());
-			this.enemiesPositions.add(startPosition);
+			this.enemiesPositions.add(robotPosition);
 			
 			G4_Vertex startVertex = this.getVertex(robotPosition.x, robotPosition.y);
 			this.enemiesVertices.add(startVertex);
@@ -1192,7 +1192,7 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			G4_Position robotPosition = new G4_Position(robot.getNode().getX(), 
 														robot.getNode().getY(), 
 														robot.getOrientation());
-			this.matesPositions.add(startPosition);
+			this.matesPositions.add(robotPosition);
 			
 			G4_Vertex startVertex = this.getVertex(robotPosition.x, robotPosition.y);
 			this.matesVertices.add(startVertex);
