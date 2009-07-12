@@ -79,7 +79,7 @@ public class G4_agent extends AITask
 	public String getRobotName()
 	{
 		// TODO: Add your group name here
-		return "GGG";
+		return "GGGG";
 	}
 
 	/**
@@ -232,8 +232,8 @@ public class G4_agent extends AITask
 			else{	
 				
 				//Sind beide DOMs bewacht?
-				boolean dom1guarded = false;
-				boolean dom2guarded = false;
+				boolean dom1attack = false;
+				boolean dom2attack = false;
 				
 				double myDist2dom1 = this.graphMap.getLengthOfShortestPath(position,dom1.toG4_Position(), false, false);
 				double myDist2dom2 = this.graphMap.getLengthOfShortestPath(position,dom2.toG4_Position(), false, false);
@@ -242,9 +242,9 @@ public class G4_agent extends AITask
 				boolean imClosest2Dom2 = true;
 						
 				//DOM1
-				for (G4_Vertex vertex: this.graphMap.matesVertices){
+				for (G4_Vertex vertex: this.graphMap.enemiesVertices){
 						if (this.graphMap.isVertexInProximity(vertex, dom1))
-						dom1guarded = true;
+							dom1attack = true;
 				}
 				
 				//DOM1
@@ -254,9 +254,9 @@ public class G4_agent extends AITask
 				}
 				
 				//DOM2
-				for (G4_Vertex vertex: this.graphMap.matesVertices){
+				for (G4_Vertex vertex: this.graphMap.enemiesVertices){
 					if (this.graphMap.isVertexInProximity(vertex, dom2))
-						dom2guarded = true;
+						dom2attack = true;
 				}
 				
 				//DOM1
@@ -265,8 +265,13 @@ public class G4_agent extends AITask
 						imClosest2Dom2 = false;
 				}
 				
-				//if (dom1guarded && dom2guarded){
-				if (!imClosest2Dom1 && !imClosest2Dom2){
+				if (dom1attack){
+					zielPosition = dom1.toG4_Position();
+				}
+				else if (dom2attack){
+					zielPosition = dom2.toG4_Position();
+				}
+				else if (!imClosest2Dom1 && !imClosest2Dom2){
 					//JAGEN
 					if (this.debugOutput)
 						System.out.println("JAGEN: " + this.graphMap.getNextEnemy(this.position));
@@ -288,12 +293,12 @@ public class G4_agent extends AITask
 			}
 		
 			chooser.chooseMovingCards2(position, zielPosition);
-					
-			//Position zum Schiessen in der Naehe?
-			G4_Position next = this.graphMap.getNextShootingPosition(position);
-//			if (this.graphMap.isVertexInProximity(position.toG4_Vertex(),next.toG4_Vertex()))
-//					chooser.chooseMovingCards2(position, next);
-					
+			if (!imHunting){		
+				//Position zum Schiessen in der Naehe?
+				G4_Position next = this.graphMap.getNextShootingPosition(position);
+				//if (this.graphMap.isVertexInProximity(position.toG4_Vertex(),next.toG4_Vertex()))
+						chooser.chooseMovingCards2(position, next);
+			}
 			chooser.FREEZE();
 		}
 		

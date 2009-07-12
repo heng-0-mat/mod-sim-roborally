@@ -772,19 +772,24 @@ public class G4_CardChooser {
 		//Falls die Zielposition schon erreicht sein muesste ist einfach mal weiter nach vorne schieben
 		//vielleicht hat uns ja jemand zurueckgeschoben
 		//this.chosenCards.addAll(this.cards);
-		while (this.chosenCards.size() < 5){
-			this.tryChoosingCard(Constants.CardType.U_Turn_Card, false);	
-		}
+		//while (this.chosenCards.size() < 5){
+		//	this.tryChoosingCard(Constants.CardType.U_Turn_Card, false);	
+		//}
 			
 		//Die ersten 5 gewaehlten Karten zurueckgeben
-		for (int i = 0; i < 5; i++){
-			myTurn[i] = chosenCards.get(i);
-			if (this.debugOutput)
-				System.out.println(myTurn[i].getCardTypeString() + "  ID = " + myTurn[i].hashCode());
+		try {
+			for (int i = 0; i < 5; i++){
+				myTurn[i] = chosenCards.get(i);
+				if (this.debugOutput)
+					System.out.println(myTurn[i].getCardTypeString() + "  ID = " + myTurn[i].hashCode());
+			}
+			if (this.debugOutput) System.out.println("----------------------------- ENDE --------------------------------------------");
+			if (this.debugOutput) System.out.println("");
+			if (this.debugOutput) System.out.println("");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		if (this.debugOutput) System.out.println("----------------------------- ENDE --------------------------------------------");
-		if (this.debugOutput) System.out.println("");
-		if (this.debugOutput) System.out.println("");
 		
 		return myTurn;
 	}
@@ -878,7 +883,12 @@ public class G4_CardChooser {
 		
 		while (this.getChosenCards().size() <= 5){
 			
-			this.tryChoosingCard(Constants.CardType.Stationary_Card ,  false);
+			try {
+				this.tryChoosingCard(Constants.CardType.Stationary_Card ,  false);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 			
 	}

@@ -704,11 +704,11 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 		
 		G4_Position temp=new G4_Position(-1,-1,Direction.EAST);
 		
-		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
-		System.out.println("0: "+partnerpositiontocheckpoint0);
-		System.out.println("1: "+partnerpositiontocheckpoint1);
-		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
-		
+//		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
+//		System.out.println("0: "+partnerpositiontocheckpoint0);
+//		System.out.println("1: "+partnerpositiontocheckpoint1);
+//		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
+//		
 			/*
 			 * if(partnerpositiontocheckpoint0 == Double.POSITIVE_INFINITY || partnerpositiontocheckpoint1 == Double.POSITIVE_INFINITY)
 			{
@@ -828,27 +828,27 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 			returnGraph.setEdgeWeight(edge, returnGraph.getEdgeWeight(edge) - 1);
 		}
 		
-		//FEINDBESCHUSS ATTRAKTIV (im invincible!) 
-		for (G4_Position position: this.shootPositions){
-			
-			G4_Vertex shootVertex = returnGraph.getVertex(position.x, position.y);
-			
-			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(shootVertex, position.getDirection())){
-				returnGraph.setEdgeWeight(edge, 0);
-			}			
-		}
+//		//FEINDBESCHUSS ATTRAKTIV (im invincible!) 
+//		for (G4_Position position: this.shootPositions){
+//			
+//			G4_Vertex shootVertex = returnGraph.getVertex(position.x, position.y);
+//			
+//			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(shootVertex, position.getDirection())){
+//				returnGraph.setEdgeWeight(edge, 1);
+//			}			
+//		}
 		
 		
-		//FREUNDBESCHUSS UN-ATTRAKTIV (Friendly Fire ISN'T...)
-		for (G4_Position position: this.ffPositions){
-			
-			G4_Vertex ffVertex = returnGraph.getVertex(position.x, position.y);
-			
-			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(ffVertex, position.getDirection())){
-				returnGraph.setEdgeWeight(edge,  returnGraph.getEdgeWeight(edge) + 4);
-			}			
-			
-		}
+//		//FREUNDBESCHUSS UN-ATTRAKTIV (Friendly Fire ISN'T...)
+//		for (G4_Position position: this.ffPositions){
+//			
+//			G4_Vertex ffVertex = returnGraph.getVertex(position.x, position.y);
+//			
+//			for(DefaultWeightedEdge edge: returnGraph.getOutgoingEdgesInDirection(ffVertex, position.getDirection())){
+//				returnGraph.setEdgeWeight(edge,  returnGraph.getEdgeWeight(edge) + 4);
+//			}			
+//			
+//		}
 		
 		return returnGraph; 
 	}
@@ -1364,35 +1364,42 @@ public class G4_GraphMap extends DefaultDirectedWeightedGraph<G4_Vertex, Default
 	
 	public G4_Position getNextShootingPosition(G4_Position position){
 				
-		HashSet<G4_Position> candidates = new HashSet<G4_Position>();
-		
-		//Erstes Casting
-		for (G4_Position currentPos: this.shootPositions){
-			//Falls keine FF Gefahr
-			if (!this.ffPositions.contains(currentPos)){
-		
-				G4_Vertex currentVertex = currentPos.toG4_Vertex();
-				currentVertex = this.getVertex(currentVertex.getX(), currentVertex.getY());
-				//Wenn nah genug
-				if (this.isVertexInProximity(position.toG4_Vertex(), currentVertex)){
-					if (!currentVertex.isCompactor() &&
-							!currentVertex.isHole())
-					candidates.add(currentPos);
+		try {
+			HashSet<G4_Position> candidates = new HashSet<G4_Position>();
+			
+			//Erstes Casting
+			for (G4_Position currentPos: this.shootPositions){
+				//Falls keine FF Gefahr
+				if (!this.ffPositions.contains(currentPos)){
+			
+					G4_Vertex currentVertex = currentPos.toG4_Vertex();
+					currentVertex = this.getVertex(currentVertex.getX(), currentVertex.getY());
+					//Wenn nah genug
+					if (this.isVertexInProximity(position.toG4_Vertex(), currentVertex)){
+						if (!currentVertex.isCompactor() &&
+								!currentVertex.isHole())
+						candidates.add(currentPos);
+					}			
 				}			
-			}			
-		}
-		
-		
-		//RECALL
-		double shortest = Double.POSITIVE_INFINITY;
-		G4_Position shootPosition = null;
-		
-		for (G4_Position currentPosition: candidates){
-			if (this.getLengthOfShortestPath(position, currentPosition, false, false) < shortest)
-				shootPosition = currentPosition;
-		}
+			}
+			
+			
+			//RECALL
+			double shortest = Double.POSITIVE_INFINITY;
+			G4_Position shootPosition = null;
+			
+			for (G4_Position currentPosition: candidates){
+				if (this.getLengthOfShortestPath(position, currentPosition, false, false) < shortest)
+					shootPosition = currentPosition;
+			}
 
-		return shootPosition;
+			return shootPosition;
+		} catch (Exception e) {
+			
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return position;
+		}
 		
 	}
 
